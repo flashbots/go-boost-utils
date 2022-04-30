@@ -195,3 +195,26 @@ type GetPayloadResponse struct {
 	Version string            `json:"version"`
 	Data    *ExecutionPayload `json:"data"`
 }
+
+func PayloadToPayloadHeader(p *ExecutionPayloadV1) (*ExecutionPayloadHeaderV1, error) {
+	// txs, err := decodeTransactions(p.Transactions)
+	// if err != nil {
+	//         return nil, err
+	// }
+	return &ExecutionPayloadHeaderV1{
+		// ParentHash:       p.ParentHash,
+		// FeeRecipient:     p.FeeRecipient,
+		// StateRoot:        p.StateRoot,
+		// ReceiptsRoot:     p.ReceiptsRoot,
+		// LogsBloom:        p.LogsBloom,
+		// PrevRandao:       p.Random,
+		// BlockNumber:      p.Number,
+		// GasLimit:         p.GasLimit,
+		// GasUsed:          p.GasUsed,
+		// Timestamp:        p.Timestamp,
+		// ExtraData:        p.ExtraData,
+		// BaseFeePerGas:    (*big.Int)(p.BaseFeePerGas),
+		// BlockHash:        p.BlockHash,
+		// TransactionsRoot: types.DeriveSha(types.Transactions(txs), trie.NewStackTrie(nil)),
+	}, nil
+}
