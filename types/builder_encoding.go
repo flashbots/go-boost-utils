@@ -2163,21 +2163,16 @@ func (r *RegisterValidatorRequestMessage) MarshalSSZTo(buf []byte) (dst []byte, 
 	dst = buf
 
 	// Field (0) 'FeeRecipient'
-	if len(r.FeeRecipient) != 32 {
-		err = ssz.ErrBytesLength
-		return
-	}
-	dst = append(dst, r.FeeRecipient...)
+	dst = append(dst, r.FeeRecipient[:]...)
 
-	// Field (1) 'Timestamp'
+	// Field (1) 'GasTarget'
+	dst = ssz.MarshalUint64(dst, uint64(r.GasTarget))
+
+	// Field (2) 'Timestamp'
 	dst = ssz.MarshalUint64(dst, uint64(r.Timestamp))
 
-	// Field (2) 'Pubkey'
-	if len(r.Pubkey) != 32 {
-		err = ssz.ErrBytesLength
-		return
-	}
-	dst = append(dst, r.Pubkey...)
+	// Field (3) 'Pubkey'
+	dst = append(dst, r.Pubkey[:]...)
 
 	return
 }
@@ -2186,31 +2181,28 @@ func (r *RegisterValidatorRequestMessage) MarshalSSZTo(buf []byte) (dst []byte, 
 func (r *RegisterValidatorRequestMessage) UnmarshalSSZ(buf []byte) error {
 	var err error
 	size := uint64(len(buf))
-	if size != 72 {
+	if size != 84 {
 		return ssz.ErrSize
 	}
 
 	// Field (0) 'FeeRecipient'
-	if cap(r.FeeRecipient) == 0 {
-		r.FeeRecipient = make([]byte, 0, len(buf[0:32]))
-	}
-	r.FeeRecipient = append(r.FeeRecipient, buf[0:32]...)
+	copy(r.FeeRecipient[:], buf[0:20])
 
-	// Field (1) 'Timestamp'
-	r.Timestamp = hexutil.Uint64(ssz.UnmarshallUint64(buf[32:40]))
+	// Field (1) 'GasTarget'
+	r.GasTarget = hexutil.Uint64(ssz.UnmarshallUint64(buf[20:28]))
 
-	// Field (2) 'Pubkey'
-	if cap(r.Pubkey) == 0 {
-		r.Pubkey = make([]byte, 0, len(buf[40:72]))
-	}
-	r.Pubkey = append(r.Pubkey, buf[40:72]...)
+	// Field (2) 'Timestamp'
+	r.Timestamp = hexutil.Uint64(ssz.UnmarshallUint64(buf[28:36]))
+
+	// Field (3) 'Pubkey'
+	copy(r.Pubkey[:], buf[36:84])
 
 	return err
 }
 
 // SizeSSZ returns the ssz encoded size in bytes for the RegisterValidatorRequestMessage object
 func (r *RegisterValidatorRequestMessage) SizeSSZ() (size int) {
-	size = 72
+	size = 84
 	return
 }
 
@@ -2224,21 +2216,16 @@ func (r *RegisterValidatorRequestMessage) HashTreeRootWith(hh *ssz.Hasher) (err 
 	indx := hh.Index()
 
 	// Field (0) 'FeeRecipient'
-	if len(r.FeeRecipient) != 32 {
-		err = ssz.ErrBytesLength
-		return
-	}
-	hh.PutBytes(r.FeeRecipient)
+	hh.PutBytes(r.FeeRecipient[:])
 
-	// Field (1) 'Timestamp'
+	// Field (1) 'GasTarget'
+	hh.PutUint64(uint64(r.GasTarget))
+
+	// Field (2) 'Timestamp'
 	hh.PutUint64(uint64(r.Timestamp))
 
-	// Field (2) 'Pubkey'
-	if len(r.Pubkey) != 32 {
-		err = ssz.ErrBytesLength
-		return
-	}
-	hh.PutBytes(r.Pubkey)
+	// Field (3) 'Pubkey'
+	hh.PutBytes(r.Pubkey[:])
 
 	hh.Merkleize(indx)
 	return
@@ -2265,11 +2252,7 @@ func (b *BuilderBidV1) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	dst = ssz.MarshalUint64(dst, uint64(b.Value))
 
 	// Field (2) 'Pubkey'
-	if len(b.Pubkey) != 32 {
-		err = ssz.ErrBytesLength
-		return
-	}
-	dst = append(dst, b.Pubkey...)
+	dst = append(dst, b.Pubkey[:]...)
 
 	return
 }
@@ -2278,7 +2261,7 @@ func (b *BuilderBidV1) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 func (b *BuilderBidV1) UnmarshalSSZ(buf []byte) error {
 	var err error
 	size := uint64(len(buf))
-	if size != 392 {
+	if size != 620 {
 		return ssz.ErrSize
 	}
 
@@ -2286,25 +2269,22 @@ func (b *BuilderBidV1) UnmarshalSSZ(buf []byte) error {
 	if b.Header == nil {
 		b.Header = new(ExecutionPayloadHeaderV1)
 	}
-	if err = b.Header.UnmarshalSSZ(buf[0:352]); err != nil {
+	if err = b.Header.UnmarshalSSZ(buf[0:564]); err != nil {
 		return err
 	}
 
 	// Field (1) 'Value'
-	b.Value = hexutil.Uint64(ssz.UnmarshallUint64(buf[352:360]))
+	b.Value = hexutil.Uint64(ssz.UnmarshallUint64(buf[564:572]))
 
 	// Field (2) 'Pubkey'
-	if cap(b.Pubkey) == 0 {
-		b.Pubkey = make([]byte, 0, len(buf[360:392]))
-	}
-	b.Pubkey = append(b.Pubkey, buf[360:392]...)
+	copy(b.Pubkey[:], buf[572:620])
 
 	return err
 }
 
 // SizeSSZ returns the ssz encoded size in bytes for the BuilderBidV1 object
 func (b *BuilderBidV1) SizeSSZ() (size int) {
-	size = 392
+	size = 620
 	return
 }
 
@@ -2326,11 +2306,7 @@ func (b *BuilderBidV1) HashTreeRootWith(hh *ssz.Hasher) (err error) {
 	hh.PutUint64(uint64(b.Value))
 
 	// Field (2) 'Pubkey'
-	if len(b.Pubkey) != 32 {
-		err = ssz.ErrBytesLength
-		return
-	}
-	hh.PutBytes(b.Pubkey)
+	hh.PutBytes(b.Pubkey[:])
 
 	hh.Merkleize(indx)
 	return
@@ -2354,11 +2330,7 @@ func (s *SignedBuilderBidV1) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	}
 
 	// Field (1) 'Signature'
-	if len(s.Signature) != 32 {
-		err = ssz.ErrBytesLength
-		return
-	}
-	dst = append(dst, s.Signature...)
+	dst = append(dst, s.Signature[:]...)
 
 	return
 }
@@ -2367,7 +2339,7 @@ func (s *SignedBuilderBidV1) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 func (s *SignedBuilderBidV1) UnmarshalSSZ(buf []byte) error {
 	var err error
 	size := uint64(len(buf))
-	if size != 424 {
+	if size != 716 {
 		return ssz.ErrSize
 	}
 
@@ -2375,22 +2347,19 @@ func (s *SignedBuilderBidV1) UnmarshalSSZ(buf []byte) error {
 	if s.Message == nil {
 		s.Message = new(BuilderBidV1)
 	}
-	if err = s.Message.UnmarshalSSZ(buf[0:392]); err != nil {
+	if err = s.Message.UnmarshalSSZ(buf[0:620]); err != nil {
 		return err
 	}
 
 	// Field (1) 'Signature'
-	if cap(s.Signature) == 0 {
-		s.Signature = make([]byte, 0, len(buf[392:424]))
-	}
-	s.Signature = append(s.Signature, buf[392:424]...)
+	copy(s.Signature[:], buf[620:716])
 
 	return err
 }
 
 // SizeSSZ returns the ssz encoded size in bytes for the SignedBuilderBidV1 object
 func (s *SignedBuilderBidV1) SizeSSZ() (size int) {
-	size = 424
+	size = 716
 	return
 }
 
@@ -2409,11 +2378,7 @@ func (s *SignedBuilderBidV1) HashTreeRootWith(hh *ssz.Hasher) (err error) {
 	}
 
 	// Field (1) 'Signature'
-	if len(s.Signature) != 32 {
-		err = ssz.ErrBytesLength
-		return
-	}
-	hh.PutBytes(s.Signature)
+	hh.PutBytes(s.Signature[:])
 
 	hh.Merkleize(indx)
 	return
