@@ -2249,7 +2249,7 @@ func (b *BuilderBidV1) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	}
 
 	// Field (1) 'Value'
-	dst = ssz.MarshalUint64(dst, uint64(b.Value))
+	dst = append(dst, b.Value[:]...)
 
 	// Field (2) 'Pubkey'
 	dst = append(dst, b.Pubkey[:]...)
@@ -2261,7 +2261,7 @@ func (b *BuilderBidV1) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 func (b *BuilderBidV1) UnmarshalSSZ(buf []byte) error {
 	var err error
 	size := uint64(len(buf))
-	if size != 620 {
+	if size != 644 {
 		return ssz.ErrSize
 	}
 
@@ -2274,17 +2274,17 @@ func (b *BuilderBidV1) UnmarshalSSZ(buf []byte) error {
 	}
 
 	// Field (1) 'Value'
-	b.Value = hexutil.Uint64(ssz.UnmarshallUint64(buf[564:572]))
+	copy(b.Value[:], buf[564:596])
 
 	// Field (2) 'Pubkey'
-	copy(b.Pubkey[:], buf[572:620])
+	copy(b.Pubkey[:], buf[596:644])
 
 	return err
 }
 
 // SizeSSZ returns the ssz encoded size in bytes for the BuilderBidV1 object
 func (b *BuilderBidV1) SizeSSZ() (size int) {
-	size = 620
+	size = 644
 	return
 }
 
@@ -2303,7 +2303,7 @@ func (b *BuilderBidV1) HashTreeRootWith(hh *ssz.Hasher) (err error) {
 	}
 
 	// Field (1) 'Value'
-	hh.PutUint64(uint64(b.Value))
+	hh.PutBytes(b.Value[:])
 
 	// Field (2) 'Pubkey'
 	hh.PutBytes(b.Pubkey[:])
@@ -2339,7 +2339,7 @@ func (s *SignedBuilderBidV1) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 func (s *SignedBuilderBidV1) UnmarshalSSZ(buf []byte) error {
 	var err error
 	size := uint64(len(buf))
-	if size != 716 {
+	if size != 740 {
 		return ssz.ErrSize
 	}
 
@@ -2347,19 +2347,19 @@ func (s *SignedBuilderBidV1) UnmarshalSSZ(buf []byte) error {
 	if s.Message == nil {
 		s.Message = new(BuilderBidV1)
 	}
-	if err = s.Message.UnmarshalSSZ(buf[0:620]); err != nil {
+	if err = s.Message.UnmarshalSSZ(buf[0:644]); err != nil {
 		return err
 	}
 
 	// Field (1) 'Signature'
-	copy(s.Signature[:], buf[620:716])
+	copy(s.Signature[:], buf[644:740])
 
 	return err
 }
 
 // SizeSSZ returns the ssz encoded size in bytes for the SignedBuilderBidV1 object
 func (s *SignedBuilderBidV1) SizeSSZ() (size int) {
-	size = 716
+	size = 740
 	return
 }
 

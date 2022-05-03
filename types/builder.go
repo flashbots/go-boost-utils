@@ -1,7 +1,10 @@
 package types
 
 import (
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/trie"
 )
 
 // Generate SSZ encoding: make generate-ssz
@@ -197,24 +200,24 @@ type GetPayloadResponse struct {
 }
 
 func PayloadToPayloadHeader(p *ExecutionPayloadV1) (*ExecutionPayloadHeaderV1, error) {
-	// txs, err := decodeTransactions(p.Transactions)
-	// if err != nil {
-	//         return nil, err
-	// }
+	txs, err := decodeTransactions(p.Transactions)
+	if err != nil {
+		return nil, err
+	}
 	return &ExecutionPayloadHeaderV1{
-		// ParentHash:       p.ParentHash,
-		// FeeRecipient:     p.FeeRecipient,
-		// StateRoot:        p.StateRoot,
-		// ReceiptsRoot:     p.ReceiptsRoot,
-		// LogsBloom:        p.LogsBloom,
-		// PrevRandao:       p.Random,
-		// BlockNumber:      p.Number,
-		// GasLimit:         p.GasLimit,
-		// GasUsed:          p.GasUsed,
-		// Timestamp:        p.Timestamp,
-		// ExtraData:        p.ExtraData,
-		// BaseFeePerGas:    (*big.Int)(p.BaseFeePerGas),
-		// BlockHash:        p.BlockHash,
-		// TransactionsRoot: types.DeriveSha(types.Transactions(txs), trie.NewStackTrie(nil)),
+		ParentHash:       [32]byte(p.ParentHash),
+		FeeRecipient:     [20]byte(p.FeeRecipient),
+		StateRoot:        [32]byte(p.StateRoot),
+		ReceiptsRoot:     [32]byte(p.ReceiptsRoot),
+		LogsBloom:        [256]byte(p.LogsBloom),
+		Random:           [32]byte(p.Random),
+		Number:           hexutil.Uint64(p.Number),
+		GasLimit:         hexutil.Uint64(p.GasLimit),
+		GasUsed:          hexutil.Uint64(p.GasUsed),
+		Timestamp:        hexutil.Uint64(p.Timestamp),
+		ExtraData:        [32]byte(common.BytesToHash(p.ExtraData)),
+		BaseFeePerGas:    [32]byte(common.BytesToHash(p.BaseFeePerGas.Bytes())),
+		BlockHash:        [32]byte(p.BlockHash),
+		TransactionsRoot: [32]byte(types.DeriveSha(types.Transactions(txs), trie.NewStackTrie(nil))),
 	}, nil
 }
