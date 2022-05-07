@@ -2169,7 +2169,7 @@ func (r *RegisterValidatorRequestMessage) MarshalSSZTo(buf []byte) (dst []byte, 
 	dst = ssz.MarshalUint64(dst, uint64(r.GasTarget))
 
 	// Field (2) 'Timestamp'
-	dst = ssz.MarshalUint64(dst, uint64(r.Timestamp))
+	dst = ssz.MarshalUint64(dst, r.Timestamp)
 
 	// Field (3) 'Pubkey'
 	dst = append(dst, r.Pubkey[:]...)
@@ -2188,11 +2188,11 @@ func (r *RegisterValidatorRequestMessage) UnmarshalSSZ(buf []byte) error {
 	// Field (0) 'FeeRecipient'
 	copy(r.FeeRecipient[:], buf[0:20])
 
-	// Field (1) 'GasTarget'
-	r.GasTarget = hexutil.Uint64(ssz.UnmarshallUint64(buf[20:28]))
+	// Field (1) 'GasLimit'
+	r.GasLimit = ssz.UnmarshallUint64(buf[20:28])
 
 	// Field (2) 'Timestamp'
-	r.Timestamp = hexutil.Uint64(ssz.UnmarshallUint64(buf[28:36]))
+	r.Timestamp = ssz.UnmarshallUint64(buf[28:36])
 
 	// Field (3) 'Pubkey'
 	copy(r.Pubkey[:], buf[36:84])
@@ -2218,11 +2218,11 @@ func (r *RegisterValidatorRequestMessage) HashTreeRootWith(hh *ssz.Hasher) (err 
 	// Field (0) 'FeeRecipient'
 	hh.PutBytes(r.FeeRecipient[:])
 
-	// Field (1) 'GasTarget'
-	hh.PutUint64(uint64(r.GasTarget))
+	// Field (1) 'GasLimit'
+	hh.PutUint64(r.GasLimit)
 
 	// Field (2) 'Timestamp'
-	hh.PutUint64(uint64(r.Timestamp))
+	hh.PutUint64(r.Timestamp)
 
 	// Field (3) 'Pubkey'
 	hh.PutBytes(r.Pubkey[:])
