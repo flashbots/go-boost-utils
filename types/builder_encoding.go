@@ -1431,21 +1431,21 @@ func (b *BlindedBeaconBlockBody) UnmarshalSSZ(buf []byte) error {
 	var o3, o4, o5, o6, o7, o9 uint64
 
 	// Field (0) 'RandaoReveal'
-	copy(b.RandaoReveal[:], buf[0:32])
+	copy(b.RandaoReveal[:], buf[0:96])
 
 	// Field (1) 'Eth1Data'
 	if b.Eth1Data == nil {
 		b.Eth1Data = new(Eth1Data)
 	}
-	if err = b.Eth1Data.UnmarshalSSZ(buf[32:104]); err != nil {
+	if err = b.Eth1Data.UnmarshalSSZ(buf[96:168]); err != nil {
 		return err
 	}
 
 	// Field (2) 'Graffiti'
-	copy(b.Graffiti[:], buf[104:136])
+	copy(b.Graffiti[:], buf[168:200])
 
 	// Offset (3) 'ProposerSlashings'
-	if o3 = ssz.ReadOffset(buf[136:140]); o3 > size {
+	if o3 = ssz.ReadOffset(buf[200:204]); o3 > size {
 		return ssz.ErrOffset
 	}
 
@@ -1454,22 +1454,22 @@ func (b *BlindedBeaconBlockBody) UnmarshalSSZ(buf []byte) error {
 	}
 
 	// Offset (4) 'AttesterSlashings'
-	if o4 = ssz.ReadOffset(buf[140:144]); o4 > size || o3 > o4 {
+	if o4 = ssz.ReadOffset(buf[204:208]); o4 > size || o3 > o4 {
 		return ssz.ErrOffset
 	}
 
 	// Offset (5) 'Attestations'
-	if o5 = ssz.ReadOffset(buf[144:148]); o5 > size || o4 > o5 {
+	if o5 = ssz.ReadOffset(buf[208:212]); o5 > size || o4 > o5 {
 		return ssz.ErrOffset
 	}
 
 	// Offset (6) 'Deposits'
-	if o6 = ssz.ReadOffset(buf[148:152]); o6 > size || o5 > o6 {
+	if o6 = ssz.ReadOffset(buf[212:216]); o6 > size || o5 > o6 {
 		return ssz.ErrOffset
 	}
 
 	// Offset (7) 'VoluntaryExits'
-	if o7 = ssz.ReadOffset(buf[152:156]); o7 > size || o6 > o7 {
+	if o7 = ssz.ReadOffset(buf[216:220]); o7 > size || o6 > o7 {
 		return ssz.ErrOffset
 	}
 
@@ -1477,7 +1477,7 @@ func (b *BlindedBeaconBlockBody) UnmarshalSSZ(buf []byte) error {
 	if b.SyncAggregate == nil {
 		b.SyncAggregate = new(SyncAggregate)
 	}
-	if err = b.SyncAggregate.UnmarshalSSZ(buf[156:316]); err != nil {
+	if err = b.SyncAggregate.UnmarshalSSZ(buf[220:380]); err != nil {
 		return err
 	}
 
