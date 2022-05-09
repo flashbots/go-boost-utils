@@ -2312,13 +2312,13 @@ func (b *BuilderBidV1) MarshalSSZ() ([]byte, error) {
 	return ssz.MarshalSSZ(b)
 }
 
-// MarshalSSZTo ssz marshals the BuilderBidV1 object to a target array
-func (b *BuilderBidV1) MarshalSSZTo(buf []byte) (dst []byte, err error) {
+// MarshalSSZTo ssz marshals the BuilderBid object to a target array
+func (b *BuilderBid) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	dst = buf
 
 	// Field (0) 'Header'
 	if b.Header == nil {
-		b.Header = new(ExecutionPayloadHeaderV1)
+		b.Header = new(ExecutionPayloadHeader)
 	}
 	if dst, err = b.Header.MarshalSSZTo(dst); err != nil {
 		return
@@ -2333,8 +2333,8 @@ func (b *BuilderBidV1) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	return
 }
 
-// UnmarshalSSZ ssz unmarshals the BuilderBidV1 object
-func (b *BuilderBidV1) UnmarshalSSZ(buf []byte) error {
+// UnmarshalSSZ ssz unmarshals the BuilderBid object
+func (b *BuilderBid) UnmarshalSSZ(buf []byte) error {
 	var err error
 	size := uint64(len(buf))
 	if size != 644 {
@@ -2343,7 +2343,7 @@ func (b *BuilderBidV1) UnmarshalSSZ(buf []byte) error {
 
 	// Field (0) 'Header'
 	if b.Header == nil {
-		b.Header = new(ExecutionPayloadHeaderV1)
+		b.Header = new(ExecutionPayloadHeader)
 	}
 	if err = b.Header.UnmarshalSSZ(buf[0:564]); err != nil {
 		return err
@@ -2358,19 +2358,19 @@ func (b *BuilderBidV1) UnmarshalSSZ(buf []byte) error {
 	return err
 }
 
-// SizeSSZ returns the ssz encoded size in bytes for the BuilderBidV1 object
-func (b *BuilderBidV1) SizeSSZ() (size int) {
+// SizeSSZ returns the ssz encoded size in bytes for the BuilderBid object
+func (b *BuilderBid) SizeSSZ() (size int) {
 	size = 644
 	return
 }
 
-// HashTreeRoot ssz hashes the BuilderBidV1 object
-func (b *BuilderBidV1) HashTreeRoot() ([32]byte, error) {
+// HashTreeRoot ssz hashes the BuilderBid object
+func (b *BuilderBid) HashTreeRoot() ([32]byte, error) {
 	return ssz.HashWithDefaultHasher(b)
 }
 
-// HashTreeRootWith ssz hashes the BuilderBidV1 object with a hasher
-func (b *BuilderBidV1) HashTreeRootWith(hh *ssz.Hasher) (err error) {
+// HashTreeRootWith ssz hashes the BuilderBid object with a hasher
+func (b *BuilderBid) HashTreeRootWith(hh *ssz.Hasher) (err error) {
 	indx := hh.Index()
 
 	// Field (0) 'Header'
@@ -2388,18 +2388,18 @@ func (b *BuilderBidV1) HashTreeRootWith(hh *ssz.Hasher) (err error) {
 	return
 }
 
-// MarshalSSZ ssz marshals the SignedBuilderBidV1 object
-func (s *SignedBuilderBidV1) MarshalSSZ() ([]byte, error) {
+// MarshalSSZ ssz marshals the SignedBuilderBid object
+func (s *SignedBuilderBid) MarshalSSZ() ([]byte, error) {
 	return ssz.MarshalSSZ(s)
 }
 
-// MarshalSSZTo ssz marshals the SignedBuilderBidV1 object to a target array
-func (s *SignedBuilderBidV1) MarshalSSZTo(buf []byte) (dst []byte, err error) {
+// MarshalSSZTo ssz marshals the SignedBuilderBid object to a target array
+func (s *SignedBuilderBid) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	dst = buf
 
 	// Field (0) 'Message'
 	if s.Message == nil {
-		s.Message = new(BuilderBidV1)
+		s.Message = new(BuilderBid)
 	}
 	if dst, err = s.Message.MarshalSSZTo(dst); err != nil {
 		return
@@ -2411,8 +2411,8 @@ func (s *SignedBuilderBidV1) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	return
 }
 
-// UnmarshalSSZ ssz unmarshals the SignedBuilderBidV1 object
-func (s *SignedBuilderBidV1) UnmarshalSSZ(buf []byte) error {
+// UnmarshalSSZ ssz unmarshals the SignedBuilderBid object
+func (s *SignedBuilderBid) UnmarshalSSZ(buf []byte) error {
 	var err error
 	size := uint64(len(buf))
 	if size != 740 {
@@ -2421,7 +2421,7 @@ func (s *SignedBuilderBidV1) UnmarshalSSZ(buf []byte) error {
 
 	// Field (0) 'Message'
 	if s.Message == nil {
-		s.Message = new(BuilderBidV1)
+		s.Message = new(BuilderBid)
 	}
 	if err = s.Message.UnmarshalSSZ(buf[0:644]); err != nil {
 		return err
@@ -2433,19 +2433,19 @@ func (s *SignedBuilderBidV1) UnmarshalSSZ(buf []byte) error {
 	return err
 }
 
-// SizeSSZ returns the ssz encoded size in bytes for the SignedBuilderBidV1 object
-func (s *SignedBuilderBidV1) SizeSSZ() (size int) {
+// SizeSSZ returns the ssz encoded size in bytes for the SignedBuilderBid object
+func (s *SignedBuilderBid) SizeSSZ() (size int) {
 	size = 740
 	return
 }
 
-// HashTreeRoot ssz hashes the SignedBuilderBidV1 object
-func (s *SignedBuilderBidV1) HashTreeRoot() ([32]byte, error) {
+// HashTreeRoot ssz hashes the SignedBuilderBid object
+func (s *SignedBuilderBid) HashTreeRoot() ([32]byte, error) {
 	return ssz.HashWithDefaultHasher(s)
 }
 
-// HashTreeRootWith ssz hashes the SignedBuilderBidV1 object with a hasher
-func (s *SignedBuilderBidV1) HashTreeRootWith(hh *ssz.Hasher) (err error) {
+// HashTreeRootWith ssz hashes the SignedBuilderBid object with a hasher
+func (s *SignedBuilderBid) HashTreeRootWith(hh *ssz.Hasher) (err error) {
 	indx := hh.Index()
 
 	// Field (0) 'Message'

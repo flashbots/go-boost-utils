@@ -199,12 +199,12 @@ type GetPayloadResponse struct {
 	Data    *ExecutionPayload `json:"data"`
 }
 
-func PayloadToPayloadHeader(p *ExecutionPayloadV1) (*ExecutionPayloadHeaderV1, error) {
+func PayloadToPayloadHeader(p *ExecutionPayloadV1) (*ExecutionPayloadHeader, error) {
 	txs, err := decodeTransactions(p.Transactions)
 	if err != nil {
 		return nil, err
 	}
-	return &ExecutionPayloadHeaderV1{
+	return &ExecutionPayloadHeader{
 		ParentHash:       [32]byte(p.ParentHash),
 		FeeRecipient:     [20]byte(p.FeeRecipient),
 		StateRoot:        [32]byte(p.StateRoot),
