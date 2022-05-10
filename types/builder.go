@@ -221,3 +221,27 @@ func PayloadToPayloadHeader(p *ExecutionPayloadV1) (*ExecutionPayloadHeader, err
 		TransactionsRoot: [32]byte(types.DeriveSha(types.Transactions(txs), trie.NewStackTrie(nil))),
 	}, nil
 }
+
+func PayloadToRESTPayload(p *ExecutionPayloadV1) (*ExecutionPayloadREST, error) {
+	txs := make([]hexutil.Bytes, len(p.Transactions))
+	for i, tx := range p.Transactions {
+		txs[i] = hexutil.Bytes(tx)
+	}
+
+	return &ExecutionPayloadREST{
+		ParentHash:    [32]byte(p.ParentHash),
+		FeeRecipient:  [20]byte(p.FeeRecipient),
+		StateRoot:     [32]byte(p.StateRoot),
+		ReceiptsRoot:  [32]byte(p.ReceiptsRoot),
+		LogsBloom:     [256]byte(p.LogsBloom),
+		Random:        [32]byte(p.Random),
+		BlockNumber:   p.Number,
+		GasLimit:      p.GasLimit,
+		GasUsed:       p.GasUsed,
+		Timestamp:     p.Timestamp,
+		ExtraData:     [32]byte(common.BytesToHash(p.ExtraData)),
+		BaseFeePerGas: [32]byte(common.BytesToHash(p.BaseFeePerGas.Bytes())),
+		BlockHash:     [32]byte(p.BlockHash),
+		Transactions:  txs,
+	}, nil
+}
