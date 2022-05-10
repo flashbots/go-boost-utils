@@ -211,7 +211,7 @@ func PayloadToPayloadHeader(p *ExecutionPayloadV1) (*ExecutionPayloadHeader, err
 		ReceiptsRoot:     [32]byte(p.ReceiptsRoot),
 		LogsBloom:        [256]byte(p.LogsBloom),
 		Random:           [32]byte(p.Random),
-		Number:           p.Number,
+		BlockNumber:      p.Number,
 		GasLimit:         p.GasLimit,
 		GasUsed:          p.GasUsed,
 		Timestamp:        p.Timestamp,
