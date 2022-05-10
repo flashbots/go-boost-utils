@@ -1878,11 +1878,9 @@ func (r *RegisterValidatorRequestMessage) MarshalSSZ() ([]byte, error) {
 // MarshalSSZTo ssz marshals the RegisterValidatorRequestMessage object to a target array
 func (r *RegisterValidatorRequestMessage) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	dst = buf
-	offset := int(24)
 
-	// Offset (0) 'FeeRecipient'
-	dst = ssz.WriteOffset(dst, offset)
-	offset += len(r.FeeRecipient)
+	// Field (0) 'FeeRecipient'
+	dst = append(dst, r.FeeRecipient[:]...)
 
 	// Field (1) 'GasLimit'
 	dst = ssz.MarshalUint64(dst, r.GasLimit)
@@ -1890,23 +1888,8 @@ func (r *RegisterValidatorRequestMessage) MarshalSSZTo(buf []byte) (dst []byte, 
 	// Field (2) 'Timestamp'
 	dst = ssz.MarshalUint64(dst, r.Timestamp)
 
-	// Offset (3) 'Pubkey'
-	dst = ssz.WriteOffset(dst, offset)
-	offset += len(r.Pubkey)
-
-	// Field (0) 'FeeRecipient'
-	if len(r.FeeRecipient) > 2048 {
-		err = ssz.ErrBytesLength
-		return
-	}
-	dst = append(dst, r.FeeRecipient...)
-
 	// Field (3) 'Pubkey'
-	if len(r.Pubkey) > 2048 {
-		err = ssz.ErrBytesLength
-		return
-	}
-	dst = append(dst, r.Pubkey...)
+	dst = append(dst, r.Pubkey[:]...)
 
 	return
 }
@@ -1915,69 +1898,28 @@ func (r *RegisterValidatorRequestMessage) MarshalSSZTo(buf []byte) (dst []byte, 
 func (r *RegisterValidatorRequestMessage) UnmarshalSSZ(buf []byte) error {
 	var err error
 	size := uint64(len(buf))
-	if size < 24 {
+	if size != 84 {
 		return ssz.ErrSize
 	}
 
-	tail := buf
-	var o0, o3 uint64
-
-	// Offset (0) 'FeeRecipient'
-	if o0 = ssz.ReadOffset(buf[0:4]); o0 > size {
-		return ssz.ErrOffset
-	}
-
-	if o0 < 24 {
-		return ssz.ErrInvalidVariableOffset
-	}
+	// Field (0) 'FeeRecipient'
+	copy(r.FeeRecipient[:], buf[0:20])
 
 	// Field (1) 'GasLimit'
-	r.GasLimit = ssz.UnmarshallUint64(buf[4:12])
+	r.GasLimit = ssz.UnmarshallUint64(buf[20:28])
 
 	// Field (2) 'Timestamp'
-	r.Timestamp = ssz.UnmarshallUint64(buf[12:20])
-
-	// Offset (3) 'Pubkey'
-	if o3 = ssz.ReadOffset(buf[20:24]); o3 > size || o0 > o3 {
-		return ssz.ErrOffset
-	}
-
-	// Field (0) 'FeeRecipient'
-	{
-		buf = tail[o0:o3]
-		if len(buf) > 2048 {
-			return ssz.ErrBytesLength
-		}
-		if cap(r.FeeRecipient) == 0 {
-			r.FeeRecipient = make([]byte, 0, len(buf))
-		}
-		r.FeeRecipient = append(r.FeeRecipient, buf...)
-	}
+	r.Timestamp = ssz.UnmarshallUint64(buf[28:36])
 
 	// Field (3) 'Pubkey'
-	{
-		buf = tail[o3:]
-		if len(buf) > 2048 {
-			return ssz.ErrBytesLength
-		}
-		if cap(r.Pubkey) == 0 {
-			r.Pubkey = make([]byte, 0, len(buf))
-		}
-		r.Pubkey = append(r.Pubkey, buf...)
-	}
+	copy(r.Pubkey[:], buf[36:84])
+
 	return err
 }
 
 // SizeSSZ returns the ssz encoded size in bytes for the RegisterValidatorRequestMessage object
 func (r *RegisterValidatorRequestMessage) SizeSSZ() (size int) {
-	size = 24
-
-	// Field (0) 'FeeRecipient'
-	size += len(r.FeeRecipient)
-
-	// Field (3) 'Pubkey'
-	size += len(r.Pubkey)
-
+	size = 84
 	return
 }
 
@@ -1991,16 +1933,7 @@ func (r *RegisterValidatorRequestMessage) HashTreeRootWith(hh *ssz.Hasher) (err 
 	indx := hh.Index()
 
 	// Field (0) 'FeeRecipient'
-	{
-		elemIndx := hh.Index()
-		byteLen := uint64(len(r.FeeRecipient))
-		if byteLen > 2048 {
-			err = ssz.ErrIncorrectListSize
-			return
-		}
-		hh.PutBytes(r.FeeRecipient)
-		hh.MerkleizeWithMixin(elemIndx, byteLen, (2048+31)/32)
-	}
+	hh.PutBytes(r.FeeRecipient[:])
 
 	// Field (1) 'GasLimit'
 	hh.PutUint64(r.GasLimit)
@@ -2009,16 +1942,7 @@ func (r *RegisterValidatorRequestMessage) HashTreeRootWith(hh *ssz.Hasher) (err 
 	hh.PutUint64(r.Timestamp)
 
 	// Field (3) 'Pubkey'
-	{
-		elemIndx := hh.Index()
-		byteLen := uint64(len(r.Pubkey))
-		if byteLen > 2048 {
-			err = ssz.ErrIncorrectListSize
-			return
-		}
-		hh.PutBytes(r.Pubkey)
-		hh.MerkleizeWithMixin(elemIndx, byteLen, (2048+31)/32)
-	}
+	hh.PutBytes(r.Pubkey[:])
 
 	hh.Merkleize(indx)
 	return
