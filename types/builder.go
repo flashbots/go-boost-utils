@@ -241,7 +241,7 @@ func ELPayloadToRESTPayload(p *ExecutionPayloadV1) (*ExecutionPayloadREST, error
 		GasLimit:      p.GasLimit,
 		GasUsed:       p.GasUsed,
 		Timestamp:     p.Timestamp,
-		ExtraData:     [32]byte(common.BytesToHash(p.ExtraData)),
+		ExtraData:     hexutil.Bytes(p.ExtraData),
 		BaseFeePerGas: [32]byte(common.BytesToHash(p.BaseFeePerGas.Bytes())),
 		BlockHash:     [32]byte(p.BlockHash),
 		Transactions:  txs,
