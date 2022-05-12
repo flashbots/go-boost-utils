@@ -2240,19 +2240,23 @@ func (b *BuilderBidV1) MarshalSSZ() ([]byte, error) {
 func (b *BuilderBid) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	dst = buf
 
-	// Field (0) 'Header'
+	// Offset (0) 'Header'
+	dst = ssz.WriteOffset(dst, offset)
 	if b.Header == nil {
 		b.Header = new(ExecutionPayloadHeader)
 	}
-	if dst, err = b.Header.MarshalSSZTo(dst); err != nil {
-		return
-	}
+	offset += b.Header.SizeSSZ()
 
 	// Field (1) 'Value'
 	dst = append(dst, b.Value[:]...)
 
 	// Field (2) 'Pubkey'
 	dst = append(dst, b.Pubkey[:]...)
+
+	// Field (0) 'Header'
+	if dst, err = b.Header.MarshalSSZTo(dst); err != nil {
+		return
+	}
 
 	return
 }
@@ -2261,30 +2265,51 @@ func (b *BuilderBid) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 func (b *BuilderBid) UnmarshalSSZ(buf []byte) error {
 	var err error
 	size := uint64(len(buf))
-	if size != 644 {
+	if size < 84 {
 		return ssz.ErrSize
 	}
 
-	// Field (0) 'Header'
-	if b.Header == nil {
-		b.Header = new(ExecutionPayloadHeader)
+	tail := buf
+	var o0 uint64
+
+	// Offset (0) 'Header'
+	if o0 = ssz.ReadOffset(buf[0:4]); o0 > size {
+		return ssz.ErrOffset
 	}
-	if err = b.Header.UnmarshalSSZ(buf[0:564]); err != nil {
-		return err
+
+	if o0 < 84 {
+		return ssz.ErrInvalidVariableOffset
 	}
 
 	// Field (1) 'Value'
-	copy(b.Value[:], buf[564:596])
+	copy(b.Value[:], buf[4:36])
 
 	// Field (2) 'Pubkey'
-	copy(b.Pubkey[:], buf[596:644])
+	copy(b.Pubkey[:], buf[36:84])
 
+	// Field (0) 'Header'
+	{
+		buf = tail[o0:]
+		if b.Header == nil {
+			b.Header = new(ExecutionPayloadHeader)
+		}
+		if err = b.Header.UnmarshalSSZ(buf); err != nil {
+			return err
+		}
+	}
 	return err
 }
 
 // SizeSSZ returns the ssz encoded size in bytes for the BuilderBid object
 func (b *BuilderBid) SizeSSZ() (size int) {
-	size = 644
+	size = 84
+
+	// Field (0) 'Header'
+	if b.Header == nil {
+		b.Header = new(ExecutionPayloadHeader)
+	}
+	size += b.Header.SizeSSZ()
+
 	return
 }
 
@@ -2320,17 +2345,22 @@ func (s *SignedBuilderBid) MarshalSSZ() ([]byte, error) {
 // MarshalSSZTo ssz marshals the SignedBuilderBid object to a target array
 func (s *SignedBuilderBid) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	dst = buf
+	offset := int(100)
 
-	// Field (0) 'Message'
+	// Offset (0) 'Message'
+	dst = ssz.WriteOffset(dst, offset)
 	if s.Message == nil {
 		s.Message = new(BuilderBid)
 	}
-	if dst, err = s.Message.MarshalSSZTo(dst); err != nil {
-		return
-	}
+	offset += s.Message.SizeSSZ()
 
 	// Field (1) 'Signature'
 	dst = append(dst, s.Signature[:]...)
+
+	// Field (0) 'Message'
+	if dst, err = s.Message.MarshalSSZTo(dst); err != nil {
+		return
+	}
 
 	return
 }
@@ -2339,27 +2369,48 @@ func (s *SignedBuilderBid) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 func (s *SignedBuilderBid) UnmarshalSSZ(buf []byte) error {
 	var err error
 	size := uint64(len(buf))
-	if size != 740 {
+	if size < 100 {
 		return ssz.ErrSize
 	}
 
-	// Field (0) 'Message'
-	if s.Message == nil {
-		s.Message = new(BuilderBid)
+	tail := buf
+	var o0 uint64
+
+	// Offset (0) 'Message'
+	if o0 = ssz.ReadOffset(buf[0:4]); o0 > size {
+		return ssz.ErrOffset
 	}
-	if err = s.Message.UnmarshalSSZ(buf[0:644]); err != nil {
-		return err
+
+	if o0 < 100 {
+		return ssz.ErrInvalidVariableOffset
 	}
 
 	// Field (1) 'Signature'
-	copy(s.Signature[:], buf[644:740])
+	copy(s.Signature[:], buf[4:100])
 
+	// Field (0) 'Message'
+	{
+		buf = tail[o0:]
+		if s.Message == nil {
+			s.Message = new(BuilderBid)
+		}
+		if err = s.Message.UnmarshalSSZ(buf); err != nil {
+			return err
+		}
+	}
 	return err
 }
 
 // SizeSSZ returns the ssz encoded size in bytes for the SignedBuilderBid object
 func (s *SignedBuilderBid) SizeSSZ() (size int) {
-	size = 740
+	size = 100
+
+	// Field (0) 'Message'
+	if s.Message == nil {
+		s.Message = new(BuilderBid)
+	}
+	size += s.Message.SizeSSZ()
+
 	return
 }
 
