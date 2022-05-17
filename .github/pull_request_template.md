@@ -1,15 +1,18 @@
-## Overview
+Related issue(s):
 
-One-line summary:
+
+Description:
+
 
 Problem(s) & goal(s):
 
-Additional context:
 
-Related issue (s):
+Additional context & references:
 
 
-## Housekeeping
+---
 
-* [ ] Have you run `make lint`?
-* [ ] Have you run `make test`?
+I have run these commands:
+
+* [ ] `make lint`
+* [ ] `make test`
