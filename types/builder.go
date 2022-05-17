@@ -228,13 +228,13 @@ func PayloadToPayloadHeader(p *ExecutionPayloadV1) (*ExecutionPayloadHeader, err
 	}, nil
 }
 
-func ELPayloadToRESTPayload(p *ExecutionPayloadV1) (*ExecutionPayloadREST, error) {
+func ELPayloadToRESTPayload(p *ExecutionPayloadV1) (*ExecutionPayload, error) {
 	txs := make([]hexutil.Bytes, len(p.Transactions))
 	for i, tx := range p.Transactions {
 		txs[i] = hexutil.Bytes(tx)
 	}
 
-	return &ExecutionPayloadREST{
+	return &ExecutionPayload{
 		ParentHash:    [32]byte(p.ParentHash),
 		FeeRecipient:  [20]byte(p.FeeRecipient),
 		StateRoot:     [32]byte(p.StateRoot),
@@ -252,7 +252,7 @@ func ELPayloadToRESTPayload(p *ExecutionPayloadV1) (*ExecutionPayloadREST, error
 	}, nil
 }
 
-func RESTPayloadToELPayload(p *ExecutionPayloadREST) (*ExecutionPayloadV1, error) {
+func RESTPayloadToELPayload(p *ExecutionPayload) (*ExecutionPayloadV1, error) {
 	txs := make([][]byte, len(p.Transactions))
 	for i, tx := range p.Transactions {
 		txs[i] = []byte(tx)

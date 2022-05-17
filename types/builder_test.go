@@ -8,6 +8,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
 	ssz "github.com/ferranbt/fastssz"
 	"github.com/stretchr/testify/require"
 )
@@ -235,6 +236,13 @@ func TestExecutionPayload(t *testing.T) {
 	err = json.Unmarshal(b, msg2)
 	require.NoError(t, err)
 	require.Equal(t, msg, msg2)
+
+	// Check converting to EL style and back
+	elMsg, err := RESTPayloadToELPayload(msg2)
+	require.NoError(t, err)
+	clMsg, err := ELPayloadToRESTPayload(elMsg)
+	require.NoError(t, err)
+	require.Equal(t, msg, clMsg)
 }
 
 func TestBuilderSSZEncoding(t *testing.T) {
@@ -271,71 +279,6 @@ func TestBuilderSSZEncoding(t *testing.T) {
 		err = test.HashTreeRootWith(hh)
 		require.NoError(t, err)
 	}
-}
-
-func TestExecutionPayloadREST(t *testing.T) {
-	parentHash := Hash{0xa1}
-	blockHash := Hash{0xa1}
-	feeRecipient := Address{0xb1}
-
-	tx1hex := "0xcdc2b165e82ed1fe09aae28fccee2199946baf6b4503ca7e6f19aaa95a92b766dce6d968024a68d97ee178082928142430d4"
-	tx1 := new(hexutil.Bytes)
-	tx1.UnmarshalText([]byte(tx1hex))
-
-	msg := &ExecutionPayloadREST{
-		ParentHash:    parentHash,
-		FeeRecipient:  feeRecipient,
-		StateRoot:     Root{0x09},
-		ReceiptsRoot:  Root{0x0a},
-		LogsBloom:     Bloom{0x0b},
-		Random:        Hash{0x0c},
-		BlockNumber:   5001,
-		GasLimit:      5002,
-		GasUsed:       5003,
-		Timestamp:     5004,
-		ExtraData:     hexutil.Bytes{0x0d},
-		BaseFeePerGas: IntToU256(123456789),
-		BlockHash:     blockHash,
-		Transactions:  []hexutil.Bytes{*tx1},
-	}
-
-	// Marshalling
-	b, err := json.Marshal(msg)
-	require.NoError(t, err)
-	fmt.Println(string(b))
-
-	expectedJSON := `{
-        "parent_hash": "0xa100000000000000000000000000000000000000000000000000000000000000",
-        "fee_recipient": "0xb100000000000000000000000000000000000000",
-        "state_root": "0x0900000000000000000000000000000000000000000000000000000000000000",
-        "receipts_root": "0x0a00000000000000000000000000000000000000000000000000000000000000",
-        "logs_bloom": "0x0b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
-        "prev_randao": "0x0c00000000000000000000000000000000000000000000000000000000000000",
-        "block_number": "5001",
-        "gas_limit": "5002",
-        "gas_used": "5003",
-        "timestamp": "5004",
-        "extra_data": "0x0d",
-        "base_fee_per_gas": "123456789",
-        "block_hash": "0xa100000000000000000000000000000000000000000000000000000000000000",
-        "transactions": [
-            "0xcdc2b165e82ed1fe09aae28fccee2199946baf6b4503ca7e6f19aaa95a92b766dce6d968024a68d97ee178082928142430d4"
-        ]
-    }`
-	require.JSONEq(t, expectedJSON, string(b))
-
-	// Now unmarshal it back and compare to original
-	msg2 := new(ExecutionPayloadREST)
-	err = json.Unmarshal(b, msg2)
-	require.NoError(t, err)
-	require.Equal(t, msg, msg2)
-
-	// Check converting to EL style and back
-	elMsg, err := RESTPayloadToELPayload(msg2)
-	require.NoError(t, err)
-	clMsg, err := ELPayloadToRESTPayload(elMsg)
-	require.NoError(t, err)
-	require.Equal(t, msg, clMsg)
 }
 
 func TestExecutionPayloadV1(t *testing.T) {

@@ -3,7 +3,7 @@ package types
 import (
 	"testing"
 
-	"github.com/prysmaticlabs/prysm/crypto/bls"
+	"github.com/prysmaticlabs/prysm/shared/bls"
 	"github.com/stretchr/testify/require"
 )
 
