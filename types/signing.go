@@ -3,7 +3,7 @@ package types
 import (
 	"encoding/binary"
 
-	"github.com/prysmaticlabs/prysm/crypto/bls"
+	"github.com/prysmaticlabs/prysm/shared/bls"
 )
 
 type Domain [32]byte

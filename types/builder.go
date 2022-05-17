@@ -1,11 +1,7 @@
 package types
 
 import (
-	"math/big"
-
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/core/types"
 )
 
 // Generate SSZ encoding: make generate-ssz
@@ -202,79 +198,4 @@ type GetPayloadResponse struct {
 
 type transactions struct {
 	Transactions [][]byte `ssz-max:"1048576,1073741824"`
-}
-
-func PayloadToPayloadHeader(p *ExecutionPayloadV1) (*ExecutionPayloadHeader, error) {
-	txs := transactions{Transactions: p.Transactions}
-	txroot, err := txs.HashTreeRoot()
-	if err != nil {
-		return nil, err
-	}
-	return &ExecutionPayloadHeader{
-		ParentHash:       [32]byte(p.ParentHash),
-		FeeRecipient:     [20]byte(p.FeeRecipient),
-		StateRoot:        [32]byte(p.StateRoot),
-		ReceiptsRoot:     [32]byte(p.ReceiptsRoot),
-		LogsBloom:        [256]byte(p.LogsBloom),
-		Random:           [32]byte(p.Random),
-		BlockNumber:      p.Number,
-		GasLimit:         p.GasLimit,
-		GasUsed:          p.GasUsed,
-		Timestamp:        p.Timestamp,
-		ExtraData:        hexutil.Bytes(p.ExtraData),
-		BaseFeePerGas:    [32]byte(common.BytesToHash(p.BaseFeePerGas.Bytes())),
-		BlockHash:        [32]byte(p.BlockHash),
-		TransactionsRoot: [32]byte(txroot),
-	}, nil
-}
-
-func ELPayloadToRESTPayload(p *ExecutionPayloadV1) (*ExecutionPayloadREST, error) {
-	txs := make([]hexutil.Bytes, len(p.Transactions))
-	for i, tx := range p.Transactions {
-		txs[i] = hexutil.Bytes(tx)
-	}
-
-	return &ExecutionPayloadREST{
-		ParentHash:    [32]byte(p.ParentHash),
-		FeeRecipient:  [20]byte(p.FeeRecipient),
-		StateRoot:     [32]byte(p.StateRoot),
-		ReceiptsRoot:  [32]byte(p.ReceiptsRoot),
-		LogsBloom:     [256]byte(p.LogsBloom),
-		Random:        [32]byte(p.Random),
-		BlockNumber:   p.Number,
-		GasLimit:      p.GasLimit,
-		GasUsed:       p.GasUsed,
-		Timestamp:     p.Timestamp,
-		ExtraData:     hexutil.Bytes(p.ExtraData),
-		BaseFeePerGas: [32]byte(common.BytesToHash(p.BaseFeePerGas.Bytes())),
-		BlockHash:     [32]byte(p.BlockHash),
-		Transactions:  txs,
-	}, nil
-}
-
-func RESTPayloadToELPayload(p *ExecutionPayloadREST) (*ExecutionPayloadV1, error) {
-	txs := make([][]byte, len(p.Transactions))
-	for i, tx := range p.Transactions {
-		txs[i] = []byte(tx)
-	}
-
-	baseFeePerGas := new(big.Int)
-	baseFeePerGas.SetBytes(p.BaseFeePerGas[:])
-
-	return &ExecutionPayloadV1{
-		ParentHash:    common.Hash(p.ParentHash),
-		FeeRecipient:  common.Address(p.FeeRecipient),
-		StateRoot:     common.Hash(p.StateRoot),
-		ReceiptsRoot:  common.Hash(p.ReceiptsRoot),
-		LogsBloom:     types.Bloom(p.LogsBloom),
-		Random:        common.Hash(p.Random),
-		Number:        p.BlockNumber,
-		GasLimit:      p.GasLimit,
-		GasUsed:       p.GasUsed,
-		Timestamp:     p.Timestamp,
-		ExtraData:     []byte(p.ExtraData[:]),
-		BaseFeePerGas: baseFeePerGas,
-		BlockHash:     common.Hash(p.BlockHash),
-		Transactions:  txs,
-	}, nil
 }
