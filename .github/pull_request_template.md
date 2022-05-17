@@ -1,11 +1,15 @@
-For new features, every pull request should be linked to an issue that documents the details 
-of the feature to implement. This issue should have a summary of all the relevant discussions 
-and links to related documents.
+## Overview
 
----
+One-line summary:
 
-Related issue:
+Problem(s) & goal(s):
 
-Short description of the changes:
+Additional context:
 
-Added tests?
+Related issue (s):
+
+
+## Housekeeping
+
+* [ ] Have you run `make lint`?
+* [ ] Have you run `make test`?
