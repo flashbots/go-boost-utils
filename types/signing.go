@@ -3,7 +3,7 @@ package types
 import (
 	"encoding/binary"
 
-	"github.com/prysmaticlabs/prysm/shared/bls"
+	"github.com/flashbots/builder/bls"
 )
 
 type Domain [32]byte
@@ -76,13 +76,6 @@ func VerifySignature(obj HashTreeRoot, d Domain, pk, s []byte) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	sig, err := bls.SignatureFromBytes(s)
-	if err != nil {
-		return false, err
-	}
-	pubkey, err := bls.PublicKeyFromBytes(pk)
-	if err != nil {
-		return false, err
-	}
-	return sig.Verify(pubkey, msg[:]), nil
+
+	return bls.VerifySignatureBytes(msg[:], s, pk)
 }
