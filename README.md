@@ -1,5 +1,6 @@
 # Eth2 builder types & signing for Golang
 
+[![Goreport status](https://goreportcard.com/badge/github.com/flashbots/builder)](https://goreportcard.com/report/github.com/flashbots/builder)
 [![Test status](https://github.com/flashbots/builder/workflows/Checks/badge.svg)](https://github.com/flashbots/builder/actions?query=workflow%3A%22Checks%22)
 
 ---
