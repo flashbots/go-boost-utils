@@ -37,6 +37,10 @@ func PublicKeyFromBytes(pkBytes []byte) (*PublicKey, error) {
 	return pk, nil
 }
 
+func PublicKeyFromSecretKey(sk *SecretKey) *PublicKey {
+	return new(PublicKey).From(sk)
+}
+
 func SecretKeyFromBytes(skBytes []byte) (*SecretKey, error) {
 	if len(skBytes) != BLSSecretKeyLength {
 		return nil, errors.New("invalid secret key length")
@@ -63,8 +67,7 @@ func GenerateNewKeypair() (*PublicKey, *SecretKey, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	pk := new(PublicKey).From(sk)
-	return pk, sk, nil
+	return PublicKeyFromSecretKey(sk), sk, nil
 }
 
 func Sign(sk *SecretKey, msg []byte) *Signature {
