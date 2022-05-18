@@ -1,21 +1,17 @@
 package types
 
 import (
-	"encoding/binary"
-
-	"github.com/prysmaticlabs/prysm/shared/bls"
+	"github.com/flashbots/builder/bls"
 )
 
 type Domain [32]byte
-type DomainType uint32
+type DomainType [4]byte
 
 var (
 	DomainBuilder Domain
-)
 
-const (
-	DomainTypeBeaconProposer DomainType = 0x00000000
-	DomainTypeAppBuilder     DomainType = 0x00000001
+	DomainTypeBeaconProposer DomainType = DomainType{0x00, 0x00, 0x00, 0x00}
+	DomainTypeAppBuilder     DomainType = DomainType{0x00, 0x00, 0x00, 0x01}
 )
 
 func init() {
@@ -47,7 +43,7 @@ func ComputeDomain(dt DomainType, forkVersion uint32, genesisValidatorsRoot *Roo
 	}).HashTreeRoot()
 
 	var domain [32]byte
-	binary.LittleEndian.PutUint32(domain[0:4], uint32(dt))
+	copy(domain[0:4], dt[:])
 	copy(domain[4:], forkDataRoot[0:28])
 
 	return domain
@@ -71,18 +67,25 @@ func ComputeSigningRoot(obj HashTreeRoot, d Domain) ([32]byte, error) {
 	return msg, nil
 }
 
-func VerifySignature(obj HashTreeRoot, d Domain, pk, s []byte) (bool, error) {
+func SignMessage(obj HashTreeRoot, d Domain, sk *bls.SecretKey) (Signature, error) {
+	root, err := ComputeSigningRoot(obj, d)
+	if err != nil {
+		return Signature{}, err
+	}
+
+	signatureBytes := bls.Sign(sk, root[:]).Compress()
+
+	var signature Signature
+	signature.FromSlice(signatureBytes)
+
+	return signature, nil
+}
+
+func VerifySignature(obj HashTreeRoot, d Domain, pkBytes, sigBytes []byte) (bool, error) {
 	msg, err := ComputeSigningRoot(obj, d)
 	if err != nil {
 		return false, err
 	}
-	sig, err := bls.SignatureFromBytes(s)
-	if err != nil {
-		return false, err
-	}
-	pubkey, err := bls.PublicKeyFromBytes(pk)
-	if err != nil {
-		return false, err
-	}
-	return sig.Verify(pubkey, msg[:]), nil
+
+	return bls.VerifySignatureBytes(msg[:], sigBytes, pkBytes)
 }

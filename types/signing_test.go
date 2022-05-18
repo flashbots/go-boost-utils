@@ -3,33 +3,29 @@ package types
 import (
 	"testing"
 
-	"github.com/prysmaticlabs/prysm/shared/bls"
-	"github.com/prysmaticlabs/prysm/shared/bls/blst"
+	"github.com/flashbots/builder/bls"
 	"github.com/stretchr/testify/require"
 )
 
-func newKeypair(t *testing.T) (pubkey []byte, privkey bls.SecretKey) {
-	sk, err := bls.RandKey()
-	if err != nil {
-		t.Fatal("unable to generate bls key pair", err)
-	}
-	return sk.PublicKey().Marshal(), sk
-}
-
 func TestVerifySignature(t *testing.T) {
-	pk, sk := newKeypair(t)
+	sk, pk, err := bls.GenerateNewKeypair()
+	require.NoError(t, err)
 	msg := &RegisterValidatorRequestMessage{
 		FeeRecipient: Address{0x42},
 		GasLimit:     15_000_000,
 		Timestamp:    1652369368,
 		Pubkey:       PublicKey{0x0d},
 	}
-	domain := ComputeApplicationDomain(0x01)
+	domain := ComputeApplicationDomain(DomainType{0x01, 0x00, 0x00, 0x00})
 	root, err := ComputeSigningRoot(msg, domain)
 	require.NoError(t, err)
 
-	sig := sk.Sign(root[:])
-	ok, err := VerifySignature(msg, domain, pk, sig.Marshal())
+	sig := bls.Sign(sk, root[:])
+	sig2, err := SignMessage(msg, domain, sk)
+	require.NoError(t, err)
+	require.Equal(t, sig.Compress(), sig2[:])
+
+	ok, err := VerifySignature(msg, domain, pk.Compress(), sig.Compress())
 	require.NoError(t, err)
 	require.True(t, ok)
 }
@@ -47,9 +43,9 @@ func TestVerifySignatureManualPk(t *testing.T) {
 	// Verify expected signature with manual pk
 	pkBytes := make([]byte, 32)
 	pkBytes[0] = 0x01
-	sk2, err := blst.SecretKeyFromBytes(pkBytes)
+	sk2, err := bls.SecretKeyFromBytes(pkBytes)
 	require.NoError(t, err)
-	sig2 := sk2.Sign(root2[:]).Marshal()
+	sig2 := bls.Sign(sk2, root2[:]).Compress()
 	var signature2 Signature
 	signature2.FromSlice(sig2)
 	require.Equal(t, "0x8e09a0ae7af113da2043001cc19fb1b3b24bbe022c1b8050ba2297ad1186f4217dd7095edad1d16d83d10f3297883d9e1674c81da95f10d3358c5afdb2500279e720b32879219c9a3b33415239bf46a66cd92b9d1750a6dd7cc7ec936a357128", signature2.String())
