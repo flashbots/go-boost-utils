@@ -62,12 +62,12 @@ func GenerateRandomSecretKey() (*SecretKey, error) {
 	return sk, nil
 }
 
-func GenerateNewKeypair() (*PublicKey, *SecretKey, error) {
+func GenerateNewKeypair() (*SecretKey, *PublicKey, error) {
 	sk, err := GenerateRandomSecretKey()
 	if err != nil {
 		return nil, nil, err
 	}
-	return PublicKeyFromSecretKey(sk), sk, nil
+	return sk, PublicKeyFromSecretKey(sk), nil
 }
 
 func Sign(sk *SecretKey, msg []byte) *Signature {
