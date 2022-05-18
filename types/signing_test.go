@@ -8,7 +8,7 @@ import (
 )
 
 func TestVerifySignature(t *testing.T) {
-	pk, sk, err := bls.GenerateNewKeypair()
+	sk, pk, err := bls.GenerateNewKeypair()
 	require.NoError(t, err)
 	msg := &RegisterValidatorRequestMessage{
 		FeeRecipient: Address{0x42},
@@ -16,7 +16,7 @@ func TestVerifySignature(t *testing.T) {
 		Timestamp:    1652369368,
 		Pubkey:       PublicKey{0x0d},
 	}
-	domain := ComputeApplicationDomain(0x01)
+	domain := ComputeApplicationDomain(DomainType{0x01, 0x00, 0x00, 0x00})
 	root, err := ComputeSigningRoot(msg, domain)
 	require.NoError(t, err)
 
