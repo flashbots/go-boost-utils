@@ -71,11 +71,25 @@ func ComputeSigningRoot(obj HashTreeRoot, d Domain) ([32]byte, error) {
 	return msg, nil
 }
 
-func VerifySignature(obj HashTreeRoot, d Domain, pk, s []byte) (bool, error) {
+func SignMessage(obj HashTreeRoot, d Domain, sk *bls.SecretKey) (Signature, error) {
+	root, err := ComputeSigningRoot(obj, d)
+	if err != nil {
+		return Signature{}, err
+	}
+
+	signatureBytes := bls.Sign(sk, root[:]).Compress()
+
+	var signature Signature
+	signature.FromSlice(signatureBytes)
+
+	return signature, nil
+}
+
+func VerifySignature(obj HashTreeRoot, d Domain, pkBytes, sigBytes []byte) (bool, error) {
 	msg, err := ComputeSigningRoot(obj, d)
 	if err != nil {
 		return false, err
 	}
 
-	return bls.VerifySignatureBytes(msg[:], s, pk)
+	return bls.VerifySignatureBytes(msg[:], sigBytes, pkBytes)
 }

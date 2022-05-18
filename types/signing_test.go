@@ -21,6 +21,10 @@ func TestVerifySignature(t *testing.T) {
 	require.NoError(t, err)
 
 	sig := bls.Sign(sk, root[:])
+	sig2, err := SignMessage(msg, domain, sk)
+	require.NoError(t, err)
+	require.Equal(t, sig.Compress(), sig2[:])
+
 	ok, err := VerifySignature(msg, domain, pk.Compress(), sig.Compress())
 	require.NoError(t, err)
 	require.True(t, ok)
