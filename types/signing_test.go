@@ -16,7 +16,7 @@ func TestVerifySignature(t *testing.T) {
 		Timestamp:    1652369368,
 		Pubkey:       PublicKey{0x0d},
 	}
-	domain := ComputeApplicationDomain(DomainType{0x01, 0x00, 0x00, 0x00})
+	domain := ComputeDomain(DomainType{0x01, 0x00, 0x00, 0x00}, ForkVersion{}, Root{})
 	root, err := ComputeSigningRoot(msg, domain)
 	require.NoError(t, err)
 
