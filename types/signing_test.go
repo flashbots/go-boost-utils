@@ -3,7 +3,7 @@ package types
 import (
 	"testing"
 
-	"github.com/flashbots/builder/bls"
+	"github.com/flashbots/go-boost-utils/bls"
 	"github.com/stretchr/testify/require"
 )
 

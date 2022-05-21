@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/flashbots/builder/bls"
+	"github.com/flashbots/go-boost-utils/bls"
 )
 
 type Domain [32]byte
