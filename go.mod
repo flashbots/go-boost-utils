@@ -1,4 +1,4 @@
-module github.com/flashbots/builder
+module github.com/flashbots/go-boost-utils
 
 go 1.18
 
