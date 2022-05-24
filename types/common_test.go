@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/stretchr/testify/require"
 )
@@ -30,8 +31,7 @@ func TestJSONSerialization(t *testing.T) {
 }
 
 func TestU256Str(t *testing.T) {
-	a := U256Str{}
-	a[31] = 0x01
+	a := U256Str(common.HexToHash("0100000000000000000000000000000000000000000000000000000000000000"))
 	require.Equal(t, "1", a.String())
 
 	b, err := json.Marshal(a)
@@ -56,53 +56,4 @@ func TestU256Str(t *testing.T) {
 	// IntToU256
 	u := IntToU256(123)
 	require.Equal(t, "123", u.String())
-}
-
-func TestU256StrCmp(t *testing.T) {
-	a1 := IntToU256(123)
-	a2 := IntToU256(123)
-	higher := IntToU256(1234)
-	lower := IntToU256(122)
-	require.Equal(t, 0, a1.Cmp(&a2))
-	require.Equal(t, -1, a1.Cmp(&higher))
-	require.Equal(t, 1, a1.Cmp(&lower))
-}
-
-type commonMarshallable interface {
-	MarshalText() ([]byte, error)
-	UnmarshalJSON(input []byte) error
-	UnmarshalText(input []byte) error
-	String() string
-	FromSlice(x []byte)
-}
-
-func TestCommonSZEncoding(t *testing.T) {
-	u256 := IntToU256(12345)
-	tests := []commonMarshallable{
-		&Signature{0x01},
-		&PublicKey{0x02},
-		&Address{0x03},
-		&Hash{0x04},
-		&Root{0x05},
-		&CommitteeBits{0x06},
-		&Bloom{0x07},
-		&u256,
-	}
-	for _, test := range tests {
-		// fmt.Printf("%T \n", test)
-		buf1, err := test.MarshalText()
-		require.NoError(t, err)
-		require.LessOrEqual(t, 0, len(buf1))
-
-		err = test.UnmarshalText(buf1)
-		require.NoError(t, err)
-
-		err = test.UnmarshalJSON([]byte(fmt.Sprintf(`"%s"`, test.String())))
-		require.NoError(t, err)
-
-		s := test.String()
-		require.LessOrEqual(t, 0, len(s))
-
-		test.FromSlice([]byte{0x01})
-	}
 }
