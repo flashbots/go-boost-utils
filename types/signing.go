@@ -6,6 +6,7 @@ import (
 
 type Domain [32]byte
 type DomainType [4]byte
+type ForkVersion [4]byte
 
 var (
 	DomainBuilder Domain
@@ -15,7 +16,7 @@ var (
 )
 
 func init() {
-	DomainBuilder = ComputeApplicationDomain(DomainTypeAppBuilder)
+	DomainBuilder = ComputeDomain(DomainTypeAppBuilder, ForkVersion{}, Root{})
 }
 
 type SigningData struct {
@@ -24,22 +25,18 @@ type SigningData struct {
 }
 
 type forkData struct {
-	CurrentVersion        uint32
-	GenesisValidatorsRoot Root `ssz-size:"32"`
+	CurrentVersion        ForkVersion `ssz-size:"4"`
+	GenesisValidatorsRoot Root        `ssz-size:"32"`
 }
 
 type HashTreeRoot interface {
 	HashTreeRoot() ([32]byte, error)
 }
 
-func ComputeDomain(dt DomainType, forkVersion uint32, genesisValidatorsRoot *Root) [32]byte {
-	if genesisValidatorsRoot == nil {
-		var tmp Root
-		genesisValidatorsRoot = &tmp
-	}
+func ComputeDomain(dt DomainType, forkVersion ForkVersion, genesisValidatorsRoot Root) [32]byte {
 	forkDataRoot, _ := (&forkData{
 		CurrentVersion:        forkVersion,
-		GenesisValidatorsRoot: *genesisValidatorsRoot,
+		GenesisValidatorsRoot: genesisValidatorsRoot,
 	}).HashTreeRoot()
 
 	var domain [32]byte
@@ -47,10 +44,6 @@ func ComputeDomain(dt DomainType, forkVersion uint32, genesisValidatorsRoot *Roo
 	copy(domain[4:], forkDataRoot[0:28])
 
 	return domain
-}
-
-func ComputeApplicationDomain(dt DomainType) [32]byte {
-	return ComputeDomain(dt, 0, nil)
 }
 
 func ComputeSigningRoot(obj HashTreeRoot, d Domain) ([32]byte, error) {
