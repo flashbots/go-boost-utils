@@ -5,9 +5,14 @@ import (
 )
 
 // Generate SSZ encoding: make generate-ssz
-
-// NilHash is an empty hash.
-var NilHash = Hash{}
+//
+// NOTE: due to the two pending TODOs, to generate the ssz it's necessary to 1)
+//       delete hexutil import in `builder_encodings.go` and 2) delete the
+//       `ExtraData` methods generated in `common_encodings.go` because these inhibit
+//       compilation.
+//
+// TODO: figure out why sszgen puts hexutil in code gen despite it not being used
+// TODO: figure out why sszgen doesn't handle import of []byte correctly and tries to create ssz methods for it
 
 // Eth1Data https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#eth1data
 type Eth1Data struct {
@@ -67,7 +72,7 @@ type AttesterSlashing struct {
 
 // Attestation https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#attestation
 type Attestation struct {
-	AggregationBits hexutil.Bytes    `json:"aggregation_bits" ssz-max:"2048"` // MAX_VALIDATORS_PER_COMMITTEE
+	AggregationBits hexutil.Bytes    `json:"aggregation_bits" ssz:"bitlist" ssz-max:"2048"` // MAX_VALIDATORS_PER_COMMITTEE
 	Data            *AttestationData `json:"data"`
 	Signature       Signature        `json:"signature" ssz-size:"96"`
 }
@@ -94,20 +99,20 @@ type SyncAggregate struct {
 
 // ExecutionPayloadHeader https://github.com/ethereum/consensus-specs/blob/dev/specs/bellatrix/beacon-chain.md#executionpayloadheader
 type ExecutionPayloadHeader struct {
-	ParentHash       Hash          `json:"parent_hash" ssz-size:"32"`
-	FeeRecipient     Address       `json:"fee_recipient" ssz-size:"20"`
-	StateRoot        Root          `json:"state_root" ssz-size:"32"`
-	ReceiptsRoot     Root          `json:"receipts_root" ssz-size:"32"`
-	LogsBloom        Bloom         `json:"logs_bloom" ssz-size:"256"`
-	Random           Hash          `json:"prev_randao" ssz-size:"32"`
-	BlockNumber      uint64        `json:"block_number,string"`
-	GasLimit         uint64        `json:"gas_limit,string"`
-	GasUsed          uint64        `json:"gas_used,string"`
-	Timestamp        uint64        `json:"timestamp,string"`
-	ExtraData        hexutil.Bytes `json:"extra_data" ssz-size:"32"`
-	BaseFeePerGas    U256Str       `json:"base_fee_per_gas" ssz-max:"32"`
-	BlockHash        Hash          `json:"block_hash" ssz-size:"32"`
-	TransactionsRoot Root          `json:"transactions_root" ssz-size:"32"`
+	ParentHash       Hash      `json:"parent_hash" ssz-size:"32"`
+	FeeRecipient     Address   `json:"fee_recipient" ssz-size:"20"`
+	StateRoot        Root      `json:"state_root" ssz-size:"32"`
+	ReceiptsRoot     Root      `json:"receipts_root" ssz-size:"32"`
+	LogsBloom        Bloom     `json:"logs_bloom" ssz-size:"256"`
+	Random           Hash      `json:"prev_randao" ssz-size:"32"`
+	BlockNumber      uint64    `json:"block_number,string"`
+	GasLimit         uint64    `json:"gas_limit,string"`
+	GasUsed          uint64    `json:"gas_used,string"`
+	Timestamp        uint64    `json:"timestamp,string"`
+	ExtraData        ExtraData `json:"extra_data" ssz-max:"32"`
+	BaseFeePerGas    U256Str   `json:"base_fee_per_gas" ssz-size:"32"`
+	BlockHash        Hash      `json:"block_hash" ssz-size:"32"`
+	TransactionsRoot Root      `json:"transactions_root" ssz-size:"32"`
 }
 
 // ExecutionPayload https://github.com/ethereum/consensus-specs/blob/dev/specs/bellatrix/beacon-chain.md#executionpayload
@@ -122,10 +127,10 @@ type ExecutionPayload struct {
 	GasLimit      uint64          `json:"gas_limit,string"`
 	GasUsed       uint64          `json:"gas_used,string"`
 	Timestamp     uint64          `json:"timestamp,string"`
-	ExtraData     hexutil.Bytes   `json:"extra_data" ssz-size:"32"`
+	ExtraData     hexutil.Bytes   `json:"extra_data" ssz-max:"32"`
 	BaseFeePerGas U256Str         `json:"base_fee_per_gas" ssz-max:"32"`
 	BlockHash     Hash            `json:"block_hash" ssz-size:"32"`
-	Transactions  []hexutil.Bytes `json:"transactions"` // ssz-size/ssz-max:"2048"?
+	Transactions  []hexutil.Bytes `json:"transactions" ssz-max:"1048576,1073741824" ssz-size:"?,?"`
 }
 
 // BlindedBeaconBlockBody https://github.com/ethereum/beacon-APIs/blob/master/types/bellatrix/block.yaml#L65
@@ -136,7 +141,7 @@ type BlindedBeaconBlockBody struct {
 	ProposerSlashings      []*ProposerSlashing     `json:"proposer_slashings" ssz-max:"16"`
 	AttesterSlashings      []*AttesterSlashing     `json:"attester_slashings" ssz-max:"2"`
 	Attestations           []*Attestation          `json:"attestations" ssz-max:"128"`
-	Deposits               []*Deposit              `json:"deposits" ssz-max:"4"`
+	Deposits               []*Deposit              `json:"deposits" ssz-max:"16"`
 	VoluntaryExits         []*VoluntaryExit        `json:"voluntary_exits" ssz-max:"16"`
 	SyncAggregate          *SyncAggregate          `json:"sync_aggregate"`
 	ExecutionPayloadHeader *ExecutionPayloadHeader `json:"execution_payload_header"`
@@ -197,5 +202,5 @@ type GetPayloadResponse struct {
 }
 
 type transactions struct {
-	Transactions [][]byte `ssz-max:"1048576,1073741824"`
+	Transactions [][]byte `ssz-max:"1048576,1073741824" ssz-size:"?,?"`
 }

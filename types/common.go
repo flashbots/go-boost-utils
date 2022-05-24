@@ -1,10 +1,6 @@
-// Package types provides all the builder types
 package types
 
-//revive:disable:exported
-
 import (
-	"bytes"
 	"fmt"
 	"math/big"
 
@@ -233,8 +229,18 @@ func (b *Bloom) FromSlice(x []byte) {
 
 type U256Str Hash // encodes/decodes to string, not hex
 
+func reverse(src []byte) []byte {
+	dst := make([]byte, len(src))
+	copy(dst, src)
+	for i := len(dst)/2 - 1; i >= 0; i-- {
+		opp := len(dst) - 1 - i
+		dst[i], dst[opp] = dst[opp], dst[i]
+	}
+	return dst
+}
+
 func (n U256Str) MarshalText() ([]byte, error) {
-	return []byte(new(big.Int).SetBytes(n[:]).String()), nil
+	return []byte(new(big.Int).SetBytes(reverse(n[:])).String()), nil
 }
 
 func (n *U256Str) UnmarshalJSON(input []byte) error {
@@ -246,7 +252,7 @@ func (n *U256Str) UnmarshalJSON(input []byte) error {
 	if err != nil {
 		return err
 	}
-	copy(n[:], x.FillBytes(n[:]))
+	copy(n[:], reverse(x.FillBytes(n[:])))
 	return nil
 }
 
@@ -256,21 +262,57 @@ func (n *U256Str) UnmarshalText(input []byte) error {
 	if err != nil {
 		return err
 	}
-	copy(n[:], x.FillBytes(n[:]))
+	copy(n[:], reverse(x.FillBytes(n[:])))
 	return nil
 
 }
 
 func (n *U256Str) String() string {
-	return new(big.Int).SetBytes(n[:]).String()
+	return new(big.Int).SetBytes(reverse(n[:])).String()
 }
 
 func (n *U256Str) FromSlice(x []byte) {
 	copy(n[:], x)
 }
 
-// Cmp returns an integer indicating whether a > b.
-// The result will be 0 if a == b, -1 if a < b, and +1 if a > b.
-func (n *U256Str) Cmp(b *U256Str) int {
-	return bytes.Compare(n[:], b[:])
+func IntToU256(i uint64) (ret U256Str) {
+	s := fmt.Sprint(i)
+	ret.UnmarshalText([]byte(s))
+	return
+}
+
+type ExtraData []byte
+
+func (e ExtraData) MarshalText() ([]byte, error) {
+	return hexutil.Bytes(e).MarshalText()
+}
+
+func (e *ExtraData) UnmarshalJSON(input []byte) error {
+	var buf = make(hexutil.Bytes, 0)
+	buf.UnmarshalJSON(input)
+	if len(buf) > 32 {
+		return ErrLength
+	}
+	e.FromSlice(buf)
+	return nil
+}
+
+func (e *ExtraData) UnmarshalText(input []byte) error {
+	var buf hexutil.Bytes
+	buf.UnmarshalText(input)
+	if len(buf) > 32 {
+		return ErrLength
+	}
+	e.FromSlice(buf)
+	return nil
+}
+
+func (e ExtraData) String() string {
+	return hexutil.Bytes(e).String()
+}
+
+func (e *ExtraData) FromSlice(x []byte) {
+	tmp := make([]byte, len(x))
+	copy(tmp, x)
+	*e = tmp
 }

@@ -1,14 +1,11 @@
 package types
 
-import (
-	"fmt"
-)
+import "bytes"
 
-// IntToU256 takes a uint64 and returns a U256 type
-func IntToU256(i uint64) (ret U256Str) {
-	s := fmt.Sprint(i)
-	ret.UnmarshalText([]byte(s))
-	return
+// Cmp compares one U256Str to another and returns an integer indicating whether a > b.
+// The result will be 0 if a == b, -1 if a < b, and +1 if a > b.
+func (n *U256Str) Cmp(b *U256Str) int {
+	return bytes.Compare(n[:], b[:])
 }
 
 // HexToAddress takes a hex string and returns an Address
