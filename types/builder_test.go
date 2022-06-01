@@ -168,7 +168,7 @@ func TestBlindedBeaconBlock(t *testing.T) {
 }
 
 func TestMerkelizeTxs(t *testing.T) {
-	txs := transactions{}
+	txs := Transactions{}
 	root, err := txs.HashTreeRoot()
 	require.NoError(t, err)
 	expected := "7ffe241ea60187fdb0187bfa22de35d1f9bed7ab061d9401fd47e34a54fbede1"
