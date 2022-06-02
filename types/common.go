@@ -262,7 +262,7 @@ func (n *U256Str) UnmarshalText(input []byte) error {
 	if err != nil {
 		return err
 	}
-	copy(n[:], reverse(x.FillBytes(n[:])))
+	n.FromBig(x)
 	return nil
 
 }
@@ -273,6 +273,11 @@ func (n *U256Str) String() string {
 
 func (n *U256Str) FromSlice(x []byte) {
 	copy(n[:], x)
+}
+
+func (n *U256Str) FromBig(x *big.Int) *U256Str {
+	copy(n[:], reverse(x.FillBytes(n[:])))
+	return n
 }
 
 func IntToU256(i uint64) (ret U256Str) {
