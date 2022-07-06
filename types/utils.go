@@ -2,7 +2,14 @@ package types
 
 import (
 	"math/big"
+	"strings"
 )
+
+type PubkeyHex string
+
+func NewPubkeyHex(pk string) PubkeyHex {
+	return PubkeyHex(strings.ToLower(pk))
+}
 
 func (n *U256Str) BigInt() *big.Int {
 	return new(big.Int).SetBytes(reverse(n[:]))
@@ -14,6 +21,10 @@ func (n *U256Str) Cmp(b *U256Str) int {
 	_a := n.BigInt()
 	_b := b.BigInt()
 	return _a.Cmp(_b)
+}
+
+func (p PublicKey) PubkeyHex() PubkeyHex {
+	return NewPubkeyHex(p.String())
 }
 
 // HexToAddress takes a hex string and returns an Address
