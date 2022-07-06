@@ -60,3 +60,21 @@ func TestU256Str(t *testing.T) {
 
 	require.Equal(t, "255121513", new(U256Str).FromBig(big.NewInt(255121513)).String())
 }
+
+func TestU256StrCmp(t *testing.T) {
+	one := IntToU256(1)
+	two := IntToU256(2)
+	bigger := IntToU256(256)
+	require.Equal(t, "1", one.String())
+	require.Equal(t, "2", two.String())
+	require.Equal(t, "256", bigger.String())
+
+	require.Equal(t, 0, one.Cmp(&one))
+	require.Equal(t, 0, bigger.Cmp(&bigger))
+
+	require.Equal(t, -1, one.Cmp(&two))
+	require.Equal(t, -1, one.Cmp(&bigger))
+
+	require.Equal(t, 1, bigger.Cmp(&two))
+	require.Equal(t, 1, bigger.Cmp(&one))
+}
