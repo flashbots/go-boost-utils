@@ -19,13 +19,12 @@ type PublicKey = blst.P1Affine
 type SecretKey = blst.SecretKey
 type Signature = blst.P2Affine
 
-// PublicKeyFromBytes creates a BLS public key from a  BigEndian byte slice.
 func PublicKeyFromBytes(pkBytes []byte) (*PublicKey, error) {
 	if len(pkBytes) != BLSPublicKeyLength {
 		return nil, errors.New("invalid pubkey length")
 	}
 
-	pk := new(blst.P1Affine).Uncompress(pkBytes)
+	pk := new(PublicKey).Uncompress(pkBytes)
 	if pk == nil {
 		return nil, errors.New("could not uncompress public key from bytes")
 	}
@@ -45,7 +44,7 @@ func SecretKeyFromBytes(skBytes []byte) (*SecretKey, error) {
 	if len(skBytes) != BLSSecretKeyLength {
 		return nil, errors.New("invalid secret key length")
 	}
-	secretKey := new(blst.SecretKey).Deserialize(skBytes)
+	secretKey := new(SecretKey).Deserialize(skBytes)
 	if secretKey == nil {
 		return nil, errors.New("could not deserialize secret key from bytes")
 	}
@@ -74,13 +73,12 @@ func Sign(sk *SecretKey, msg []byte) *Signature {
 	return new(Signature).Sign(sk, msg, dst)
 }
 
-// SignatureFromBytes creates a BLS signature from a LittleEndian byte slice.
 func SignatureFromBytes(sigBytes []byte) (*Signature, error) {
 	if len(sigBytes) != BLSSignatureLength {
 		return nil, errors.New("invalid signature length")
 	}
 
-	sig := new(blst.P2Affine).Uncompress(sigBytes)
+	sig := new(Signature).Uncompress(sigBytes)
 	if sig == nil {
 		return nil, errors.New("could not uncompress signature from bytes")
 	}
