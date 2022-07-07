@@ -15,6 +15,9 @@ build:
 test:
 	go test ./...
 
+bench:
+	go test -benchmem -bench=. ./...
+
 lint:
 	gofmt -d ./
 	go vet ./...
