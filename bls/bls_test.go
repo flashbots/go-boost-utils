@@ -26,11 +26,11 @@ func TestSecretToPubkey(t *testing.T) {
 // Stolen from Teku's BLSTest class:
 // https://github.com/ConsenSys/teku/blob/ce6e13e32f2c5029aa05895f400c00a9c72a3f38/infrastructure/bls/src/test/java/tech/pegasys/teku/bls/BLSTest.java#L318-L332
 func TestSignatureVerifyRealValues(t *testing.T) {
-    signingRootBytes := hexutil.MustDecode("0x95b8e2ba063ab62f68ebe7db0a9669ab9e7906aa4e060e1cc0b67b294ce8c5e4")
-    sigBytes := hexutil.MustDecode("0xab51f352e90509ca5085ec43af9ad3ea4ae42bf30c91af7dcdc113ef79cfc8601b756f18d8cf634436d8b6b0095fc5680066f382eb3728a7090c55c9afb66e8f94b44d2682db8ef5de4b89928d1744824df174e0c800b9e934b0ad14e6388163")
-    pkBytes := hexutil.MustDecode("0xb5e8f551c28abd6ef8253581ffad0834bfd8fafa9948d09b337c9c5f21d6e7fd6065a1ee35ac5146ac17344f97490301")
+	signingRootBytes := hexutil.MustDecode("0x95b8e2ba063ab62f68ebe7db0a9669ab9e7906aa4e060e1cc0b67b294ce8c5e4")
+	sigBytes := hexutil.MustDecode("0xab51f352e90509ca5085ec43af9ad3ea4ae42bf30c91af7dcdc113ef79cfc8601b756f18d8cf634436d8b6b0095fc5680066f382eb3728a7090c55c9afb66e8f94b44d2682db8ef5de4b89928d1744824df174e0c800b9e934b0ad14e6388163")
+	pkBytes := hexutil.MustDecode("0xb5e8f551c28abd6ef8253581ffad0834bfd8fafa9948d09b337c9c5f21d6e7fd6065a1ee35ac5146ac17344f97490301")
 
-    result, err := VerifySignatureBytes(signingRootBytes, sigBytes, pkBytes)
-    require.NoError(t, err)
-    require.Equal(t, result, true)
+	result, err := VerifySignatureBytes(signingRootBytes, sigBytes, pkBytes)
+	require.NoError(t, err)
+	require.Equal(t, result, true)
 }
