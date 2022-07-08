@@ -28,6 +28,23 @@ See also:
 
 ---
 
+## Contributing
+
+Useful commands:
+
+```bash
+make lint
+make test
+
+# Install sszgen command
+go install github.com/ferranbt/fastssz/sszgen@v0.1.0
+
+# Create SSZ encoding methods
+make generate-ssz
+```
+
+---
+
 ## Contributors
 
 Maintainers:

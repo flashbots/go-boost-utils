@@ -1,8 +1,10 @@
 package types
 
 import (
+	"encoding/binary"
 	"fmt"
 	"math/big"
+	"strconv"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
@@ -10,6 +12,40 @@ import (
 var (
 	ErrLength = fmt.Errorf("incorrect byte length")
 )
+
+type U64Str uint64
+
+func (i U64Str) MarshalText() ([]byte, error) {
+	a := strconv.FormatUint(uint64(i), 10)
+	return []byte(a), nil
+}
+
+func (i *U64Str) UnmarshalJSON(input []byte) error {
+	number, err := strconv.ParseUint(string(input), 10, 64)
+	if err != nil {
+		return err
+	}
+	*i = U64Str(number)
+	return nil
+}
+
+func (i *U64Str) UnmarshalText(input []byte) error {
+	number, err := strconv.ParseUint(string(input), 10, 64)
+	if err != nil {
+		return err
+	}
+	*i = U64Str(number)
+	return nil
+}
+
+func (i U64Str) String() string {
+	return strconv.FormatUint(uint64(i), 10)
+}
+
+func (i *U64Str) FromSlice(x []byte) {
+	number, _ := binary.Uvarint(x)
+	*i = U64Str(number)
+}
 
 type Signature [96]byte
 

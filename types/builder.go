@@ -59,7 +59,7 @@ type AttestationData struct {
 
 // IndexedAttestation https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#indexedattestation
 type IndexedAttestation struct {
-	AttestingIndices []uint64         `json:"attesting_indices" ssz-max:"2048"` // MAX_VALIDATORS_PER_COMMITTEE
+	AttestingIndices []U64Str         `json:"attesting_indices" ssz-max:"2048"` // MAX_VALIDATORS_PER_COMMITTEE
 	Data             *AttestationData `json:"data"`
 	Signature        Signature        `json:"signature" ssz-size:"96"`
 }
@@ -180,7 +180,7 @@ type BuilderBid struct {
 // SignedBuilderBid https://github.com/ethereum/builder-specs/pull/2/files#diff-b37cbf48e8754483e30e7caaadc5defc8c3c6e1aaf3273ee188d787b7c75d993
 type SignedBuilderBid struct {
 	Message   *BuilderBid `json:"message"`
-	Signature Signature   `json:"signature"`
+	Signature Signature   `json:"signature" ssz-size:"96"`
 }
 
 // GetHeaderResponse is the response payload from the getHeader request: https://github.com/ethereum/builder-specs/pull/2/files#diff-c80f52e38c99b1049252a99215450a29fd248d709ffd834a9480c98a233bf32c
@@ -192,7 +192,7 @@ type GetHeaderResponse struct {
 // SignedBlindedBeaconBlock https://github.com/ethereum/beacon-APIs/blob/master/types/bellatrix/block.yaml#L83
 type SignedBlindedBeaconBlock struct {
 	Message   *BlindedBeaconBlock `json:"message"`
-	Signature Signature           `json:"signature"`
+	Signature Signature           `json:"signature" ssz-size:"96"`
 }
 
 // GetPayloadResponse is the response payload from the getPayload request: https://github.com/ethereum/builder-specs/pull/2/files#diff-8446716b376f3ffe88737f9773ce2ff21adc2bc0f2c9a140dcc2e9d632091ba4
