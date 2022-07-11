@@ -32,6 +32,40 @@ func TestVerifySignature(t *testing.T) {
 	require.True(t, ok)
 }
 
+func genValidatorRegistration(t require.TestingT, domain Domain) *SignedValidatorRegistration {
+	sk, pk, err := bls.GenerateNewKeypair()
+	require.NoError(t, err)
+
+	var pubKey PublicKey
+	pubKey.FromSlice(pk.Compress())
+
+	msg := &RegisterValidatorRequestMessage{
+		FeeRecipient: Address{0x42},
+		GasLimit:     15_000_000,
+		Timestamp:    1652369368,
+		Pubkey:       pubKey,
+	}
+
+	signature, err := SignMessage(msg, domain, sk)
+	require.NoError(t, err)
+	return &SignedValidatorRegistration{
+		Message:   msg,
+		Signature: signature,
+	}
+}
+
+func BenchmarkSignatureVerification(b *testing.B) {
+	domain := ComputeDomain(DomainType{0x01, 0x00, 0x00, 0x00}, ForkVersion{}, Root{})
+	reg := genValidatorRegistration(b, domain)
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		ok, err := VerifySignature(reg.Message, domain, reg.Message.Pubkey[:], reg.Signature[:])
+		require.NoError(b, err)
+		require.True(b, ok)
+	}
+}
+
 func TestVerifySignatureManualPk(t *testing.T) {
 	msg2 := RegisterValidatorRequestMessage{
 		FeeRecipient: Address{0x42},
