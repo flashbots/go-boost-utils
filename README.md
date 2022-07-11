@@ -39,3 +39,4 @@ Special thanks:
 
 * [@lightclient](https://twitter.com/lightclients)
 * [@terencechain](https://twitter.com/terencechain)
+* [@JustinTraglia](https://twitter.com/JustinTraglia)
