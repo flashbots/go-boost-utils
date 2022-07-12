@@ -252,7 +252,10 @@ func (n *U256Str) UnmarshalJSON(input []byte) error {
 	if err != nil {
 		return err
 	}
-	copy(n[:], reverse(x.FillBytes(n[:])))
+	err = n.FromBig(x)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -262,7 +265,10 @@ func (n *U256Str) UnmarshalText(input []byte) error {
 	if err != nil {
 		return err
 	}
-	n.FromBig(x)
+	err = n.FromBig(x)
+	if err != nil {
+		return err
+	}
 	return nil
 
 }
@@ -271,13 +277,20 @@ func (n *U256Str) String() string {
 	return new(big.Int).SetBytes(reverse(n[:])).String()
 }
 
-func (n *U256Str) FromSlice(x []byte) {
+func (n *U256Str) FromSlice(x []byte) error {
+	if len(x) > 32 {
+		return ErrLength
+	}
 	copy(n[:], x)
+	return nil
 }
 
-func (n *U256Str) FromBig(x *big.Int) *U256Str {
+func (n *U256Str) FromBig(x *big.Int) error {
+	if x.BitLen() > 256 {
+		return ErrLength
+	}
 	copy(n[:], reverse(x.FillBytes(n[:])))
-	return n
+	return nil
 }
 
 func IntToU256(i uint64) (ret U256Str) {
@@ -295,9 +308,6 @@ func (e ExtraData) MarshalText() ([]byte, error) {
 func (e *ExtraData) UnmarshalJSON(input []byte) error {
 	var buf = make(hexutil.Bytes, 0)
 	buf.UnmarshalJSON(input)
-	if len(buf) > 32 {
-		return ErrLength
-	}
 	e.FromSlice(buf)
 	return nil
 }
@@ -305,9 +315,6 @@ func (e *ExtraData) UnmarshalJSON(input []byte) error {
 func (e *ExtraData) UnmarshalText(input []byte) error {
 	var buf hexutil.Bytes
 	buf.UnmarshalText(input)
-	if len(buf) > 32 {
-		return ErrLength
-	}
 	e.FromSlice(buf)
 	return nil
 }
