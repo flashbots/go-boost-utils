@@ -58,8 +58,9 @@ func TestU256Str(t *testing.T) {
 	u := IntToU256(123)
 	require.Equal(t, "123", u.String())
 
-    value := new(U256Str)
-    err = value.FromBig(big.NewInt(255121513))
+	value := new(U256Str)
+	err = value.FromBig(big.NewInt(255121513))
+	require.NoError(t, err)
 	require.Equal(t, "255121513", value.String())
 }
 
@@ -82,28 +83,28 @@ func TestU256StrCmp(t *testing.T) {
 }
 
 func TestU256StrMaxValue(t *testing.T) {
-    uint256MaxValue, _ := new(big.Int).SetString("115792089237316195423570985008687907853269984665640564039457584007913129639935", 10) // 2**256 - 1
-    uint256MaxValuePlusOne, _ := new(big.Int).SetString("115792089237316195423570985008687907853269984665640564039457584007913129639936", 10) // 2**256
+	uint256MaxValue, _ := new(big.Int).SetString("115792089237316195423570985008687907853269984665640564039457584007913129639935", 10)        // 2**256 - 1
+	uint256MaxValuePlusOne, _ := new(big.Int).SetString("115792089237316195423570985008687907853269984665640564039457584007913129639936", 10) // 2**256
 
-    value := new(U256Str)
+	value := new(U256Str)
 
-    err := value.FromBig(uint256MaxValue)
-    require.NoError(t, err)
-    err = value.FromBig(uint256MaxValuePlusOne)
-    require.EqualError(t, err, "incorrect byte length")
+	err := value.FromBig(uint256MaxValue)
+	require.NoError(t, err)
+	err = value.FromBig(uint256MaxValuePlusOne)
+	require.EqualError(t, err, "incorrect byte length")
 
-    err = value.UnmarshalText([]byte(uint256MaxValue.String()))
-    require.NoError(t, err)
-    err = value.UnmarshalText([]byte(uint256MaxValuePlusOne.String()))
-    require.EqualError(t, err, "incorrect byte length")
+	err = value.UnmarshalText([]byte(uint256MaxValue.String()))
+	require.NoError(t, err)
+	err = value.UnmarshalText([]byte(uint256MaxValuePlusOne.String()))
+	require.EqualError(t, err, "incorrect byte length")
 
-    err = value.UnmarshalJSON([]byte("\"" + uint256MaxValue.String() + "\""))
-    require.NoError(t, err)
-    err = value.UnmarshalJSON([]byte("\"" + uint256MaxValuePlusOne.String() + "\""))
-    require.EqualError(t, err, "incorrect byte length")
+	err = value.UnmarshalJSON([]byte("\"" + uint256MaxValue.String() + "\""))
+	require.NoError(t, err)
+	err = value.UnmarshalJSON([]byte("\"" + uint256MaxValuePlusOne.String() + "\""))
+	require.EqualError(t, err, "incorrect byte length")
 
-    err = value.FromSlice(make([]byte, 32))
-    require.NoError(t, err)
-    err = value.FromSlice(make([]byte, 33))
-    require.EqualError(t, err, "incorrect byte length")
+	err = value.FromSlice(make([]byte, 32))
+	require.NoError(t, err)
+	err = value.FromSlice(make([]byte, 33))
+	require.EqualError(t, err, "incorrect byte length")
 }
