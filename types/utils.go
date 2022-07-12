@@ -1,7 +1,6 @@
 package types
 
 import (
-	"errors"
 	"fmt"
 	"math/big"
 	"strings"
@@ -62,35 +61,4 @@ func HexToPubkey(s string) (ret PublicKey, err error) {
 func HexToSignature(s string) (ret Signature, err error) {
 	err = ret.UnmarshalText([]byte(s))
 	return ret, err
-}
-
-func BuilderSubmitBlockRequestToSignedBuilderBid(req *BuilderSubmitBlockRequest, sk *bls.SecretKey, domain Domain) (*SignedBuilderBid, error) {
-	if req == nil {
-		return nil, errors.New("req is nil")
-	}
-
-	if sk == nil {
-		return nil, errors.New("secret key is nil")
-	}
-
-	header, err := PayloadToPayloadHeader(&req.ExecutionPayload)
-	if err != nil {
-		return nil, err
-	}
-
-	builderBid := BuilderBid{
-		Value:  req.Message.Value,
-		Header: header,
-		Pubkey: BlsPublicKeyToPublicKey(bls.PublicKeyFromSecretKey(sk)),
-	}
-
-	sig, err := SignMessage(&builderBid, domain, sk)
-	if err != nil {
-		return nil, err
-	}
-
-	return &SignedBuilderBid{
-		Message:   &builderBid,
-		Signature: sig,
-	}, nil
 }

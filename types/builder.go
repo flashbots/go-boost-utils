@@ -207,6 +207,12 @@ type Transactions struct {
 	Transactions [][]byte `ssz-max:"1048576,1073741824" ssz-size:"?,?"`
 }
 
+// BuilderGetValidatorsResponseEntry is an entry of the response array for getValidators: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#ba12faa6e2714825af4aa883bdef6d81
+type BuilderGetValidatorsResponseEntry struct {
+	Slot  uint64                       `json:"slot,string"`
+	Entry *SignedValidatorRegistration `json:"entry"`
+}
+
 // BidTraceMessage contains the signed message part of the BidTrace: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#286c858c4ba24e58ada6348d8d4b71ec
 type BidTraceMessage struct {
 	Slot                 uint64    `json:"slot,string"`
