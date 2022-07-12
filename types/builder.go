@@ -74,7 +74,7 @@ type AttesterSlashing struct {
 
 // Attestation https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#attestation
 type Attestation struct {
-	AggregationBits hexutil.Bytes    `json:"aggregation_bits" ssz:"bitlist" ssz-max:"2048"` // MAX_VALIDATORS_PER_COMMITTEE
+	AggregationBits hexutil.Bytes    `json:"aggregation_bits" ssz:"Bitlist" ssz-max:"2048"` // MAX_VALIDATORS_PER_COMMITTEE
 	Data            *AttestationData `json:"data"`
 	Signature       Signature        `json:"signature" ssz-size:"96"`
 }
@@ -226,27 +226,27 @@ type BidTraceMessage struct {
 
 // BidTrace is public information about a bid, signed by the builder: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#286c858c4ba24e58ada6348d8d4b71ec
 type BidTrace struct {
-	Signature Signature       `json:"signature"`
-	Message   BidTraceMessage `json:"message"`
+	Signature Signature        `json:"signature"`
+	Message   *BidTraceMessage `json:"message"`
 }
 
 // BuilderSubmitBlockRequest spec: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#fa719683d4ae4a57bc3bf60e138b0dc6
 type BuilderSubmitBlockRequest struct {
-	Signature        Signature        `json:"signature"`
-	Message          BidTraceMessage  `json:"message"`
-	ExecutionPayload ExecutionPayload `json:"execution_payload"`
+	Signature        Signature         `json:"signature"`
+	Message          *BidTraceMessage  `json:"message"`
+	ExecutionPayload *ExecutionPayload `json:"execution_payload"`
 }
 
 // BuilderSubmitBlockResponseMessage spec: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#fa719683d4ae4a57bc3bf60e138b0dc6
 type BuilderSubmitBlockResponseMessage struct {
-	ReceiveTimestamp uint64          `json:"receive_timestamp,string"`
-	BidUnverified    BidTraceMessage `json:"bid_unverified"`
+	ReceiveTimestamp uint64           `json:"receive_timestamp,string"`
+	BidUnverified    *BidTraceMessage `json:"bid_unverified"`
 }
 
 // BuilderSubmitBlockResponse spec: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#fa719683d4ae4a57bc3bf60e138b0dc6
 type BuilderSubmitBlockResponse struct {
-	Signature Signature                         `json:"signature"`
-	Message   BuilderSubmitBlockResponseMessage `json:"message"`
+	Signature Signature                          `json:"signature"`
+	Message   *BuilderSubmitBlockResponseMessage `json:"message"`
 }
 
 // PayloadToPayloadHeader converts an ExecutionPayload to ExecutionPayloadHeader
