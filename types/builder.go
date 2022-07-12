@@ -1,6 +1,8 @@
 package types
 
 import (
+	"errors"
+
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
@@ -203,4 +205,75 @@ type GetPayloadResponse struct {
 
 type Transactions struct {
 	Transactions [][]byte `ssz-max:"1048576,1073741824" ssz-size:"?,?"`
+}
+
+// BidTraceMessage contains the signed message part of the BidTrace: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#286c858c4ba24e58ada6348d8d4b71ec
+type BidTraceMessage struct {
+	Slot                 uint64    `json:"slot,string"`
+	ParentHash           Hash      `json:"parent_hash" ssz-size:"32"`
+	BlockHash            Hash      `json:"block_hash" ssz-size:"32"`
+	BuilderPubkey        PublicKey `json:"builder_pubkey" ssz-size:"48"`
+	ProposerPubkey       PublicKey `json:"proposer_pubkey" ssz-size:"48"`
+	ProposerFeeRecipient Address   `json:"proposer_fee_recipient" ssz-size:"32"`
+	Value                U256Str   `json:"value" ssz-size:"32"`
+}
+
+// BidTrace is public information about a bid, signed by the builder: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#286c858c4ba24e58ada6348d8d4b71ec
+type BidTrace struct {
+	Signature Signature       `json:"signature"`
+	Message   BidTraceMessage `json:"message"`
+}
+
+// BuilderSubmitBlockRequest spec: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#fa719683d4ae4a57bc3bf60e138b0dc6
+type BuilderSubmitBlockRequest struct {
+	Signature        Signature        `json:"signature"`
+	Message          BidTraceMessage  `json:"message"`
+	ExecutionPayload ExecutionPayload `json:"execution_payload"`
+}
+
+// BuilderSubmitBlockResponseMessage spec: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#fa719683d4ae4a57bc3bf60e138b0dc6
+type BuilderSubmitBlockResponseMessage struct {
+	ReceiveTimestamp uint64          `json:"receive_timestamp,string"`
+	BidUnverified    BidTraceMessage `json:"bid_unverified"`
+}
+
+// BuilderSubmitBlockResponse spec: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#fa719683d4ae4a57bc3bf60e138b0dc6
+type BuilderSubmitBlockResponse struct {
+	Signature Signature                         `json:"signature"`
+	Message   BuilderSubmitBlockResponseMessage `json:"message"`
+}
+
+// PayloadToPayloadHeader converts an ExecutionPayload to ExecutionPayloadHeader
+func PayloadToPayloadHeader(p *ExecutionPayload) (*ExecutionPayloadHeader, error) {
+	if p == nil {
+		return nil, errors.New("nil payload")
+	}
+
+	txs := [][]byte{}
+	for _, tx := range p.Transactions {
+		txs = append(txs, []byte(tx))
+	}
+
+	transactions := Transactions{Transactions: txs}
+	txroot, err := transactions.HashTreeRoot()
+	if err != nil {
+		return nil, err
+	}
+
+	return &ExecutionPayloadHeader{
+		ParentHash:       p.ParentHash,
+		FeeRecipient:     p.FeeRecipient,
+		StateRoot:        p.StateRoot,
+		ReceiptsRoot:     p.ReceiptsRoot,
+		LogsBloom:        p.LogsBloom,
+		Random:           p.Random,
+		BlockNumber:      p.BlockNumber,
+		GasLimit:         p.GasLimit,
+		GasUsed:          p.GasUsed,
+		Timestamp:        p.Timestamp,
+		ExtraData:        ExtraData(p.ExtraData),
+		BaseFeePerGas:    p.BaseFeePerGas,
+		BlockHash:        p.BlockHash,
+		TransactionsRoot: [32]byte(txroot),
+	}, nil
 }

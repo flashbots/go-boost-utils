@@ -1,14 +1,32 @@
 package types
 
 import (
+	"errors"
+	"fmt"
 	"math/big"
 	"strings"
+
+	"github.com/flashbots/go-boost-utils/bls"
 )
 
 type PubkeyHex string
 
 func NewPubkeyHex(pk string) PubkeyHex {
 	return PubkeyHex(strings.ToLower(pk))
+}
+
+func (p PublicKey) PubkeyHex() PubkeyHex {
+	return NewPubkeyHex(p.String())
+}
+
+func (p PubkeyHex) String() string {
+	return string(p)
+}
+
+func IntToU256(i uint64) (ret U256Str) {
+	s := fmt.Sprint(i)
+	ret.UnmarshalText([]byte(s))
+	return
 }
 
 func (n *U256Str) BigInt() *big.Int {
@@ -23,8 +41,9 @@ func (n *U256Str) Cmp(b *U256Str) int {
 	return _a.Cmp(_b)
 }
 
-func (p PublicKey) PubkeyHex() PubkeyHex {
-	return NewPubkeyHex(p.String())
+func BlsPublicKeyToPublicKey(blsPubKey *bls.PublicKey) (ret PublicKey) {
+	ret.FromSlice(blsPubKey.Compress())
+	return
 }
 
 // HexToAddress takes a hex string and returns an Address
@@ -43,4 +62,35 @@ func HexToPubkey(s string) (ret PublicKey, err error) {
 func HexToSignature(s string) (ret Signature, err error) {
 	err = ret.UnmarshalText([]byte(s))
 	return ret, err
+}
+
+func BuilderSubmitBlockRequestToSignedBuilderBid(req *BuilderSubmitBlockRequest, sk *bls.SecretKey, domain Domain) (*SignedBuilderBid, error) {
+	if req == nil {
+		return nil, errors.New("req is nil")
+	}
+
+	if sk == nil {
+		return nil, errors.New("secret key is nil")
+	}
+
+	header, err := PayloadToPayloadHeader(&req.ExecutionPayload)
+	if err != nil {
+		return nil, err
+	}
+
+	builderBid := BuilderBid{
+		Value:  req.Message.Value,
+		Header: header,
+		Pubkey: BlsPublicKeyToPublicKey(bls.PublicKeyFromSecretKey(sk)),
+	}
+
+	sig, err := SignMessage(&builderBid, domain, sk)
+	if err != nil {
+		return nil, err
+	}
+
+	return &SignedBuilderBid{
+		Message:   &builderBid,
+		Signature: sig,
+	}, nil
 }

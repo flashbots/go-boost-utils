@@ -280,12 +280,6 @@ func (n *U256Str) FromBig(x *big.Int) *U256Str {
 	return n
 }
 
-func IntToU256(i uint64) (ret U256Str) {
-	s := fmt.Sprint(i)
-	ret.UnmarshalText([]byte(s))
-	return
-}
-
 type ExtraData []byte
 
 func (e ExtraData) MarshalText() ([]byte, error) {
