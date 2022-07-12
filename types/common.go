@@ -308,6 +308,9 @@ func (e ExtraData) MarshalText() ([]byte, error) {
 func (e *ExtraData) UnmarshalJSON(input []byte) error {
 	var buf = make(hexutil.Bytes, 0)
 	buf.UnmarshalJSON(input)
+	if len(buf) > 32 {
+		return ErrLength
+	}
 	e.FromSlice(buf)
 	return nil
 }
@@ -315,6 +318,9 @@ func (e *ExtraData) UnmarshalJSON(input []byte) error {
 func (e *ExtraData) UnmarshalText(input []byte) error {
 	var buf hexutil.Bytes
 	buf.UnmarshalText(input)
+	if len(buf) > 32 {
+		return ErrLength
+	}
 	e.FromSlice(buf)
 	return nil
 }
