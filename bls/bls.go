@@ -90,7 +90,7 @@ func SignatureFromBytes(sigBytes []byte) (*Signature, error) {
 }
 
 func VerifySignature(sig *Signature, pk *PublicKey, msg []byte) bool {
-	return sig.Verify(false, pk, false, msg, dst)
+	return sig.Verify(true, pk, false, msg, dst)
 }
 
 func VerifySignatureBytes(msg, sigBytes, pkBytes []byte) (bool, error) {
