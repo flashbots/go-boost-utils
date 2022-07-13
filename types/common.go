@@ -293,12 +293,6 @@ func (n *U256Str) FromBig(x *big.Int) error {
 	return nil
 }
 
-func IntToU256(i uint64) (ret U256Str) {
-	s := fmt.Sprint(i)
-	ret.UnmarshalText([]byte(s))
-	return
-}
-
 type ExtraData []byte
 
 func (e ExtraData) MarshalText() ([]byte, error) {
