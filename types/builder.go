@@ -61,9 +61,9 @@ type AttestationData struct {
 
 // IndexedAttestation https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#indexedattestation
 type IndexedAttestation struct {
-	AttestingIndices []uint64         `json:"attesting_indices" ssz-max:"2048"` // MAX_VALIDATORS_PER_COMMITTEE
-	Data             *AttestationData `json:"data"`
-	Signature        Signature        `json:"signature" ssz-size:"96"`
+	AttestingIndices Uint64StringSlice `json:"attesting_indices" ssz-max:"2048"` // MAX_VALIDATORS_PER_COMMITTEE
+	Data             *AttestationData  `json:"data"`
+	Signature        Signature         `json:"signature" ssz-size:"96"`
 }
 
 // AttesterSlashing https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#attesterslashing
@@ -74,7 +74,7 @@ type AttesterSlashing struct {
 
 // Attestation https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#attestation
 type Attestation struct {
-	AggregationBits hexutil.Bytes    `json:"aggregation_bits" ssz:"Bitlist" ssz-max:"2048"` // MAX_VALIDATORS_PER_COMMITTEE
+	AggregationBits hexutil.Bytes    `json:"aggregation_bits" ssz:"bitlist" ssz-max:"2048"` // MAX_VALIDATORS_PER_COMMITTEE
 	Data            *AttestationData `json:"data"`
 	Signature       Signature        `json:"signature" ssz-size:"96"`
 }
@@ -169,7 +169,7 @@ type RegisterValidatorRequestMessage struct {
 // SignedValidatorRegistration https://github.com/ethereum/beacon-APIs/blob/master/types/registration.yaml#L18
 type SignedValidatorRegistration struct {
 	Message   *RegisterValidatorRequestMessage `json:"message"`
-	Signature Signature                        `json:"signature"`
+	Signature Signature                        `json:"signature" ssz-size:"96"`
 }
 
 // BuilderBid https://github.com/ethereum/builder-specs/pull/2/files#diff-b37cbf48e8754483e30e7caaadc5defc8c3c6e1aaf3273ee188d787b7c75d993
@@ -182,7 +182,7 @@ type BuilderBid struct {
 // SignedBuilderBid https://github.com/ethereum/builder-specs/pull/2/files#diff-b37cbf48e8754483e30e7caaadc5defc8c3c6e1aaf3273ee188d787b7c75d993
 type SignedBuilderBid struct {
 	Message   *BuilderBid `json:"message"`
-	Signature Signature   `json:"signature"`
+	Signature Signature   `json:"signature" ssz-size:"96"`
 }
 
 // GetHeaderResponse is the response payload from the getHeader request: https://github.com/ethereum/builder-specs/pull/2/files#diff-c80f52e38c99b1049252a99215450a29fd248d709ffd834a9480c98a233bf32c
@@ -194,7 +194,7 @@ type GetHeaderResponse struct {
 // SignedBlindedBeaconBlock https://github.com/ethereum/beacon-APIs/blob/master/types/bellatrix/block.yaml#L83
 type SignedBlindedBeaconBlock struct {
 	Message   *BlindedBeaconBlock `json:"message"`
-	Signature Signature           `json:"signature"`
+	Signature Signature           `json:"signature" ssz-size:"96"`
 }
 
 // GetPayloadResponse is the response payload from the getPayload request: https://github.com/ethereum/builder-specs/pull/2/files#diff-8446716b376f3ffe88737f9773ce2ff21adc2bc0f2c9a140dcc2e9d632091ba4
@@ -220,19 +220,19 @@ type BidTraceMessage struct {
 	BlockHash            Hash      `json:"block_hash" ssz-size:"32"`
 	BuilderPubkey        PublicKey `json:"builder_pubkey" ssz-size:"48"`
 	ProposerPubkey       PublicKey `json:"proposer_pubkey" ssz-size:"48"`
-	ProposerFeeRecipient Address   `json:"proposer_fee_recipient" ssz-size:"32"`
+	ProposerFeeRecipient Address   `json:"proposer_fee_recipient" ssz-size:"20"`
 	Value                U256Str   `json:"value" ssz-size:"32"`
 }
 
 // BidTrace is public information about a bid, signed by the builder: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#286c858c4ba24e58ada6348d8d4b71ec
 type BidTrace struct {
-	Signature Signature        `json:"signature"`
+	Signature Signature        `json:"signature" ssz-size:"96"`
 	Message   *BidTraceMessage `json:"message"`
 }
 
 // BuilderSubmitBlockRequest spec: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#fa719683d4ae4a57bc3bf60e138b0dc6
 type BuilderSubmitBlockRequest struct {
-	Signature        Signature         `json:"signature"`
+	Signature        Signature         `json:"signature" ssz-size:"96"`
 	Message          *BidTraceMessage  `json:"message"`
 	ExecutionPayload *ExecutionPayload `json:"execution_payload"`
 }
@@ -245,7 +245,7 @@ type BuilderSubmitBlockResponseMessage struct {
 
 // BuilderSubmitBlockResponse spec: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#fa719683d4ae4a57bc3bf60e138b0dc6
 type BuilderSubmitBlockResponse struct {
-	Signature Signature                          `json:"signature"`
+	Signature Signature                          `json:"signature" ssz-size:"96"`
 	Message   *BuilderSubmitBlockResponseMessage `json:"message"`
 }
 

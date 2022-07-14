@@ -3,7 +3,7 @@
 [![Goreport status](https://goreportcard.com/badge/github.com/flashbots/go-boost-utils)](https://goreportcard.com/report/github.com/flashbots/go-boost-utils)
 [![Test status](https://github.com/flashbots/go-boost-utils/workflows/Checks/badge.svg)](https://github.com/flashbots/go-boost-utils/actions?query=workflow%3A%22Checks%22)
 
-Tested types and signing routines of the [Eth2 Builder API](https://ethereum.github.io/builder-specs/).
+Tested types and SSZ/BLS signing routines for the [Eth2 Builder API](https://ethereum.github.io/builder-specs/).
 
 This is useful for:
 
@@ -20,11 +20,21 @@ See also:
 
 ---
 
-## Contents
 
-* [`types/common.go`](https://github.com/flashbots/go-boost-utils/blob/main/types/common.go): various common basic datatypes (Signature, PublicKey, Hash, etc), with tested SSZ encoding
-* [`types/builder.go`](https://github.com/flashbots/go-boost-utils/blob/main/types/builder.go): builder-API specific datatypes, with tested SSZ encoding
-* ...
+## Contributing
+
+Useful commands:
+
+```bash
+make lint
+make test
+
+# Install sszgen command
+go install github.com/ferranbt/fastssz/sszgen@v0.1.1
+
+# Create SSZ encoding methods
+make generate-ssz
+```
 
 ---
 
