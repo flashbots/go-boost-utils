@@ -205,8 +205,7 @@ func TestMerkelizePayload(t *testing.T) {
 }
 
 func TestIndexedAttestation(t *testing.T) {
-    input := `
-    {
+	input := `{
       "attesting_indices": [
         "1", "2", "3"
       ],
