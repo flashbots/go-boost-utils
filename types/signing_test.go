@@ -1,8 +1,14 @@
 package types
 
 import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"io/ioutil"
+	"os"
 	"testing"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/stretchr/testify/require"
 
@@ -107,4 +113,57 @@ func TestComputeDomainVector(t *testing.T) {
 		copy(expectedDomain[:], hexutil.MustDecode(tc.ExpectedDomain)[:32])
 		require.Equal(t, expectedDomain, ComputeDomain(bytesTo4(hexutil.MustDecode(tc.DomainType)), bytesTo4(hexutil.MustDecode(tc.ForkVersion)), genesisValidatorsRoot))
 	}
+}
+
+func _ComputeDomain(domainType DomainType, forkVersionHex string, genesisValidatorsRootHex string) (domain Domain, err error) {
+	forkVersionBytes, err := hexutil.Decode(forkVersionHex)
+	if err != nil || len(forkVersionBytes) > 4 {
+		err = errors.New("invalid fork version passed")
+		return domain, err
+	}
+	var forkVersion [4]byte
+	copy(forkVersion[:], forkVersionBytes[:4])
+
+	genesisValidatorsRoot := Root(common.HexToHash(genesisValidatorsRootHex))
+	return ComputeDomain(domainType, forkVersion, genesisValidatorsRoot), nil
+}
+
+func Test_ComputeDomain(t *testing.T) {
+	builderDomainKiln, err := _ComputeDomain(DomainTypeAppBuilder, GenesisForkVersionKiln, Root{}.String())
+	require.NoError(t, err)
+	require.Equal(t, "0x000000017acd69a9ede79f3eb3eaa814c09159eeaa3d004be62f3372d9b31e9c", hexutil.Encode(builderDomainKiln[:]))
+
+	beaconProposerDomainKiln, err := _ComputeDomain(DomainTypeBeaconProposer, BellatrixForkVersionKiln, GenesisValidatorsRootKiln)
+	require.NoError(t, err)
+	require.Equal(t, "0x00000000e7acb21061790987fa1c1e745cccfb358370b33e8af2b2c18938e6c2", hexutil.Encode(beaconProposerDomainKiln[:]))
+}
+
+func TestKilnSignedBlindedBeaconBlockSignature(t *testing.T) {
+	jsonFile, err := os.Open("../testdata/kiln-signedBlindedBeaconBlock-899730.json")
+	require.NoError(t, err)
+	defer jsonFile.Close()
+
+	byteValue, err := ioutil.ReadAll(jsonFile)
+	require.NoError(t, err)
+
+	payload := new(SignedBlindedBeaconBlock)
+
+	dec := json.NewDecoder(bytes.NewReader(byteValue))
+	dec.DisallowUnknownFields()
+	err = dec.Decode(payload)
+	require.NoError(t, err)
+
+	root, err := payload.Message.HashTreeRoot()
+	require.NoError(t, err)
+	require.Equal(t, "4ada338ce48190c9d2169ca2484de507140b1bfeff2a8f820611dedcdc102d63", common.Bytes2Hex(root[:]))
+
+	pk, err := HexToPubkey("0xa04fe993de82bc878039bba5212a9fa750abf2293195cd55cbbce4827f56799cc67b5f66cf33bb1cec92dabcbcc0a0a9")
+	require.NoError(t, err)
+	require.Equal(t, "0xa04fe993de82bc878039bba5212a9fa750abf2293195cd55cbbce4827f56799cc67b5f66cf33bb1cec92dabcbcc0a0a9", pk.String())
+
+	domain, err := _ComputeDomain(DomainTypeBeaconProposer, BellatrixForkVersionKiln, GenesisValidatorsRootKiln)
+	require.NoError(t, err)
+	ok, err := VerifySignature(payload.Message, domain, pk[:], payload.Signature[:])
+	require.NoError(t, err)
+	require.True(t, ok)
 }
