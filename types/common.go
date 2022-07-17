@@ -111,13 +111,17 @@ func (p PublicKey) MarshalText() ([]byte, error) {
 
 func (p *PublicKey) UnmarshalJSON(input []byte) error {
 	b := hexutil.Bytes(p[:])
-	b.UnmarshalJSON(input)
+	if err := b.UnmarshalJSON(input); err != nil {
+		return err
+	}
 	return p.FromSlice(b)
 }
 
 func (p *PublicKey) UnmarshalText(input []byte) error {
 	b := hexutil.Bytes(p[:])
-	b.UnmarshalText(input)
+	if err := b.UnmarshalText(input); err != nil {
+		return err
+	}
 	return p.FromSlice(b)
 }
 
@@ -141,13 +145,17 @@ func (a Address) MarshalText() ([]byte, error) {
 
 func (a *Address) UnmarshalJSON(input []byte) error {
 	b := hexutil.Bytes(a[:])
-	b.UnmarshalJSON(input)
+	if err := b.UnmarshalJSON(input); err != nil {
+		return err
+	}
 	return a.FromSlice(b)
 }
 
 func (a *Address) UnmarshalText(input []byte) error {
 	b := hexutil.Bytes(a[:])
-	b.UnmarshalText(input)
+	if err := b.UnmarshalText(input); err != nil {
+		return err
+	}
 	return a.FromSlice(b)
 }
 
@@ -172,13 +180,17 @@ func (h Hash) MarshalText() ([]byte, error) {
 
 func (h *Hash) UnmarshalJSON(input []byte) error {
 	b := hexutil.Bytes(h[:])
-	b.UnmarshalJSON(input)
+	if err := b.UnmarshalJSON(input); err != nil {
+		return err
+	}
 	return h.FromSlice(b)
 }
 
 func (h *Hash) UnmarshalText(input []byte) error {
 	b := hexutil.Bytes(h[:])
-	b.UnmarshalText(input)
+	if err := b.UnmarshalText(input); err != nil {
+		return err
+	}
 	return h.FromSlice(b)
 }
 
@@ -202,13 +214,17 @@ func (c CommitteeBits) MarshalText() ([]byte, error) {
 
 func (c *CommitteeBits) UnmarshalJSON(input []byte) error {
 	b := hexutil.Bytes(c[:])
-	b.UnmarshalJSON(input)
+	if err := b.UnmarshalJSON(input); err != nil {
+		return err
+	}
 	return c.FromSlice(b)
 }
 
 func (c *CommitteeBits) UnmarshalText(input []byte) error {
 	b := hexutil.Bytes(c[:])
-	b.UnmarshalText(input)
+	if err := b.UnmarshalText(input); err != nil {
+		return err
+	}
 	return c.FromSlice(b)
 
 }
@@ -233,13 +249,17 @@ func (b Bloom) MarshalText() ([]byte, error) {
 
 func (b *Bloom) UnmarshalJSON(input []byte) error {
 	buf := hexutil.Bytes(b[:])
-	buf.UnmarshalJSON(input)
+	if err := buf.UnmarshalJSON(input); err != nil {
+		return err
+	}
 	return b.FromSlice(buf)
 }
 
 func (b *Bloom) UnmarshalText(input []byte) error {
 	buf := hexutil.Bytes(b[:])
-	buf.UnmarshalText(input)
+	if err := buf.UnmarshalText(input); err != nil {
+		return err
+	}
 	return b.FromSlice(buf)
 }
 
@@ -320,13 +340,17 @@ func (e ExtraData) MarshalText() ([]byte, error) {
 
 func (e *ExtraData) UnmarshalJSON(input []byte) error {
 	var buf hexutil.Bytes
-	buf.UnmarshalJSON(input)
+	if err := buf.UnmarshalJSON(input); err != nil {
+		return err
+	}
 	return e.FromSlice(buf)
 }
 
 func (e *ExtraData) UnmarshalText(input []byte) error {
 	var buf hexutil.Bytes
-	buf.UnmarshalText(input)
+	if err := buf.UnmarshalText(input); err != nil {
+		return err
+	}
 	return e.FromSlice(buf)
 }
 
