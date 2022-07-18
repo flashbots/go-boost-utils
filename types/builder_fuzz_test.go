@@ -5,23 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/trailofbits/go-fuzz-utils"
 )
-
-func GetTypeProvider(data []byte) (*go_fuzz_utils.TypeProvider, error) {
-	tp, err := go_fuzz_utils.NewTypeProvider(data)
-	if err != nil {
-		return nil, err
-	}
-
-	// Prevent nil fields.
-	err = tp.SetParamsBiases(0, 0, 0, 0)
-	if err != nil {
-		return nil, err
-	}
-
-	return tp, nil
-}
 
 func FuzzRoundTripEth1Data(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
