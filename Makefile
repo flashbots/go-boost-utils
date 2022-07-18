@@ -18,6 +18,9 @@ test:
 bench:
 	go test -benchmem -bench=. ./...
 
+fuzz:
+	./scripts/fuzz.sh
+
 lint:
 	gofmt -d ./
 	go vet ./...
