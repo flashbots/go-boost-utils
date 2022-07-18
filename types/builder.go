@@ -1,6 +1,8 @@
 package types
 
 import (
+	"errors"
+
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
@@ -59,9 +61,9 @@ type AttestationData struct {
 
 // IndexedAttestation https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#indexedattestation
 type IndexedAttestation struct {
-	AttestingIndices []uint64         `json:"attesting_indices" ssz-max:"2048"` // MAX_VALIDATORS_PER_COMMITTEE
-	Data             *AttestationData `json:"data"`
-	Signature        Signature        `json:"signature" ssz-size:"96"`
+	AttestingIndices Uint64StringSlice `json:"attesting_indices" ssz-max:"2048"` // MAX_VALIDATORS_PER_COMMITTEE
+	Data             *AttestationData  `json:"data"`
+	Signature        Signature         `json:"signature" ssz-size:"96"`
 }
 
 // AttesterSlashing https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#attesterslashing
@@ -167,7 +169,7 @@ type RegisterValidatorRequestMessage struct {
 // SignedValidatorRegistration https://github.com/ethereum/beacon-APIs/blob/master/types/registration.yaml#L18
 type SignedValidatorRegistration struct {
 	Message   *RegisterValidatorRequestMessage `json:"message"`
-	Signature Signature                        `json:"signature"`
+	Signature Signature                        `json:"signature" ssz-size:"96"`
 }
 
 // BuilderBid https://github.com/ethereum/builder-specs/pull/2/files#diff-b37cbf48e8754483e30e7caaadc5defc8c3c6e1aaf3273ee188d787b7c75d993
@@ -180,7 +182,7 @@ type BuilderBid struct {
 // SignedBuilderBid https://github.com/ethereum/builder-specs/pull/2/files#diff-b37cbf48e8754483e30e7caaadc5defc8c3c6e1aaf3273ee188d787b7c75d993
 type SignedBuilderBid struct {
 	Message   *BuilderBid `json:"message"`
-	Signature Signature   `json:"signature"`
+	Signature Signature   `json:"signature" ssz-size:"96"`
 }
 
 // GetHeaderResponse is the response payload from the getHeader request: https://github.com/ethereum/builder-specs/pull/2/files#diff-c80f52e38c99b1049252a99215450a29fd248d709ffd834a9480c98a233bf32c
@@ -192,7 +194,7 @@ type GetHeaderResponse struct {
 // SignedBlindedBeaconBlock https://github.com/ethereum/beacon-APIs/blob/master/types/bellatrix/block.yaml#L83
 type SignedBlindedBeaconBlock struct {
 	Message   *BlindedBeaconBlock `json:"message"`
-	Signature Signature           `json:"signature"`
+	Signature Signature           `json:"signature" ssz-size:"96"`
 }
 
 // GetPayloadResponse is the response payload from the getPayload request: https://github.com/ethereum/builder-specs/pull/2/files#diff-8446716b376f3ffe88737f9773ce2ff21adc2bc0f2c9a140dcc2e9d632091ba4
@@ -203,4 +205,81 @@ type GetPayloadResponse struct {
 
 type Transactions struct {
 	Transactions [][]byte `ssz-max:"1048576,1073741824" ssz-size:"?,?"`
+}
+
+// BuilderGetValidatorsResponseEntry is an entry of the response array for getValidators: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#ba12faa6e2714825af4aa883bdef6d81
+type BuilderGetValidatorsResponseEntry struct {
+	Slot  uint64                       `json:"slot,string"`
+	Entry *SignedValidatorRegistration `json:"entry"`
+}
+
+// BidTraceMessage contains the signed message part of the BidTrace: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#286c858c4ba24e58ada6348d8d4b71ec
+type BidTraceMessage struct {
+	Slot                 uint64    `json:"slot,string"`
+	ParentHash           Hash      `json:"parent_hash" ssz-size:"32"`
+	BlockHash            Hash      `json:"block_hash" ssz-size:"32"`
+	BuilderPubkey        PublicKey `json:"builder_pubkey" ssz-size:"48"`
+	ProposerPubkey       PublicKey `json:"proposer_pubkey" ssz-size:"48"`
+	ProposerFeeRecipient Address   `json:"proposer_fee_recipient" ssz-size:"20"`
+	Value                U256Str   `json:"value" ssz-size:"32"`
+}
+
+// BidTrace is public information about a bid, signed by the builder: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#286c858c4ba24e58ada6348d8d4b71ec
+type BidTrace struct {
+	Signature Signature        `json:"signature" ssz-size:"96"`
+	Message   *BidTraceMessage `json:"message"`
+}
+
+// BuilderSubmitBlockRequest spec: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#fa719683d4ae4a57bc3bf60e138b0dc6
+type BuilderSubmitBlockRequest struct {
+	Signature        Signature         `json:"signature" ssz-size:"96"`
+	Message          *BidTraceMessage  `json:"message"`
+	ExecutionPayload *ExecutionPayload `json:"execution_payload"`
+}
+
+// BuilderSubmitBlockResponseMessage spec: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#fa719683d4ae4a57bc3bf60e138b0dc6
+type BuilderSubmitBlockResponseMessage struct {
+	ReceiveTimestamp uint64           `json:"receive_timestamp,string"`
+	BidUnverified    *BidTraceMessage `json:"bid_unverified"`
+}
+
+// BuilderSubmitBlockResponse spec: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#fa719683d4ae4a57bc3bf60e138b0dc6
+type BuilderSubmitBlockResponse struct {
+	Signature Signature                          `json:"signature" ssz-size:"96"`
+	Message   *BuilderSubmitBlockResponseMessage `json:"message"`
+}
+
+// PayloadToPayloadHeader converts an ExecutionPayload to ExecutionPayloadHeader
+func PayloadToPayloadHeader(p *ExecutionPayload) (*ExecutionPayloadHeader, error) {
+	if p == nil {
+		return nil, errors.New("nil payload")
+	}
+
+	txs := [][]byte{}
+	for _, tx := range p.Transactions {
+		txs = append(txs, []byte(tx))
+	}
+
+	transactions := Transactions{Transactions: txs}
+	txroot, err := transactions.HashTreeRoot()
+	if err != nil {
+		return nil, err
+	}
+
+	return &ExecutionPayloadHeader{
+		ParentHash:       p.ParentHash,
+		FeeRecipient:     p.FeeRecipient,
+		StateRoot:        p.StateRoot,
+		ReceiptsRoot:     p.ReceiptsRoot,
+		LogsBloom:        p.LogsBloom,
+		Random:           p.Random,
+		BlockNumber:      p.BlockNumber,
+		GasLimit:         p.GasLimit,
+		GasUsed:          p.GasUsed,
+		Timestamp:        p.Timestamp,
+		ExtraData:        ExtraData(p.ExtraData),
+		BaseFeePerGas:    p.BaseFeePerGas,
+		BlockHash:        p.BlockHash,
+		TransactionsRoot: [32]byte(txroot),
+	}, nil
 }

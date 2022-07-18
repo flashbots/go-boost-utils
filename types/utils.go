@@ -1,14 +1,31 @@
 package types
 
 import (
+	"fmt"
 	"math/big"
 	"strings"
+
+	"github.com/flashbots/go-boost-utils/bls"
 )
 
 type PubkeyHex string
 
 func NewPubkeyHex(pk string) PubkeyHex {
 	return PubkeyHex(strings.ToLower(pk))
+}
+
+func (p PublicKey) PubkeyHex() PubkeyHex {
+	return NewPubkeyHex(p.String())
+}
+
+func (p PubkeyHex) String() string {
+	return string(p)
+}
+
+func IntToU256(i uint64) (ret U256Str) {
+	s := fmt.Sprint(i)
+	ret.UnmarshalText([]byte(s))
+	return
 }
 
 func (n *U256Str) BigInt() *big.Int {
@@ -23,8 +40,9 @@ func (n *U256Str) Cmp(b *U256Str) int {
 	return _a.Cmp(_b)
 }
 
-func (p PublicKey) PubkeyHex() PubkeyHex {
-	return NewPubkeyHex(p.String())
+func BlsPublicKeyToPublicKey(blsPubKey *bls.PublicKey) (ret PublicKey) {
+	ret.FromSlice(blsPubKey.Compress())
+	return
 }
 
 // HexToAddress takes a hex string and returns an Address

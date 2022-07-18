@@ -1,15 +1,71 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/big"
+	"strconv"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 var (
+	// GenesisValidatorsRootMainnet = ""
+	GenesisValidatorsRootKiln    = "0x99b09fcd43e5905236c370f184056bec6e6638cfc31a323b304fc4aa789cb4ad"
+	GenesisValidatorsRootRopsten = "0x44f1e56283ca88b35c789f7f449e52339bc1fefe3a45913a43a6d16edcd33cf1"
+	GenesisValidatorsRootSepolia = "0xd8ea171f3c94aea21ebc42a1ed61052acf3f9209c00e4efbaaddac09ed9b8078"
+	// GenesisValidatorsRootGoerli  = ""
+
+	// GenesisForkVersionMainnet = "0x00000000"
+	GenesisForkVersionKiln    = "0x70000069"
+	GenesisForkVersionRopsten = "0x80000069"
+	GenesisForkVersionSepolia = "0x90000069"
+	// GenesisForkVersionGoerli  = ""
+
+	// BellatrixForkVersionMainner = ""
+	BellatrixForkVersionKiln    = "0x70000071"
+	BellatrixForkVersionRopsten = "0x80000071"
+	BellatrixForkVersionSepolia = "0x90000071"
+	// BellatrixForkVersionGoerli  = ""
+
 	ErrLength = fmt.Errorf("incorrect byte length")
 )
+
+type Uint64StringSlice []uint64
+
+func (slice Uint64StringSlice) MarshalJSON() ([]byte, error) {
+	values := make([]string, len(slice))
+	for i, value := range []uint64(slice) {
+		values[i] = fmt.Sprintf(`"%v"`, value)
+	}
+
+	return []byte(fmt.Sprintf("[%v]", strings.Join(values, ","))), nil
+}
+
+func (slice *Uint64StringSlice) UnmarshalJSON(b []byte) error {
+	// Try array of strings first.
+	var values []string
+	err := json.Unmarshal(b, &values)
+	if err != nil {
+		// Fall back to array of integers:
+		var values []uint64
+		if err := json.Unmarshal(b, &values); err != nil {
+			return err
+		}
+		*slice = values
+		return nil
+	}
+	*slice = make([]uint64, len(values))
+	for i, value := range values {
+		value, err := strconv.ParseUint(value, 10, 64)
+		if err != nil {
+			return err
+		}
+		(*slice)[i] = value
+	}
+	return nil
+}
 
 type Signature [96]byte
 
@@ -23,11 +79,7 @@ func (s *Signature) UnmarshalJSON(input []byte) error {
 	if err != nil {
 		return err
 	}
-	if len(b) != 96 {
-		return ErrLength
-	}
-	s.FromSlice(b)
-	return nil
+	return s.FromSlice(b)
 }
 
 func (s *Signature) UnmarshalText(input []byte) error {
@@ -36,20 +88,19 @@ func (s *Signature) UnmarshalText(input []byte) error {
 	if err != nil {
 		return err
 	}
-	if len(b) != 96 {
-		return ErrLength
-	}
-	s.FromSlice(b)
-	return nil
-
+	return s.FromSlice(b)
 }
 
 func (s Signature) String() string {
 	return hexutil.Bytes(s[:]).String()
 }
 
-func (s *Signature) FromSlice(x []byte) {
+func (s *Signature) FromSlice(x []byte) error {
+	if len(x) != 96 {
+		return ErrLength
+	}
 	copy(s[:], x)
+	return nil
 }
 
 type PublicKey [48]byte
@@ -61,30 +112,25 @@ func (p PublicKey) MarshalText() ([]byte, error) {
 func (p *PublicKey) UnmarshalJSON(input []byte) error {
 	b := hexutil.Bytes(p[:])
 	b.UnmarshalJSON(input)
-	if len(b) != 48 {
-		return ErrLength
-	}
-	p.FromSlice(b)
-	return nil
+	return p.FromSlice(b)
 }
 
 func (p *PublicKey) UnmarshalText(input []byte) error {
 	b := hexutil.Bytes(p[:])
 	b.UnmarshalText(input)
-	if len(b) != 48 {
-		return ErrLength
-	}
-	p.FromSlice(b)
-	return nil
-
+	return p.FromSlice(b)
 }
 
 func (p PublicKey) String() string {
 	return hexutil.Bytes(p[:]).String()
 }
 
-func (p *PublicKey) FromSlice(x []byte) {
+func (p *PublicKey) FromSlice(x []byte) error {
+	if len(x) != 48 {
+		return ErrLength
+	}
 	copy(p[:], x)
+	return nil
 }
 
 type Address [20]byte
@@ -96,30 +142,25 @@ func (a Address) MarshalText() ([]byte, error) {
 func (a *Address) UnmarshalJSON(input []byte) error {
 	b := hexutil.Bytes(a[:])
 	b.UnmarshalJSON(input)
-	if len(b) != 20 {
-		return ErrLength
-	}
-	a.FromSlice(b)
-	return nil
+	return a.FromSlice(b)
 }
 
 func (a *Address) UnmarshalText(input []byte) error {
 	b := hexutil.Bytes(a[:])
 	b.UnmarshalText(input)
-	if len(b) != 20 {
-		return ErrLength
-	}
-	a.FromSlice(b)
-	return nil
-
+	return a.FromSlice(b)
 }
 
 func (a Address) String() string {
 	return hexutil.Bytes(a[:]).String()
 }
 
-func (a *Address) FromSlice(x []byte) {
+func (a *Address) FromSlice(x []byte) error {
+	if len(x) != 20 {
+		return ErrLength
+	}
 	copy(a[:], x)
+	return nil
 }
 
 type Hash [32]byte
@@ -132,26 +173,21 @@ func (h Hash) MarshalText() ([]byte, error) {
 func (h *Hash) UnmarshalJSON(input []byte) error {
 	b := hexutil.Bytes(h[:])
 	b.UnmarshalJSON(input)
-	if len(b) != 32 {
-		return ErrLength
-	}
-	h.FromSlice(b)
-	return nil
+	return h.FromSlice(b)
 }
 
 func (h *Hash) UnmarshalText(input []byte) error {
 	b := hexutil.Bytes(h[:])
 	b.UnmarshalText(input)
-	if len(b) != 32 {
-		return ErrLength
-	}
-	h.FromSlice(b)
-	return nil
-
+	return h.FromSlice(b)
 }
 
-func (h *Hash) FromSlice(x []byte) {
+func (h *Hash) FromSlice(x []byte) error {
+	if len(x) != 32 {
+		return ErrLength
+	}
 	copy(h[:], x)
+	return nil
 }
 
 func (h Hash) String() string {
@@ -167,21 +203,13 @@ func (c CommitteeBits) MarshalText() ([]byte, error) {
 func (c *CommitteeBits) UnmarshalJSON(input []byte) error {
 	b := hexutil.Bytes(c[:])
 	b.UnmarshalJSON(input)
-	if len(b) != 64 {
-		return ErrLength
-	}
-	c.FromSlice(b)
-	return nil
+	return c.FromSlice(b)
 }
 
 func (c *CommitteeBits) UnmarshalText(input []byte) error {
 	b := hexutil.Bytes(c[:])
 	b.UnmarshalText(input)
-	if len(b) != 64 {
-		return ErrLength
-	}
-	c.FromSlice(b)
-	return nil
+	return c.FromSlice(b)
 
 }
 
@@ -189,8 +217,12 @@ func (c CommitteeBits) String() string {
 	return hexutil.Bytes(c[:]).String()
 }
 
-func (c *CommitteeBits) FromSlice(x []byte) {
+func (c *CommitteeBits) FromSlice(x []byte) error {
+	if len(x) != 64 {
+		return ErrLength
+	}
 	copy(c[:], x)
+	return nil
 }
 
 type Bloom [256]byte
@@ -202,29 +234,25 @@ func (b Bloom) MarshalText() ([]byte, error) {
 func (b *Bloom) UnmarshalJSON(input []byte) error {
 	buf := hexutil.Bytes(b[:])
 	buf.UnmarshalJSON(input)
-	if len(b) != 256 {
-		return ErrLength
-	}
-	b.FromSlice(buf)
-	return nil
+	return b.FromSlice(buf)
 }
 
 func (b *Bloom) UnmarshalText(input []byte) error {
 	buf := hexutil.Bytes(b[:])
 	buf.UnmarshalText(input)
-	if len(b) != 256 {
-		return ErrLength
-	}
-	b.FromSlice(buf)
-	return nil
+	return b.FromSlice(buf)
 }
 
 func (b Bloom) String() string {
 	return hexutil.Bytes(b[:]).String()
 }
 
-func (b *Bloom) FromSlice(x []byte) {
+func (b *Bloom) FromSlice(x []byte) error {
+	if len(b) != 256 {
+		return ErrLength
+	}
 	copy(b[:], x)
+	return nil
 }
 
 type U256Str Hash // encodes/decodes to string, not hex
@@ -252,11 +280,7 @@ func (n *U256Str) UnmarshalJSON(input []byte) error {
 	if err != nil {
 		return err
 	}
-	err = n.FromBig(x)
-	if err != nil {
-		return err
-	}
-	return nil
+	return n.FromBig(x)
 }
 
 func (n *U256Str) UnmarshalText(input []byte) error {
@@ -265,12 +289,7 @@ func (n *U256Str) UnmarshalText(input []byte) error {
 	if err != nil {
 		return err
 	}
-	err = n.FromBig(x)
-	if err != nil {
-		return err
-	}
-	return nil
-
+	return n.FromBig(x)
 }
 
 func (n *U256Str) String() string {
@@ -293,12 +312,6 @@ func (n *U256Str) FromBig(x *big.Int) error {
 	return nil
 }
 
-func IntToU256(i uint64) (ret U256Str) {
-	s := fmt.Sprint(i)
-	ret.UnmarshalText([]byte(s))
-	return
-}
-
 type ExtraData []byte
 
 func (e ExtraData) MarshalText() ([]byte, error) {
@@ -306,31 +319,27 @@ func (e ExtraData) MarshalText() ([]byte, error) {
 }
 
 func (e *ExtraData) UnmarshalJSON(input []byte) error {
-	var buf = make(hexutil.Bytes, 0)
+	var buf hexutil.Bytes
 	buf.UnmarshalJSON(input)
-	if len(buf) > 32 {
-		return ErrLength
-	}
-	e.FromSlice(buf)
-	return nil
+	return e.FromSlice(buf)
 }
 
 func (e *ExtraData) UnmarshalText(input []byte) error {
 	var buf hexutil.Bytes
 	buf.UnmarshalText(input)
-	if len(buf) > 32 {
-		return ErrLength
-	}
-	e.FromSlice(buf)
-	return nil
+	return e.FromSlice(buf)
 }
 
 func (e ExtraData) String() string {
 	return hexutil.Bytes(e).String()
 }
 
-func (e *ExtraData) FromSlice(x []byte) {
+func (e *ExtraData) FromSlice(x []byte) error {
+	if len(x) > 32 {
+		return ErrLength
+	}
 	tmp := make([]byte, len(x))
 	copy(tmp, x)
 	*e = tmp
+	return nil
 }
