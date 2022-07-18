@@ -14,8 +14,12 @@ func GetTypeProvider(data []byte) (*go_fuzz_utils.TypeProvider, error) {
 		return nil, err
 	}
 
-	// Prevent nil fields
-	_ = tp.SetParamsBiases(0, 0, 0, 0)
+	// Prevent nil fields.
+	err = tp.SetParamsBiases(0, 0, 0, 0)
+	if err != nil {
+		return nil, err
+	}
+
 	return tp, nil
 }
 
