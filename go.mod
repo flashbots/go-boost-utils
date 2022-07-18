@@ -7,6 +7,7 @@ require (
 	github.com/ferranbt/fastssz v0.1.1-0.20220303160658-88bb965b6747
 	github.com/stretchr/testify v1.7.1
 	github.com/supranational/blst v0.3.7
+	github.com/trailofbits/go-fuzz-utils v0.0.0-20210901195358-9657fcfd256c
 )
 
 require (
