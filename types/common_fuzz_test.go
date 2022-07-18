@@ -1,8 +1,8 @@
 package types
 
 import (
-	"testing"
 	"encoding/json"
+	"testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/trailofbits/go-fuzz-utils"
