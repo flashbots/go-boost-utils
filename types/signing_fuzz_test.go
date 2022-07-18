@@ -58,3 +58,35 @@ func FuzzRoundTripForkData(f *testing.F) {
 		require.Equal(t, value, decJSON)
 	})
 }
+
+func FuzzVerifySignature(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		tp, err := GetTypeProvider(data)
+		if err != nil {
+			return
+		}
+
+		var forkData ForkData
+		err = tp.Fill(&forkData)
+		if err != nil {
+			return
+		}
+		var domain Domain
+		err = tp.Fill(&domain)
+		if err != nil {
+			return
+		}
+		var pkBytes []byte
+		err = tp.Fill(&pkBytes)
+		if err != nil {
+			return
+		}
+		var sigBytes []byte
+		err = tp.Fill(&sigBytes)
+		if err != nil {
+			return
+		}
+
+		VerifySignature(&forkData, domain, pkBytes, sigBytes)
+	})
+}
