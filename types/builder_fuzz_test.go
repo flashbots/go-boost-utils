@@ -601,3 +601,132 @@ func FuzzRoundTripTransactions(f *testing.F) {
 		require.Equal(t, value, decJSON)
 	})
 }
+
+func FuzzRoundTripBuilderGetValidatorsResponseEntry(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value, decJSON BuilderGetValidatorsResponseEntry
+		tp, err := GetTypeProvider(data)
+		if err != nil {
+			return
+		}
+		err = tp.Fill(&value)
+		if err != nil {
+			return
+		}
+
+		encJSON, err := json.Marshal(value)
+		require.NoError(t, err)
+		err = json.Unmarshal(encJSON, &decJSON)
+		require.NoError(t, err)
+		require.Equal(t, value, decJSON)
+	})
+}
+
+func FuzzRoundTripBidTrace(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value, decSSZ, decJSON BidTrace
+		tp, err := GetTypeProvider(data)
+		if err != nil {
+			return
+		}
+		err = tp.Fill(&value)
+		if err != nil {
+			return
+		}
+
+		encSSZ, err := value.MarshalSSZ()
+		require.NoError(t, err)
+		err = decSSZ.UnmarshalSSZ(encSSZ)
+		require.NoError(t, err)
+		require.Equal(t, value, decSSZ)
+
+		encJSON, err := json.Marshal(value)
+		require.NoError(t, err)
+		err = json.Unmarshal(encJSON, &decJSON)
+		require.NoError(t, err)
+		require.Equal(t, value, decJSON)
+	})
+}
+
+func FuzzRoundTripSignedBidTrace(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value, decJSON SignedBidTrace
+		tp, err := GetTypeProvider(data)
+		if err != nil {
+			return
+		}
+		err = tp.Fill(&value)
+		if err != nil {
+			return
+		}
+
+		encJSON, err := json.Marshal(value)
+		require.NoError(t, err)
+		err = json.Unmarshal(encJSON, &decJSON)
+		require.NoError(t, err)
+		require.Equal(t, value, decJSON)
+	})
+}
+
+func FuzzRoundTripBuilderSubmitBlockResponseMessage(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value, decSSZ, decJSON BuilderSubmitBlockResponseMessage
+		tp, err := GetTypeProvider(data)
+		if err != nil {
+			return
+		}
+		err = tp.Fill(&value)
+		if err != nil {
+			return
+		}
+
+		encSSZ, err := value.MarshalSSZ()
+		require.NoError(t, err)
+		err = decSSZ.UnmarshalSSZ(encSSZ)
+		require.NoError(t, err)
+		require.Equal(t, value, decSSZ)
+
+		encJSON, err := json.Marshal(value)
+		require.NoError(t, err)
+		err = json.Unmarshal(encJSON, &decJSON)
+		require.NoError(t, err)
+		require.Equal(t, value, decJSON)
+	})
+}
+
+func FuzzRoundTripBuilderSubmitBlockResponse(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value, decJSON BuilderSubmitBlockResponse
+		tp, err := GetTypeProvider(data)
+		if err != nil {
+			return
+		}
+		err = tp.Fill(&value)
+		if err != nil {
+			return
+		}
+
+		encJSON, err := json.Marshal(value)
+		require.NoError(t, err)
+		err = json.Unmarshal(encJSON, &decJSON)
+		require.NoError(t, err)
+		require.Equal(t, value, decJSON)
+	})
+}
+
+func FuzzPayloadToPayloadHeader(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		tp, err := GetTypeProvider(data)
+		if err != nil {
+			return
+		}
+
+		var payloadHeader ExecutionPayload
+		err = tp.Fill(&payloadHeader)
+		if err != nil {
+			return
+		}
+
+		PayloadToPayloadHeader(&payloadHeader)
+	})
+}
