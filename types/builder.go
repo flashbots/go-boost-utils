@@ -213,8 +213,8 @@ type BuilderGetValidatorsResponseEntry struct {
 	Entry *SignedValidatorRegistration `json:"entry"`
 }
 
-// BidTraceMessage contains the signed message part of the BidTrace: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#286c858c4ba24e58ada6348d8d4b71ec
-type BidTraceMessage struct {
+// BidTrace is public information about a bid: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#286c858c4ba24e58ada6348d8d4b71ec
+type BidTrace struct {
 	Slot                 uint64    `json:"slot,string"`
 	ParentHash           Hash      `json:"parent_hash" ssz-size:"32"`
 	BlockHash            Hash      `json:"block_hash" ssz-size:"32"`
@@ -224,23 +224,23 @@ type BidTraceMessage struct {
 	Value                U256Str   `json:"value" ssz-size:"32"`
 }
 
-// BidTrace is public information about a bid, signed by the builder: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#286c858c4ba24e58ada6348d8d4b71ec
-type BidTrace struct {
-	Signature Signature        `json:"signature" ssz-size:"96"`
-	Message   *BidTraceMessage `json:"message"`
+// SignedBidTrace is a BidTrace with a signature
+type SignedBidTrace struct {
+	Signature Signature `json:"signature" ssz-size:"96"`
+	Message   *BidTrace `json:"message"`
 }
 
 // BuilderSubmitBlockRequest spec: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#fa719683d4ae4a57bc3bf60e138b0dc6
 type BuilderSubmitBlockRequest struct {
 	Signature        Signature         `json:"signature" ssz-size:"96"`
-	Message          *BidTraceMessage  `json:"message"`
+	Message          *BidTrace         `json:"message"`
 	ExecutionPayload *ExecutionPayload `json:"execution_payload"`
 }
 
 // BuilderSubmitBlockResponseMessage spec: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#fa719683d4ae4a57bc3bf60e138b0dc6
 type BuilderSubmitBlockResponseMessage struct {
-	ReceiveTimestamp uint64           `json:"receive_timestamp,string"`
-	BidUnverified    *BidTraceMessage `json:"bid_unverified"`
+	ReceiveTimestamp uint64    `json:"receive_timestamp,string"`
+	BidUnverified    *BidTrace `json:"bid_unverified"`
 }
 
 // BuilderSubmitBlockResponse spec: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#fa719683d4ae4a57bc3bf60e138b0dc6
