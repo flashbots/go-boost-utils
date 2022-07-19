@@ -69,6 +69,13 @@ func FuzzRoundTripSignature(f *testing.F) {
 	})
 }
 
+func FuzzFromSliceSignature(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value Signature
+		value.FromSlice(data)
+	})
+}
+
 func FuzzRoundTripPublicKey(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value, decJSON PublicKey
@@ -86,6 +93,13 @@ func FuzzRoundTripPublicKey(f *testing.F) {
 		err = json.Unmarshal(encJSON, &decJSON)
 		require.NoError(t, err)
 		require.Equal(t, value, decJSON)
+	})
+}
+
+func FuzzFromSlicePublicKey(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value PublicKey
+		value.FromSlice(data)
 	})
 }
 
@@ -109,6 +123,13 @@ func FuzzRoundTripAddress(f *testing.F) {
 	})
 }
 
+func FuzzFromSliceAddress(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value Address
+		value.FromSlice(data)
+	})
+}
+
 func FuzzRoundTripHash(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value, decJSON Hash
@@ -126,6 +147,13 @@ func FuzzRoundTripHash(f *testing.F) {
 		err = json.Unmarshal(encJSON, &decJSON)
 		require.NoError(t, err)
 		require.Equal(t, value, decJSON)
+	})
+}
+
+func FuzzFromSliceHash(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value Hash
+		value.FromSlice(data)
 	})
 }
 
@@ -149,6 +177,13 @@ func FuzzRoundTripRoot(f *testing.F) {
 	})
 }
 
+func FuzzFromSliceRoot(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value Root
+		value.FromSlice(data)
+	})
+}
+
 func FuzzRoundTripCommitteeBits(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value, decJSON CommitteeBits
@@ -166,6 +201,13 @@ func FuzzRoundTripCommitteeBits(f *testing.F) {
 		err = json.Unmarshal(encJSON, &decJSON)
 		require.NoError(t, err)
 		require.Equal(t, value, decJSON)
+	})
+}
+
+func FuzzFromSliceCommitteeBits(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value CommitteeBits
+		value.FromSlice(data)
 	})
 }
 
@@ -189,6 +231,13 @@ func FuzzRoundTripBloom(f *testing.F) {
 	})
 }
 
+func FuzzFromSliceBloom(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value Bloom
+		value.FromSlice(data)
+	})
+}
+
 func FuzzRoundTripU256Str(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value, decJSON U256Str
@@ -209,6 +258,13 @@ func FuzzRoundTripU256Str(f *testing.F) {
 	})
 }
 
+func FuzzFromSliceU256Str(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value U256Str
+		value.FromSlice(data)
+	})
+}
+
 func FuzzRoundTripExtraData(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value, decJSON ExtraData
@@ -226,5 +282,12 @@ func FuzzRoundTripExtraData(f *testing.F) {
 		err = json.Unmarshal(encJSON, &decJSON)
 		require.NoError(t, err)
 		require.Equal(t, value, decJSON)
+	})
+}
+
+func FuzzFromSliceExtraData(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value ExtraData
+		value.FromSlice(data)
 	})
 }
