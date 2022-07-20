@@ -202,7 +202,9 @@ func FuzzRoundTripBuilderSubmitBlockResponse(f *testing.F) {
 func FuzzPayloadToPayloadHeader(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var payloadHeader ExecutionPayload
-		if !Fill(data, &payloadHeader) { return }
+		if !Fill(data, &payloadHeader) {
+			return
+		}
 		PayloadToPayloadHeader(&payloadHeader)
 	})
 }

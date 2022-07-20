@@ -28,20 +28,19 @@ func Fill[T interface{}](data []byte, value *T) bool {
 		return false
 	}
 	err = tp.Fill(value)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
-type MarshalableSSZ interface{
+type MarshalableSSZ interface {
 	MarshalSSZ() ([]byte, error)
 	UnmarshalSSZ([]byte) error
 }
 
 func RoundTripSSZ[V MarshalableSSZ](t *testing.T, data []byte, decSSZ V) {
 	value := *new(V)
-	if !Fill(data, &value) { return }
+	if !Fill(data, &value) {
+		return
+	}
 	encSSZ, err := value.MarshalSSZ()
 	require.NoError(t, err)
 	err = decSSZ.UnmarshalSSZ(encSSZ)
@@ -51,7 +50,9 @@ func RoundTripSSZ[V MarshalableSSZ](t *testing.T, data []byte, decSSZ V) {
 
 func RoundTripJSON[V any](t *testing.T, data []byte, decJSON V) {
 	value := *new(V)
-	if !Fill(data, &value) { return }
+	if !Fill(data, &value) {
+		return
+	}
 	encJSON, err := json.Marshal(value)
 	require.NoError(t, err)
 	err = json.Unmarshal(encJSON, &decJSON)
