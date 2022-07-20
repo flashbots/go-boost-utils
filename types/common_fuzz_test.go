@@ -19,7 +19,6 @@ func GetTypeProvider(data []byte) (*go_fuzz_utils.TypeProvider, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return tp, nil
 }
 
@@ -80,8 +79,7 @@ func FuzzRoundTripSignature(f *testing.F) {
 
 func FuzzFromSliceSignature(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		var value Signature
-		value.FromSlice(data)
+		new(Signature).FromSlice(data)
 	})
 }
 
@@ -93,8 +91,7 @@ func FuzzRoundTripPublicKey(f *testing.F) {
 
 func FuzzFromSlicePublicKey(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		var value PublicKey
-		value.FromSlice(data)
+		new(PublicKey).FromSlice(data)
 	})
 }
 
@@ -106,8 +103,7 @@ func FuzzRoundTripAddress(f *testing.F) {
 
 func FuzzFromSliceAddress(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		var value Address
-		value.FromSlice(data)
+		new(Address).FromSlice(data)
 	})
 }
 
@@ -119,8 +115,7 @@ func FuzzRoundTripHash(f *testing.F) {
 
 func FuzzFromSliceHash(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		var value Hash
-		value.FromSlice(data)
+		new(Hash).FromSlice(data)
 	})
 }
 
@@ -132,8 +127,7 @@ func FuzzRoundTripRoot(f *testing.F) {
 
 func FuzzFromSliceRoot(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		var value Root
-		value.FromSlice(data)
+		new(Root).FromSlice(data)
 	})
 }
 
@@ -145,8 +139,7 @@ func FuzzRoundTripCommitteeBits(f *testing.F) {
 
 func FuzzFromSliceCommitteeBits(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		var value CommitteeBits
-		value.FromSlice(data)
+		new(CommitteeBits).FromSlice(data)
 	})
 }
 
@@ -158,8 +151,7 @@ func FuzzRoundTripBloom(f *testing.F) {
 
 func FuzzFromSliceBloom(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		var value Bloom
-		value.FromSlice(data)
+		new(Bloom).FromSlice(data)
 	})
 }
 
@@ -171,8 +163,7 @@ func FuzzRoundTripU256Str(f *testing.F) {
 
 func FuzzFromSliceU256Str(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		var value U256Str
-		value.FromSlice(data)
+		new(U256Str).FromSlice(data)
 	})
 }
 
@@ -184,7 +175,6 @@ func FuzzRoundTripExtraData(f *testing.F) {
 
 func FuzzFromSliceExtraData(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		var value ExtraData
-		value.FromSlice(data)
+		new(ExtraData).FromSlice(data)
 	})
 }

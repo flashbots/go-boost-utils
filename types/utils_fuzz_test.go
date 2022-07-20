@@ -27,7 +27,6 @@ func FuzzU256StrCmp(f *testing.F) {
 		if err != nil {
 			return
 		}
-
 		var a U256Str
 		err = tp.Fill(&a)
 		if err != nil {
@@ -38,7 +37,6 @@ func FuzzU256StrCmp(f *testing.F) {
 		if err != nil {
 			return
 		}
-
 		(&a).Cmp(&b)
 	})
 }

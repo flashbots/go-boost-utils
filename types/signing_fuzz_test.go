@@ -26,7 +26,6 @@ func FuzzComputeDomain(f *testing.F) {
 		if err != nil {
 			return
 		}
-
 		var domainType DomainType
 		err = tp.Fill(&domainType)
 		if err != nil {
@@ -42,7 +41,6 @@ func FuzzComputeDomain(f *testing.F) {
 		if err != nil {
 			return
 		}
-
 		ComputeDomain(domainType, forkVersion, genesisValidatorsRoot)
 	})
 }
@@ -53,7 +51,6 @@ func FuzzComputeSigningRoot(f *testing.F) {
 		if err != nil {
 			return
 		}
-
 		var forkData ForkData
 		err = tp.Fill(&forkData)
 		if err != nil {
@@ -64,7 +61,6 @@ func FuzzComputeSigningRoot(f *testing.F) {
 		if err != nil {
 			return
 		}
-
 		ComputeSigningRoot(&forkData, domain)
 	})
 }
@@ -75,7 +71,6 @@ func FuzzSignMessage(f *testing.F) {
 		if err != nil {
 			return
 		}
-
 		var forkData ForkData
 		err = tp.Fill(&forkData)
 		if err != nil {
@@ -96,7 +91,6 @@ func FuzzSignMessage(f *testing.F) {
 		if err != nil {
 			return
 		}
-
 		SignMessage(&forkData, domain, &sk)
 	})
 }
@@ -107,7 +101,6 @@ func FuzzVerifySignature(f *testing.F) {
 		if err != nil {
 			return
 		}
-
 		var forkData ForkData
 		err = tp.Fill(&forkData)
 		if err != nil {
@@ -128,7 +121,6 @@ func FuzzVerifySignature(f *testing.F) {
 		if err != nil {
 			return
 		}
-
 		VerifySignature(&forkData, domain, pkBytes, sigBytes)
 	})
 }
