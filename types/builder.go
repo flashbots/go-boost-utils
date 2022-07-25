@@ -221,6 +221,8 @@ type BidTrace struct {
 	BuilderPubkey        PublicKey `json:"builder_pubkey" ssz-size:"48"`
 	ProposerPubkey       PublicKey `json:"proposer_pubkey" ssz-size:"48"`
 	ProposerFeeRecipient Address   `json:"proposer_fee_recipient" ssz-size:"20"`
+	GasLimit             uint64    `json:"gas_limit,string"`
+	GasUsed              uint64    `json:"gas_used,string"`
 	Value                U256Str   `json:"value" ssz-size:"32"`
 }
 
