@@ -64,4 +64,4 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Fuzz each test for one second
-        run: FUZZTIME=1s make fuzz
+        run: TERM=xterm FUZZTIME=1s make fuzz
