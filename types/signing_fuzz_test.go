@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/flashbots/go-boost-utils/bls"
@@ -13,10 +14,26 @@ func FuzzRoundTripSigningData(f *testing.F) {
 	})
 }
 
+func FuzzUnmarshalSigningData(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value SigningData
+		json.Unmarshal(data, &value)
+		value.UnmarshalSSZ(data)
+	})
+}
+
 func FuzzRoundTripForkData(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		RoundTripSSZ(t, data, &ForkData{})
 		RoundTripJSON(t, data, &ForkData{})
+	})
+}
+
+func FuzzUnmarshalForkData(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value ForkData
+		json.Unmarshal(data, &value)
+		value.UnmarshalSSZ(data)
 	})
 }
 
