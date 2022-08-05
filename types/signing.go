@@ -24,7 +24,7 @@ type SigningData struct {
 	Domain Domain `ssz-size:"32"`
 }
 
-type forkData struct {
+type ForkData struct {
 	CurrentVersion        ForkVersion `ssz-size:"4"`
 	GenesisValidatorsRoot Root        `ssz-size:"32"`
 }
@@ -34,7 +34,7 @@ type HashTreeRoot interface {
 }
 
 func ComputeDomain(dt DomainType, forkVersion ForkVersion, genesisValidatorsRoot Root) [32]byte {
-	forkDataRoot, _ := (&forkData{
+	forkDataRoot, _ := (&ForkData{
 		CurrentVersion:        forkVersion,
 		GenesisValidatorsRoot: genesisValidatorsRoot,
 	}).HashTreeRoot()

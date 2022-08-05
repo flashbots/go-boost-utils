@@ -367,3 +367,17 @@ func (e *ExtraData) FromSlice(x []byte) error {
 	*e = tmp
 	return nil
 }
+
+type VersionString string
+
+func (s VersionString) MarshalJSON() ([]byte, error) {
+	return json.Marshal(string(s))
+}
+
+func (s *VersionString) UnmarshalJSON(b []byte) error {
+	if len(b) >= 2 {
+		return ErrLength
+	}
+	*s = VersionString(b[1 : len(b)-1])
+	return nil
+}

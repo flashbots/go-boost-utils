@@ -187,7 +187,7 @@ type SignedBuilderBid struct {
 
 // GetHeaderResponse is the response payload from the getHeader request: https://github.com/ethereum/builder-specs/pull/2/files#diff-c80f52e38c99b1049252a99215450a29fd248d709ffd834a9480c98a233bf32c
 type GetHeaderResponse struct {
-	Version string            `json:"version"`
+	Version VersionString     `json:"version"`
 	Data    *SignedBuilderBid `json:"data"`
 }
 
@@ -199,7 +199,7 @@ type SignedBlindedBeaconBlock struct {
 
 // GetPayloadResponse is the response payload from the getPayload request: https://github.com/ethereum/builder-specs/pull/2/files#diff-8446716b376f3ffe88737f9773ce2ff21adc2bc0f2c9a140dcc2e9d632091ba4
 type GetPayloadResponse struct {
-	Version string            `json:"version"`
+	Version VersionString     `json:"version"`
 	Data    *ExecutionPayload `json:"data"`
 }
 

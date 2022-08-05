@@ -71,13 +71,13 @@ func (s *SigningData) GetTree() (*ssz.Node, error) {
 	return ssz.ProofTree(s)
 }
 
-// MarshalSSZ ssz marshals the forkData object
-func (f *forkData) MarshalSSZ() ([]byte, error) {
+// MarshalSSZ ssz marshals the ForkData object
+func (f *ForkData) MarshalSSZ() ([]byte, error) {
 	return ssz.MarshalSSZ(f)
 }
 
-// MarshalSSZTo ssz marshals the forkData object to a target array
-func (f *forkData) MarshalSSZTo(buf []byte) (dst []byte, err error) {
+// MarshalSSZTo ssz marshals the ForkData object to a target array
+func (f *ForkData) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	dst = buf
 
 	// Field (0) 'CurrentVersion'
@@ -89,8 +89,8 @@ func (f *forkData) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	return
 }
 
-// UnmarshalSSZ ssz unmarshals the forkData object
-func (f *forkData) UnmarshalSSZ(buf []byte) error {
+// UnmarshalSSZ ssz unmarshals the ForkData object
+func (f *ForkData) UnmarshalSSZ(buf []byte) error {
 	var err error
 	size := uint64(len(buf))
 	if size != 36 {
@@ -106,19 +106,19 @@ func (f *forkData) UnmarshalSSZ(buf []byte) error {
 	return err
 }
 
-// SizeSSZ returns the ssz encoded size in bytes for the forkData object
-func (f *forkData) SizeSSZ() (size int) {
+// SizeSSZ returns the ssz encoded size in bytes for the ForkData object
+func (f *ForkData) SizeSSZ() (size int) {
 	size = 36
 	return
 }
 
-// HashTreeRoot ssz hashes the forkData object
-func (f *forkData) HashTreeRoot() ([32]byte, error) {
+// HashTreeRoot ssz hashes the ForkData object
+func (f *ForkData) HashTreeRoot() ([32]byte, error) {
 	return ssz.HashWithDefaultHasher(f)
 }
 
-// HashTreeRootWith ssz hashes the forkData object with a hasher
-func (f *forkData) HashTreeRootWith(hh ssz.HashWalker) (err error) {
+// HashTreeRootWith ssz hashes the ForkData object with a hasher
+func (f *ForkData) HashTreeRootWith(hh ssz.HashWalker) (err error) {
 	indx := hh.Index()
 
 	// Field (0) 'CurrentVersion'
@@ -131,7 +131,7 @@ func (f *forkData) HashTreeRootWith(hh ssz.HashWalker) (err error) {
 	return
 }
 
-// GetTree ssz hashes the forkData object
-func (f *forkData) GetTree() (*ssz.Node, error) {
+// GetTree ssz hashes the ForkData object
+func (f *ForkData) GetTree() (*ssz.Node, error) {
 	return ssz.ProofTree(f)
 }
