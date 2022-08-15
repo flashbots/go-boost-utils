@@ -375,7 +375,7 @@ func (s VersionString) MarshalJSON() ([]byte, error) {
 }
 
 func (s *VersionString) UnmarshalJSON(b []byte) error {
-	if len(b) >= 2 {
+	if len(b) < 2 {
 		return ErrLength
 	}
 	*s = VersionString(b[1 : len(b)-1])
