@@ -9,10 +9,10 @@ import (
 )
 
 func CalculateHash(payload *ExecutionPayload) Hash {
-	return [32]byte(executionPayloadToHeader(payload).Hash())
+	return [32]byte(ExecutionPayloadToHeader(payload).Hash())
 }
 
-func executionPayloadToHeader(payload *ExecutionPayload) *types.Header {
+func ExecutionPayloadToHeader(payload *ExecutionPayload) *types.Header {
 	transactionData := make([]*types.Transaction, len(payload.Transactions))
 	for i, encTx := range payload.Transactions {
 		var tx types.Transaction
