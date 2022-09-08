@@ -149,6 +149,20 @@ type BlindedBeaconBlockBody struct {
 	ExecutionPayloadHeader *ExecutionPayloadHeader `json:"execution_payload_header"`
 }
 
+// BeaconBlockBody https://github.com/ethereum/beacon-APIs/blob/master/types/bellatrix/block.yaml#L38
+type BeaconBlockBody struct {
+	RandaoReveal      Signature           `json:"randao_reveal" ssz-size:"96"`
+	Eth1Data          *Eth1Data           `json:"eth1_data"`
+	Graffiti          Hash                `json:"graffiti" ssz-size:"32"`
+	ProposerSlashings []*ProposerSlashing `json:"proposer_slashings" ssz-max:"16"`
+	AttesterSlashings []*AttesterSlashing `json:"attester_slashings" ssz-max:"2"`
+	Attestations      []*Attestation      `json:"attestations" ssz-max:"128"`
+	Deposits          []*Deposit          `json:"deposits" ssz-max:"16"`
+	VoluntaryExits    []*VoluntaryExit    `json:"voluntary_exits" ssz-max:"16"`
+	SyncAggregate     *SyncAggregate      `json:"sync_aggregate"`
+	ExecutionPayload  *ExecutionPayload   `json:"execution_payload"`
+}
+
 // BlindedBeaconBlock https://github.com/ethereum/beacon-APIs/blob/master/types/bellatrix/block.yaml#L74
 type BlindedBeaconBlock struct {
 	Slot          uint64                  `json:"slot,string"`
@@ -156,6 +170,15 @@ type BlindedBeaconBlock struct {
 	ParentRoot    Root                    `json:"parent_root" ssz-size:"32"`
 	StateRoot     Root                    `json:"state_root" ssz-size:"32"`
 	Body          *BlindedBeaconBlockBody `json:"body"`
+}
+
+// BeaconBlock https://github.com/ethereum/beacon-APIs/blob/master/types/bellatrix/block.yaml#L46
+type BeaconBlock struct {
+	Slot          uint64           `json:"slot,string"`
+	ProposerIndex uint64           `json:"proposer_index,string"`
+	ParentRoot    Root             `json:"parent_root" ssz-size:"32"`
+	StateRoot     Root             `json:"state_root" ssz-size:"32"`
+	Body          *BeaconBlockBody `json:"body"`
 }
 
 // RegisterValidatorRequestMessage https://github.com/ethereum/beacon-APIs/blob/master/types/registration.yaml
@@ -195,6 +218,12 @@ type GetHeaderResponse struct {
 type SignedBlindedBeaconBlock struct {
 	Message   *BlindedBeaconBlock `json:"message"`
 	Signature Signature           `json:"signature" ssz-size:"96"`
+}
+
+// SignedBeaconBlock https://github.com/ethereum/beacon-APIs/blob/master/types/bellatrix/block.yaml#L55
+type SignedBeaconBlock struct {
+	Message   *BeaconBlock `json:"message"`
+	Signature Signature    `json:"signature" ssz-size:"96"`
 }
 
 // GetPayloadResponse is the response payload from the getPayload request: https://github.com/ethereum/builder-specs/pull/2/files#diff-8446716b376f3ffe88737f9773ce2ff21adc2bc0f2c9a140dcc2e9d632091ba4
