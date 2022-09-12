@@ -45,8 +45,9 @@ Maintainers:
 * [@metachris](https://twitter.com/metachris)
 * [@Ruteri](https://twitter.com/mmrosum)
 
-Special thanks:
+Special thanks to:
 
 * [@lightclient](https://twitter.com/lightclients)
 * [@terencechain](https://twitter.com/terencechain)
 * [@JustinTraglia](https://twitter.com/JustinTraglia)
+* https://github.com/flashbots/go-boost-utils/graphs/contributors

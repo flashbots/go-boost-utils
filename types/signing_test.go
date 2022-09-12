@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 
@@ -160,7 +160,7 @@ func TestKilnSignedBlindedBeaconBlockSignature(t *testing.T) {
 	require.NoError(t, err)
 	defer jsonFile.Close()
 
-	byteValue, err := ioutil.ReadAll(jsonFile)
+	byteValue, err := io.ReadAll(jsonFile)
 	require.NoError(t, err)
 
 	payload := new(SignedBlindedBeaconBlock)
