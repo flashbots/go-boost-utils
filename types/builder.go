@@ -79,12 +79,18 @@ type Attestation struct {
 	Signature       Signature        `json:"signature" ssz-size:"96"`
 }
 
-// Deposit https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#deposit
-type Deposit struct {
+// DepositData https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#depositdata
+type DepositData struct {
 	Pubkey                PublicKey `json:"pubkey" ssz-size:"48"`
 	WithdrawalCredentials Hash      `json:"withdrawal_credentials" ssz-size:"32"`
 	Amount                uint64    `json:"amount,string"`
 	Signature             Signature `json:"signature" ssz-size:"96"`
+}
+
+// Deposit https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#deposit
+type Deposit struct {
+	Proof [][]byte     `json:"proof,omitempty" ssz-size:"33,32"`
+	Data  *DepositData `json:"data"`
 }
 
 // VoluntaryExit https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#voluntaryexit

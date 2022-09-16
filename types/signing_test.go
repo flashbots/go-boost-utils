@@ -184,3 +184,41 @@ func TestKilnSignedBlindedBeaconBlockSignature(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, ok)
 }
+
+func TestKilnSignedBlindedBeaconBlockSignature2(t *testing.T) {
+	jsonFile, err := os.Open("../testdata/kiln-signedBlindedBeaconBlock-899730.json")
+	require.NoError(t, err)
+	defer jsonFile.Close()
+
+	byteValue, err := io.ReadAll(jsonFile)
+	require.NoError(t, err)
+
+	payload := new(SignedBlindedBeaconBlock)
+	dec := json.NewDecoder(bytes.NewReader(byteValue))
+	dec.DisallowUnknownFields()
+	err = dec.Decode(payload)
+	require.NoError(t, err)
+
+	proof := make([][]byte, 33)
+	for i := 0; i < 33; i++ {
+		hash := Hash{0x01}
+		proof[i] = hash[:]
+	}
+
+	payload.Message.Body.Deposits = []*Deposit{
+		&Deposit{
+			Proof: proof,
+			Data: &DepositData{
+				Pubkey:                PublicKey{0x02},
+				WithdrawalCredentials: Hash{0x03},
+				Amount:                1234,
+				Signature:             Signature{0x04},
+			},
+		},
+	}
+
+	root, err := payload.Message.HashTreeRoot()
+	require.NoError(t, err)
+	htrHex := common.Bytes2Hex(root[:])
+	require.Equal(t, "da469dcc55560d3f8ae26ea6c3910efce3e3b1c4cecc988c3ebafe71e81ad077", htrHex, htrHex)
+}
