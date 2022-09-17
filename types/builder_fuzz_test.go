@@ -228,6 +228,19 @@ func FuzzUnmarshalBlindedBeaconBlockBody(f *testing.F) {
 	})
 }
 
+func FuzzRoundTripBeaconBlockBody(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		RoundTripJSON(t, data, &BeaconBlockBody{})
+	})
+}
+
+func FuzzUnmarshalBeaconBlockBody(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value BeaconBlockBody
+		json.Unmarshal(data, &value)
+	})
+}
+
 func FuzzRoundTripBlindedBeaconBlock(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		RoundTripSSZ(t, data, &BlindedBeaconBlock{})
@@ -240,6 +253,19 @@ func FuzzUnmarshalBlindedBeaconBlock(f *testing.F) {
 		var value BlindedBeaconBlock
 		json.Unmarshal(data, &value)
 		value.UnmarshalSSZ(data)
+	})
+}
+
+func FuzzRoundTripBeaconBlock(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		RoundTripJSON(t, data, &BeaconBlock{})
+	})
+}
+
+func FuzzUnmarshalBeaconBlock(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value BeaconBlock
+		json.Unmarshal(data, &value)
 	})
 }
 
@@ -392,6 +418,19 @@ func FuzzRoundTripSignedBidTrace(f *testing.F) {
 func FuzzUnmarshalSignedBidTrace(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value SignedBidTrace
+		json.Unmarshal(data, &value)
+	})
+}
+
+func FuzzRoundTripBuilderSubmitBlockRequest(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		RoundTripJSON(t, data, &BuilderSubmitBlockRequest{})
+	})
+}
+
+func FuzzUnmarshalBuilderSubmitBlockRequest(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		var value BuilderSubmitBlockRequest
 		json.Unmarshal(data, &value)
 	})
 }
