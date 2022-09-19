@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/trailofbits/go-fuzz-utils"
+	go_fuzz_utils "github.com/trailofbits/go-fuzz-utils"
 )
 
 func GetTypeProvider(data []byte) (*go_fuzz_utils.TypeProvider, error) {
@@ -44,6 +44,7 @@ type MarshalableSSZ interface {
 }
 
 func RoundTripSSZ[V MarshalableSSZ](t *testing.T, data []byte, decSSZ V) {
+	t.Helper()
 	value := *new(V)
 	if !Fill(data, &value) {
 		return
@@ -81,6 +82,7 @@ func RoundTripSSZ[V MarshalableSSZ](t *testing.T, data []byte, decSSZ V) {
 }
 
 func RoundTripJSON[V any](t *testing.T, data []byte, decJSON V) {
+	t.Helper()
 	value := *new(V)
 	if !Fill(data, &value) {
 		return

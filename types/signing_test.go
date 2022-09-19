@@ -10,10 +10,11 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/stretchr/testify/require"
-
 	"github.com/flashbots/go-boost-utils/bls"
+	"github.com/stretchr/testify/require"
 )
+
+var ErrInvalidForkVersion = errors.New("invalid fork version passed")
 
 func TestVerifySignature(t *testing.T) {
 	sk, pk, err := bls.GenerateNewKeypair()
@@ -118,8 +119,7 @@ func TestComputeDomainVector(t *testing.T) {
 func _ComputeDomain(domainType DomainType, forkVersionHex string, genesisValidatorsRootHex string) (domain Domain, err error) {
 	forkVersionBytes, err := hexutil.Decode(forkVersionHex)
 	if err != nil || len(forkVersionBytes) > 4 {
-		err = errors.New("invalid fork version passed")
-		return domain, err
+		return domain, ErrInvalidForkVersion
 	}
 	var forkVersion [4]byte
 	copy(forkVersion[:], forkVersionBytes[:4])

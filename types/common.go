@@ -208,7 +208,6 @@ func (c *CommitteeBits) UnmarshalText(input []byte) error {
 		return err
 	}
 	return c.FromSlice(b)
-
 }
 
 func (c CommitteeBits) String() string {

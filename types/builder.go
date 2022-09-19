@@ -16,6 +16,8 @@ import (
 // TODO: figure out why sszgen puts hexutil in code gen despite it not being used
 // TODO: figure out why sszgen doesn't handle import of []byte correctly and tries to create ssz methods for it
 
+var ErrNilPayload = errors.New("nil payload")
+
 // Eth1Data https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#eth1data
 type Eth1Data struct {
 	DepositRoot  Root   `json:"deposit_root" ssz-size:"32"`
@@ -289,12 +291,12 @@ type BuilderSubmitBlockResponse struct {
 // PayloadToPayloadHeader converts an ExecutionPayload to ExecutionPayloadHeader
 func PayloadToPayloadHeader(p *ExecutionPayload) (*ExecutionPayloadHeader, error) {
 	if p == nil {
-		return nil, errors.New("nil payload")
+		return nil, ErrNilPayload
 	}
 
 	txs := [][]byte{}
 	for _, tx := range p.Transactions {
-		txs = append(txs, []byte(tx))
+		txs = append(txs, tx)
 	}
 
 	transactions := Transactions{Transactions: txs}
@@ -317,6 +319,6 @@ func PayloadToPayloadHeader(p *ExecutionPayload) (*ExecutionPayloadHeader, error
 		ExtraData:        ExtraData(p.ExtraData),
 		BaseFeePerGas:    p.BaseFeePerGas,
 		BlockHash:        p.BlockHash,
-		TransactionsRoot: [32]byte(txroot),
+		TransactionsRoot: txroot,
 	}, nil
 }
