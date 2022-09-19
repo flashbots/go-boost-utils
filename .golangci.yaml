@@ -27,19 +27,6 @@ linters:
     - wsl
 
     #
-    # To fix:
-    #
-    - errcheck
-    - gci
-    - goerr113
-    - gofmt
-    - gofumpt
-    - goimports
-    - thelper
-    - unconvert
-    - whitespace
-
-    #
     # Disabled because of generics:
     #
     - contextcheck
