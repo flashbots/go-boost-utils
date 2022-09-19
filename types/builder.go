@@ -135,7 +135,7 @@ type ExecutionPayload struct {
 	GasLimit      uint64          `json:"gas_limit,string"`
 	GasUsed       uint64          `json:"gas_used,string"`
 	Timestamp     uint64          `json:"timestamp,string"`
-	ExtraData     hexutil.Bytes   `json:"extra_data" ssz-max:"32"`
+	ExtraData     ExtraData       `json:"extra_data" ssz-max:"32"`
 	BaseFeePerGas U256Str         `json:"base_fee_per_gas" ssz-max:"32"`
 	BlockHash     Hash            `json:"block_hash" ssz-size:"32"`
 	Transactions  []hexutil.Bytes `json:"transactions" ssz-max:"1048576,1073741824" ssz-size:"?,?"`
