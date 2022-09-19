@@ -14,6 +14,7 @@
 package types
 
 import (
+	"bytes"
 	"encoding/json"
 	"testing"
 
@@ -28,7 +29,7 @@ func TestDepositJSON(t *testing.T) {
 	}{
 		{
 			name: "Empty",
-			err:  "unexpected end of JSON input",
+			err:  "EOF",
 		},
 		{
 			name:  "JSONBad",
@@ -94,7 +95,8 @@ func TestDepositJSON(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			var res Deposit
-			err := json.Unmarshal(test.input, &res)
+			err := DecodeJSON(bytes.NewReader(test.input), &res)
+
 			if test.err != "" {
 				require.EqualError(t, err, test.err)
 			} else {
