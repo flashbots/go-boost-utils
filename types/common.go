@@ -10,9 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
-var (
-	ErrLength = fmt.Errorf("incorrect byte length")
-)
+var ErrLength = fmt.Errorf("incorrect byte length")
 
 type Uint64StringSlice []uint64
 
@@ -153,8 +151,10 @@ func (a *Address) FromSlice(x []byte) error {
 	return nil
 }
 
-type Hash [32]byte
-type Root = Hash
+type (
+	Hash [32]byte
+	Root = Hash
+)
 
 func (h Hash) MarshalText() ([]byte, error) {
 	return hexutil.Bytes(h[:]).MarshalText()
@@ -208,7 +208,6 @@ func (c *CommitteeBits) UnmarshalText(input []byte) error {
 		return err
 	}
 	return c.FromSlice(b)
-
 }
 
 func (c CommitteeBits) String() string {

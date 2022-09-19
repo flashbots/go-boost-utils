@@ -22,9 +22,11 @@ fuzz:
 	./scripts/fuzz.sh
 
 lint:
-	gofmt -d ./
+	gofmt -d -s .
+	gofumpt -d -extra .
 	go vet ./...
 	staticcheck ./...
+	golangci-lint run
 
 generate-ssz:
 	rm -f types/builder_encoding.go types/signing_encoding.go types/common_encoding.go

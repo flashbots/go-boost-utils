@@ -1,0 +1,69 @@
+linters:
+  enable-all: true
+  disable:
+    - cyclop
+    - exhaustruct
+    - forbidigo
+    - funlen
+    - gochecknoglobals
+    - gochecknoinits
+    - gocritic
+    - godot
+    - godox
+    - gomnd
+    - lll
+    - nestif
+    - nilnil
+    - nlreturn
+    - noctx
+    - nonamedreturns
+    - nosnakecase
+    - paralleltest
+    - revive
+    - testpackage
+    - unparam
+    - varnamelen
+    - wrapcheck
+    - wsl
+
+    #
+    # To fix:
+    #
+    - errcheck
+    - gci
+    - goerr113
+    - gofmt
+    - gofumpt
+    - goimports
+    - thelper
+    - unconvert
+    - whitespace
+
+    #
+    # Disabled because of generics:
+    #
+    - contextcheck
+    - rowserrcheck
+    - sqlclosecheck
+    - structcheck
+    - wastedassign
+
+    #
+    # Disabled because deprecated:
+    #
+    - deadcode
+    - exhaustivestruct
+    - golint
+    - ifshort
+    - interfacer
+    - maligned
+    - scopelint
+    - varcheck
+
+linters-settings:
+  tagliatelle:
+    case:
+      rules:
+        json: snake
+  gofumpt:
+    extra-rules: true

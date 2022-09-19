@@ -115,7 +115,7 @@ func TestComputeDomainVector(t *testing.T) {
 	}
 }
 
-func _ComputeDomain(domainType DomainType, forkVersionHex string, genesisValidatorsRootHex string) (domain Domain, err error) {
+func _ComputeDomain(domainType DomainType, forkVersionHex, genesisValidatorsRootHex string) (domain Domain, err error) {
 	forkVersionBytes, err := hexutil.Decode(forkVersionHex)
 	if err != nil || len(forkVersionBytes) > 4 {
 		err = errors.New("invalid fork version passed")
@@ -198,7 +198,7 @@ func TestKilnSignedBlindedBeaconBlockSignature2(t *testing.T) {
 	}
 
 	payload.Message.Body.Deposits = []*Deposit{
-		&Deposit{
+		{
 			Proof: proof,
 			Data: &DepositData{
 				Pubkey:                PublicKey{0x02},
