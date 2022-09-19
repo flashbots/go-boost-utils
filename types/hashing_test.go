@@ -1,7 +1,7 @@
 package types
 
 import (
-	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -27,8 +27,8 @@ func TestCalculateHash(t *testing.T) {
 		]
 	}`
 	payload := new(ExecutionPayload)
-	err := json.Unmarshal([]byte(payloadJSON), payload)
-	require.NoError(t, err)
+	require.NoError(t, DecodeJSON(strings.NewReader(payloadJSON), payload))
+
 	hash := CalculateHash(payload)
 	require.Equal(t, "0x6662fb418aa7b5c5c80e2e8bc87be48db82e799c4704368d34ddeb3b12549655", hash.String())
 }

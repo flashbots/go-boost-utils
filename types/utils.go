@@ -1,7 +1,9 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"math/big"
 	"strings"
 
@@ -61,4 +63,15 @@ func HexToPubkey(s string) (ret PublicKey, err error) {
 func HexToSignature(s string) (ret Signature, err error) {
 	err = ret.UnmarshalText([]byte(s))
 	return ret, err
+}
+
+// DecodeJSON decodes a JSON string into a struct while disallowing unknown fields
+func DecodeJSON(r io.Reader, dst any) error {
+	decoder := json.NewDecoder(r)
+	decoder.DisallowUnknownFields()
+
+	if err := decoder.Decode(dst); err != nil {
+		return err
+	}
+	return nil
 }

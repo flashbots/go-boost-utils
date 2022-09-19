@@ -2,10 +2,10 @@ package types
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"io"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -144,8 +144,7 @@ func TestVerifySignedBuilderBidSignature(t *testing.T) {
 
 	// Decode the bid
 	bid := new(SignedBuilderBid)
-	err := json.Unmarshal([]byte(bidStr), bid)
-	require.NoError(t, err)
+	require.NoError(t, DecodeJSON(strings.NewReader(bidStr), bid))
 
 	// Verify signature
 	builderDomainKiln, err := _ComputeDomain(DomainTypeAppBuilder, GenesisForkVersionKiln, Root{}.String())
@@ -164,11 +163,7 @@ func TestKilnSignedBlindedBeaconBlockSignature(t *testing.T) {
 	require.NoError(t, err)
 
 	payload := new(SignedBlindedBeaconBlock)
-
-	dec := json.NewDecoder(bytes.NewReader(byteValue))
-	dec.DisallowUnknownFields()
-	err = dec.Decode(payload)
-	require.NoError(t, err)
+	require.NoError(t, DecodeJSON(bytes.NewReader(byteValue), payload))
 
 	root, err := payload.Message.HashTreeRoot()
 	require.NoError(t, err)
@@ -194,10 +189,7 @@ func TestKilnSignedBlindedBeaconBlockSignature2(t *testing.T) {
 	require.NoError(t, err)
 
 	payload := new(SignedBlindedBeaconBlock)
-	dec := json.NewDecoder(bytes.NewReader(byteValue))
-	dec.DisallowUnknownFields()
-	err = dec.Decode(payload)
-	require.NoError(t, err)
+	require.NoError(t, DecodeJSON(bytes.NewReader(byteValue), payload))
 
 	proof := make([][]byte, 33)
 	for i := 0; i < 33; i++ {
