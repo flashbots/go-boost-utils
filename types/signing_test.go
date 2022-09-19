@@ -43,7 +43,8 @@ func genValidatorRegistration(t require.TestingT, domain Domain) *SignedValidato
 	require.NoError(t, err)
 
 	var pubKey PublicKey
-	pubKey.FromSlice(pk.Compress())
+	err = pubKey.FromSlice(pk.Compress())
+	require.NoError(t, err)
 
 	msg := &RegisterValidatorRequestMessage{
 		FeeRecipient: Address{0x42},
@@ -89,7 +90,8 @@ func TestVerifySignatureManualPk(t *testing.T) {
 	require.NoError(t, err)
 	sig2 := bls.Sign(sk2, root2[:]).Compress()
 	var signature2 Signature
-	signature2.FromSlice(sig2)
+	err = signature2.FromSlice(sig2)
+	require.NoError(t, err)
 	require.Equal(t, "0x8e09a0ae7af113da2043001cc19fb1b3b24bbe022c1b8050ba2297ad1186f4217dd7095edad1d16d83d10f3297883d9e1674c81da95f10d3358c5afdb2500279e720b32879219c9a3b33415239bf46a66cd92b9d1750a6dd7cc7ec936a357128", signature2.String())
 }
 
@@ -108,7 +110,8 @@ func TestComputeDomainVector(t *testing.T) {
 		{"0x07000000", "0x01000000", "0x0a08c27fe4ece2483f9e581f78c66379a06f96e9c24cd1390594ff939b26f95b", "0x07000000b503183cf3d26841cf4499d79f4387520811f5ed97776f0d5317f086"},
 	} {
 		var genesisValidatorsRoot Root
-		genesisValidatorsRoot.FromSlice(hexutil.MustDecode(tc.GenesisValidatorsRoot))
+		err := genesisValidatorsRoot.FromSlice(hexutil.MustDecode(tc.GenesisValidatorsRoot))
+		require.NoError(t, err)
 		var expectedDomain [32]byte
 		copy(expectedDomain[:], hexutil.MustDecode(tc.ExpectedDomain)[:32])
 		require.Equal(t, expectedDomain, ComputeDomain(bytesTo4(hexutil.MustDecode(tc.DomainType)), bytesTo4(hexutil.MustDecode(tc.ForkVersion)), genesisValidatorsRoot))

@@ -3,20 +3,30 @@ package types
 import (
 	"math/big"
 
+	"errors"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/trie"
 )
 
-func CalculateHash(payload *ExecutionPayload) Hash {
-	return [32]byte(ExecutionPayloadToHeader(payload).Hash())
+var ErrInvalidTransaction = errors.New("invalid transaction")
+
+func CalculateHash(payload *ExecutionPayload) (Hash, error) {
+	header, err := ExecutionPayloadToHeader(payload)
+	if err != nil {
+		return Hash{}, err
+	}
+	return Hash(header.Hash()), nil
 }
 
-func ExecutionPayloadToHeader(payload *ExecutionPayload) *types.Header {
+func ExecutionPayloadToHeader(payload *ExecutionPayload) (*types.Header, error) {
 	transactionData := make([]*types.Transaction, len(payload.Transactions))
 	for i, encTx := range payload.Transactions {
 		var tx types.Transaction
-		tx.UnmarshalBinary(encTx)
+		err := tx.UnmarshalBinary(encTx)
+		if err != nil {
+			return nil, ErrInvalidTransaction
+		}
 		transactionData[i] = &tx
 	}
 
@@ -36,5 +46,5 @@ func ExecutionPayloadToHeader(payload *ExecutionPayload) *types.Header {
 		Extra:       payload.ExtraData,
 		MixDigest:   common.Hash(payload.Random),
 		BaseFee:     payload.BaseFeePerGas.BigInt(),
-	}
+	}, nil
 }

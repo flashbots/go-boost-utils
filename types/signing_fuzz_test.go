@@ -17,8 +17,8 @@ func FuzzRoundTripSigningData(f *testing.F) {
 func FuzzUnmarshalSigningData(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value SigningData
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -32,8 +32,8 @@ func FuzzRoundTripForkData(f *testing.F) {
 func FuzzUnmarshalForkData(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value ForkData
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -78,7 +78,7 @@ func FuzzComputeSigningRoot(f *testing.F) {
 		if err != nil {
 			return
 		}
-		ComputeSigningRoot(&forkData, domain)
+		_, _ = ComputeSigningRoot(&forkData, domain)
 	})
 }
 
@@ -108,7 +108,7 @@ func FuzzSignMessage(f *testing.F) {
 		if err != nil {
 			return
 		}
-		SignMessage(&forkData, domain, &sk)
+		_, _ = SignMessage(&forkData, domain, &sk)
 	})
 }
 
@@ -138,6 +138,6 @@ func FuzzVerifySignature(f *testing.F) {
 		if err != nil {
 			return
 		}
-		VerifySignature(&forkData, domain, pkBytes, sigBytes)
+		_, _ = VerifySignature(&forkData, domain, pkBytes, sigBytes)
 	})
 }
