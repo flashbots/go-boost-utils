@@ -54,7 +54,7 @@ func (d *Deposit) unpack(depositJSON *depositJSON) error {
 	if depositJSON.Proof == nil {
 		return errors.New("proof missing")
 	}
-	if len(depositJSON.Proof) != 33 {
+	if len(depositJSON.Proof) != DepositContractTreeDepth+1 {
 		return errors.New("incorrect length for proof")
 	}
 	d.Proof = make([][]byte, len(depositJSON.Proof))
