@@ -13,8 +13,8 @@ type (
 var (
 	DomainBuilder Domain
 
-	DomainTypeBeaconProposer DomainType = DomainType{0x00, 0x00, 0x00, 0x00}
-	DomainTypeAppBuilder     DomainType = DomainType{0x00, 0x00, 0x00, 0x01}
+	DomainTypeBeaconProposer = DomainType{0x00, 0x00, 0x00, 0x00}
+	DomainTypeAppBuilder     = DomainType{0x00, 0x00, 0x00, 0x01}
 )
 
 func init() {

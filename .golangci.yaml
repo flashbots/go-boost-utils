@@ -1,9 +1,7 @@
 linters:
   enable-all: true
   disable:
-    - cyclop
     - exhaustruct
-    - forbidigo
     - funlen
     - gochecknoglobals
     - gochecknoinits
@@ -12,16 +10,11 @@ linters:
     - godox
     - gomnd
     - lll
-    - nestif
-    - nilnil
     - nlreturn
-    - noctx
     - nonamedreturns
     - nosnakecase
     - paralleltest
-    - revive
     - testpackage
-    - unparam
     - varnamelen
     - wrapcheck
     - wsl
