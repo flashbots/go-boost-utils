@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/trailofbits/go-fuzz-utils"
+	go_fuzz_utils "github.com/trailofbits/go-fuzz-utils"
 )
 
 func GetTypeProvider(data []byte) (*go_fuzz_utils.TypeProvider, error) {
