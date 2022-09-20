@@ -23,18 +23,29 @@ type (
 	Signature = blst.P2Affine
 )
 
+var (
+	ErrDeserializeSecretKey   = errors.New("could not deserialize secret key from bytes")
+	ErrInvalidPubkey          = errors.New("invalid pubkey")
+	ErrInvalidPubkeyLength    = errors.New("invalid pubkey length")
+	ErrInvalidSecretKeyLength = errors.New("invalid secret key length")
+	ErrInvalidSignature       = errors.New("invalid signature")
+	ErrInvalidSignatureLength = errors.New("invalid signature length")
+	ErrUncompressPubkey       = errors.New("could not uncompress public key from bytes")
+	ErrUncompressSignature    = errors.New("could not uncompress signature from bytes")
+)
+
 func PublicKeyFromBytes(pkBytes []byte) (*PublicKey, error) {
 	if len(pkBytes) != BLSPublicKeyLength {
-		return nil, errors.New("invalid pubkey length")
+		return nil, ErrInvalidPubkeyLength
 	}
 
 	pk := new(PublicKey).Uncompress(pkBytes)
 	if pk == nil {
-		return nil, errors.New("could not uncompress public key from bytes")
+		return nil, ErrUncompressPubkey
 	}
 
 	if !pk.KeyValidate() {
-		return nil, errors.New("invalid pubkey")
+		return nil, ErrInvalidPubkey
 	}
 
 	return pk, nil
@@ -46,11 +57,11 @@ func PublicKeyFromSecretKey(sk *SecretKey) *PublicKey {
 
 func SecretKeyFromBytes(skBytes []byte) (*SecretKey, error) {
 	if len(skBytes) != BLSSecretKeyLength {
-		return nil, errors.New("invalid secret key length")
+		return nil, ErrInvalidSecretKeyLength
 	}
 	secretKey := new(SecretKey).Deserialize(skBytes)
 	if secretKey == nil {
-		return nil, errors.New("could not deserialize secret key from bytes")
+		return nil, ErrDeserializeSecretKey
 	}
 	return secretKey, nil
 }
@@ -79,16 +90,16 @@ func Sign(sk *SecretKey, msg []byte) *Signature {
 
 func SignatureFromBytes(sigBytes []byte) (*Signature, error) {
 	if len(sigBytes) != BLSSignatureLength {
-		return nil, errors.New("invalid signature length")
+		return nil, ErrInvalidSignatureLength
 	}
 
 	sig := new(Signature).Uncompress(sigBytes)
 	if sig == nil {
-		return nil, errors.New("could not uncompress signature from bytes")
+		return nil, ErrUncompressSignature
 	}
 
 	if !sig.SigValidate(false) {
-		return nil, errors.New("invalid signature")
+		return nil, ErrInvalidSignature
 	}
 	return sig, nil
 }

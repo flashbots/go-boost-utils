@@ -26,8 +26,8 @@ func (p PubkeyHex) String() string {
 
 func IntToU256(i uint64) (ret U256Str) {
 	s := fmt.Sprint(i)
-	ret.UnmarshalText([]byte(s))
-	return
+	_ = ret.UnmarshalText([]byte(s))
+	return ret
 }
 
 func (n *U256Str) BigInt() *big.Int {
@@ -42,9 +42,9 @@ func (n *U256Str) Cmp(b *U256Str) int {
 	return _a.Cmp(_b)
 }
 
-func BlsPublicKeyToPublicKey(blsPubKey *bls.PublicKey) (ret PublicKey) {
-	ret.FromSlice(blsPubKey.Compress())
-	return
+func BlsPublicKeyToPublicKey(blsPubKey *bls.PublicKey) (ret PublicKey, err error) {
+	err = ret.FromSlice(blsPubKey.Compress())
+	return ret, err
 }
 
 // HexToAddress takes a hex string and returns an Address

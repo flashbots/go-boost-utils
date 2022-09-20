@@ -15,8 +15,8 @@ func FuzzRoundTripEth1Data(f *testing.F) {
 func FuzzUnmarshalEth1Data(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value Eth1Data
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -30,8 +30,8 @@ func FuzzRoundTripBeaconBlockHeader(f *testing.F) {
 func FuzzUnmarshalBeaconBlockHeader(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value BeaconBlockHeader
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -45,8 +45,8 @@ func FuzzRoundTripSignedBeaconBlockHeader(f *testing.F) {
 func FuzzUnmarshalSignedBeaconBlockHeader(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value SignedBeaconBlockHeader
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -60,8 +60,8 @@ func FuzzRoundTripProposerSlashing(f *testing.F) {
 func FuzzUnmarshalProposerSlashing(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value ProposerSlashing
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -75,8 +75,8 @@ func FuzzRoundTripCheckpoint(f *testing.F) {
 func FuzzUnmarshalCheckpoint(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value Checkpoint
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -90,8 +90,8 @@ func FuzzRoundTripAttestationData(f *testing.F) {
 func FuzzUnmarshalAttestationData(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value AttestationData
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -105,8 +105,8 @@ func FuzzRoundTripIndexedAttestation(f *testing.F) {
 func FuzzUnmarshalIndexedAttestation(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value IndexedAttestation
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -120,8 +120,8 @@ func FuzzRoundTripAttesterSlashing(f *testing.F) {
 func FuzzUnmarshalAttesterSlashing(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value AttesterSlashing
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -135,8 +135,8 @@ func FuzzRoundTripAttestation(f *testing.F) {
 func FuzzUnmarshalAttestation(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value Attestation
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -150,8 +150,8 @@ func FuzzRoundTripDeposit(f *testing.F) {
 func FuzzUnmarshalDeposit(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value Deposit
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -165,8 +165,8 @@ func FuzzRoundTripSyncAggregate(f *testing.F) {
 func FuzzUnmarshalSyncAggregate(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value SyncAggregate
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -180,8 +180,8 @@ func FuzzRoundTripVoluntaryExit(f *testing.F) {
 func FuzzUnmarshalVoluntaryExit(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value VoluntaryExit
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -195,8 +195,8 @@ func FuzzRoundTripExecutionPayloadHeader(f *testing.F) {
 func FuzzUnmarshalExecutionPayloadHeader(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value ExecutionPayloadHeader
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -209,7 +209,7 @@ func FuzzRoundTripExecutionPayload(f *testing.F) {
 func FuzzUnmarshalExecutionPayload(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value ExecutionPayload
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
@@ -223,8 +223,8 @@ func FuzzRoundTripBlindedBeaconBlockBody(f *testing.F) {
 func FuzzUnmarshalBlindedBeaconBlockBody(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value BlindedBeaconBlockBody
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -237,7 +237,7 @@ func FuzzRoundTripBeaconBlockBody(f *testing.F) {
 func FuzzUnmarshalBeaconBlockBody(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value BeaconBlockBody
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
@@ -251,8 +251,8 @@ func FuzzRoundTripBlindedBeaconBlock(f *testing.F) {
 func FuzzUnmarshalBlindedBeaconBlock(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value BlindedBeaconBlock
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -265,7 +265,7 @@ func FuzzRoundTripBeaconBlock(f *testing.F) {
 func FuzzUnmarshalBeaconBlock(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value BeaconBlock
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
@@ -279,8 +279,8 @@ func FuzzRoundTripRegisterValidatorRequestMessage(f *testing.F) {
 func FuzzUnmarshalRegisterValidatorRequestMessage(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value RegisterValidatorRequestMessage
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -293,7 +293,7 @@ func FuzzRoundTripSignedValidatorRegistration(f *testing.F) {
 func FuzzUnmarshalSignedValidatorRegistration(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value SignedValidatorRegistration
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
@@ -307,8 +307,8 @@ func FuzzRoundTripBuilderBid(f *testing.F) {
 func FuzzUnmarshalBuilderBid(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value BuilderBid
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -322,8 +322,8 @@ func FuzzRoundTripSignedBuilderBid(f *testing.F) {
 func FuzzUnmarshalSignedBuilderBid(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value SignedBuilderBid
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -336,7 +336,7 @@ func FuzzRoundTripGetHeaderResponse(f *testing.F) {
 func FuzzUnmarshalGetHeaderResponse(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value GetHeaderResponse
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
@@ -349,7 +349,7 @@ func FuzzRoundTripSignedBlindedBeaconBlock(f *testing.F) {
 func FuzzUnmarshalSignedBlindedBeaconBlock(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value SignedBlindedBeaconBlock
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
@@ -362,7 +362,7 @@ func FuzzRoundTripGetPayloadResponse(f *testing.F) {
 func FuzzUnmarshalGetPayloadResponse(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value GetPayloadResponse
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
@@ -376,8 +376,8 @@ func FuzzRoundTripTransactions(f *testing.F) {
 func FuzzUnmarshalTransactions(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value Transactions
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -390,7 +390,7 @@ func FuzzRoundTripBuilderGetValidatorsResponseEntry(f *testing.F) {
 func FuzzUnmarshalBuilderGetValidatorsResponseEntry(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value BuilderGetValidatorsResponseEntry
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
@@ -404,8 +404,8 @@ func FuzzRoundTripBidTrace(f *testing.F) {
 func FuzzUnmarshalBidTrace(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value BidTrace
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -418,7 +418,7 @@ func FuzzRoundTripSignedBidTrace(f *testing.F) {
 func FuzzUnmarshalSignedBidTrace(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value SignedBidTrace
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
@@ -431,7 +431,7 @@ func FuzzRoundTripBuilderSubmitBlockRequest(f *testing.F) {
 func FuzzUnmarshalBuilderSubmitBlockRequest(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value BuilderSubmitBlockRequest
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
@@ -445,8 +445,8 @@ func FuzzRoundTripBuilderSubmitBlockResponseMessage(f *testing.F) {
 func FuzzUnmarshalBuilderSubmitBlockResponseMessage(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value BuilderSubmitBlockResponseMessage
-		json.Unmarshal(data, &value)
-		value.UnmarshalSSZ(data)
+		_ = json.Unmarshal(data, &value)
+		_ = value.UnmarshalSSZ(data)
 	})
 }
 
@@ -459,7 +459,7 @@ func FuzzRoundTripBuilderSubmitBlockResponse(f *testing.F) {
 func FuzzUnmarshalBuilderSubmitBlockResponse(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value BuilderSubmitBlockResponse
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
@@ -469,6 +469,6 @@ func FuzzPayloadToPayloadHeader(f *testing.F) {
 		if !Fill(data, &payloadHeader) {
 			return
 		}
-		PayloadToPayloadHeader(&payloadHeader)
+		_, _ = PayloadToPayloadHeader(&payloadHeader)
 	})
 }
