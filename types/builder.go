@@ -7,14 +7,8 @@ import (
 )
 
 // Generate SSZ encoding: make generate-ssz
-//
-// NOTE: due to the two pending TODOs, to generate the ssz it's necessary to 1)
-//       delete hexutil import in `builder_encodings.go` and 2) delete the
-//       `ExtraData` methods generated in `common_encodings.go` because these inhibit
-//       compilation.
-//
+// NOTE: due to the two pending TODOs, to generate the ssz it's necessary to delete hexutil import in `builder_encodings.go`
 // TODO: figure out why sszgen puts hexutil in code gen despite it not being used
-// TODO: figure out why sszgen doesn't handle import of []byte correctly and tries to create ssz methods for it
 
 var ErrNilPayload = errors.New("nil payload")
 
@@ -101,6 +95,12 @@ type VoluntaryExit struct {
 	ValidatorIndex uint64 `json:"validator_index,string"`
 }
 
+// SignedVoluntaryExit https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#voluntaryexit
+type SignedVoluntaryExit struct {
+	Message   *VoluntaryExit `json:"message"`
+	Signature Signature      `json:"signature" ssz-size:"96"`
+}
+
 // SyncAggregate ...
 type SyncAggregate struct {
 	CommitteeBits      CommitteeBits `json:"sync_committee_bits" ssz-size:"64"`
@@ -152,23 +152,23 @@ type BlindedBeaconBlockBody struct {
 	AttesterSlashings      []*AttesterSlashing     `json:"attester_slashings" ssz-max:"2"`
 	Attestations           []*Attestation          `json:"attestations" ssz-max:"128"`
 	Deposits               []*Deposit              `json:"deposits" ssz-max:"16"`
-	VoluntaryExits         []*VoluntaryExit        `json:"voluntary_exits" ssz-max:"16"`
+	VoluntaryExits         []*SignedVoluntaryExit  `json:"voluntary_exits" ssz-max:"16"`
 	SyncAggregate          *SyncAggregate          `json:"sync_aggregate"`
 	ExecutionPayloadHeader *ExecutionPayloadHeader `json:"execution_payload_header"`
 }
 
 // BeaconBlockBody https://github.com/ethereum/beacon-APIs/blob/master/types/bellatrix/block.yaml#L38
 type BeaconBlockBody struct {
-	RandaoReveal      Signature           `json:"randao_reveal" ssz-size:"96"`
-	Eth1Data          *Eth1Data           `json:"eth1_data"`
-	Graffiti          Hash                `json:"graffiti" ssz-size:"32"`
-	ProposerSlashings []*ProposerSlashing `json:"proposer_slashings" ssz-max:"16"`
-	AttesterSlashings []*AttesterSlashing `json:"attester_slashings" ssz-max:"2"`
-	Attestations      []*Attestation      `json:"attestations" ssz-max:"128"`
-	Deposits          []*Deposit          `json:"deposits" ssz-max:"16"`
-	VoluntaryExits    []*VoluntaryExit    `json:"voluntary_exits" ssz-max:"16"`
-	SyncAggregate     *SyncAggregate      `json:"sync_aggregate"`
-	ExecutionPayload  *ExecutionPayload   `json:"execution_payload"`
+	RandaoReveal      Signature              `json:"randao_reveal" ssz-size:"96"`
+	Eth1Data          *Eth1Data              `json:"eth1_data"`
+	Graffiti          Hash                   `json:"graffiti" ssz-size:"32"`
+	ProposerSlashings []*ProposerSlashing    `json:"proposer_slashings" ssz-max:"16"`
+	AttesterSlashings []*AttesterSlashing    `json:"attester_slashings" ssz-max:"2"`
+	Attestations      []*Attestation         `json:"attestations" ssz-max:"128"`
+	Deposits          []*Deposit             `json:"deposits" ssz-max:"16"`
+	VoluntaryExits    []*SignedVoluntaryExit `json:"voluntary_exits" ssz-max:"16"`
+	SyncAggregate     *SyncAggregate         `json:"sync_aggregate"`
+	ExecutionPayload  *ExecutionPayload      `json:"execution_payload"`
 }
 
 // BlindedBeaconBlock https://github.com/ethereum/beacon-APIs/blob/master/types/bellatrix/block.yaml#L74
