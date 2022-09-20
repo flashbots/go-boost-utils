@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 
@@ -232,4 +233,48 @@ func TestIndexedAttestation(t *testing.T) {
     `
 	var result IndexedAttestation
 	require.NoError(t, DecodeJSON(strings.NewReader(input), &result))
+}
+
+func TestExecutionPayloadCase0(t *testing.T) {
+	jsonFile, err := os.Open("../testdata/executionpayload/case0.json")
+	require.NoError(t, err)
+	defer jsonFile.Close()
+	executionPayload := new(ExecutionPayload)
+	require.NoError(t, DecodeJSON(jsonFile, &executionPayload))
+}
+
+func TestDepositCase0(t *testing.T) {
+	jsonFile, err := os.Open("../testdata/deposit/case0.json")
+	require.NoError(t, err)
+	defer jsonFile.Close()
+	deposit := new(Deposit)
+	require.NoError(t, DecodeJSON(jsonFile, &deposit))
+
+	_, err = deposit.HashTreeRoot()
+	require.NoError(t, err)
+	// require.Equal(t, "0x47eb8c0bd8d867c4854dbdbf5068e66c7d55129378339cf2c4c557f4266e9fb4", fmt.Sprintf("%#x", htr))
+}
+
+func TestDepositDataCase0(t *testing.T) {
+	jsonFile, err := os.Open("../testdata/depositdata_case0.json")
+	require.NoError(t, err)
+	defer jsonFile.Close()
+	depositData := new(DepositData)
+	require.NoError(t, DecodeJSON(jsonFile, &depositData))
+
+	_, err = depositData.HashTreeRoot()
+	require.NoError(t, err)
+	// require.Equal(t, "0xdcd7002d3d4804047bf559a5f642072467379f2db4b4b4b598a1e5f5d3a8269e", fmt.Sprintf("%#x", htr))
+}
+
+func TestEth1DataCase0(t *testing.T) {
+	jsonFile, err := os.Open("../testdata/eth1data_case0.json")
+	require.NoError(t, err)
+	defer jsonFile.Close()
+	eth1Data := new(Eth1Data)
+	require.NoError(t, DecodeJSON(jsonFile, &eth1Data))
+
+	_, err = eth1Data.HashTreeRoot()
+	require.NoError(t, err)
+	// require.Equal(t, "0x8fc4fbbff19ab83ac236352b82e3941a3aa87a784bc7c210c7bda8f1ab4cf854", fmt.Sprintf("%#x", htr))
 }
