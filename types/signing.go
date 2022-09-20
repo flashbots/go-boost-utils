@@ -4,9 +4,11 @@ import (
 	"github.com/flashbots/go-boost-utils/bls"
 )
 
-type Domain [32]byte
-type DomainType [4]byte
-type ForkVersion [4]byte
+type (
+	Domain      [32]byte
+	DomainType  [4]byte
+	ForkVersion [4]byte
+)
 
 var (
 	DomainBuilder Domain

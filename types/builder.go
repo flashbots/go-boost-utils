@@ -316,7 +316,7 @@ func PayloadToPayloadHeader(p *ExecutionPayload) (*ExecutionPayloadHeader, error
 		GasLimit:         p.GasLimit,
 		GasUsed:          p.GasUsed,
 		Timestamp:        p.Timestamp,
-		ExtraData:        ExtraData(p.ExtraData),
+		ExtraData:        p.ExtraData,
 		BaseFeePerGas:    p.BaseFeePerGas,
 		BlockHash:        p.BlockHash,
 		TransactionsRoot: txroot,

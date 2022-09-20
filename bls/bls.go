@@ -11,13 +11,17 @@ import (
 
 var dst = []byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_POP_")
 
-const BLSPublicKeyLength int = 48
-const BLSSecretKeyLength int = 32
-const BLSSignatureLength int = 96
+const (
+	BLSPublicKeyLength int = 48
+	BLSSecretKeyLength int = 32
+	BLSSignatureLength int = 96
+)
 
-type PublicKey = blst.P1Affine
-type SecretKey = blst.SecretKey
-type Signature = blst.P2Affine
+type (
+	PublicKey = blst.P1Affine
+	SecretKey = blst.SecretKey
+	Signature = blst.P2Affine
+)
 
 var (
 	ErrDeserializeSecretKey   = errors.New("could not deserialize secret key from bytes")
