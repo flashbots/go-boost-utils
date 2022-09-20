@@ -90,7 +90,7 @@ func TestBlindedBeaconBlock(t *testing.T) {
 			AttesterSlashings: []*AttesterSlashing{},
 			Attestations:      []*Attestation{},
 			Deposits:          []*Deposit{},
-			VoluntaryExits:    []*VoluntaryExit{},
+			VoluntaryExits:    []*SignedVoluntaryExit{},
 			SyncAggregate:     &SyncAggregate{CommitteeBits{0x07}, Signature{0x08}},
 			ExecutionPayloadHeader: &ExecutionPayloadHeader{
 				ParentHash:       parentHash,
@@ -277,4 +277,66 @@ func TestEth1DataCase0(t *testing.T) {
 	_, err = eth1Data.HashTreeRoot()
 	require.NoError(t, err)
 	// require.Equal(t, "0x8fc4fbbff19ab83ac236352b82e3941a3aa87a784bc7c210c7bda8f1ab4cf854", fmt.Sprintf("%#x", htr))
+}
+
+func TestSignedBeaconBlock(t *testing.T) {
+	tests := []struct {
+		name      string
+		inputFile string
+		txRoot    string
+	}{
+		{
+			// https://github.com/ethereum/consensus-spec-tests/tree/master/tests/mainnet/bellatrix/ssz_static/SignedBeaconBlock/ssz_random/case_0
+			name:      "case0",
+			inputFile: "../testdata/signed-beacon-block-case0.json",
+			txRoot:    "0xdf88d2d8cc3602bcc9b949c65308225bf336802ddd0ac4452a60950346be1b4b",
+		},
+		{
+			// https://github.com/ethereum/consensus-spec-tests/tree/master/tests/mainnet/bellatrix/ssz_static/SignedBeaconBlock/ssz_random/case_1
+			name:      "case1",
+			inputFile: "../testdata/signed-beacon-block-case1.json",
+			txRoot:    "0xb20e2a4663df68310fd2e4b5434018ad88757f5a6a0530936b759bca003228f9",
+		},
+		{
+			// https://github.com/ethereum/consensus-spec-tests/tree/master/tests/mainnet/bellatrix/ssz_static/SignedBeaconBlock/ssz_random/case_2
+			name:      "case2",
+			inputFile: "../testdata/signed-beacon-block-case2.json",
+			txRoot:    "0x846167c4733d3d0111523d6a1d05af04cdf94d4b00ee90595f820d1082833847",
+		},
+		{
+			// https://github.com/ethereum/consensus-spec-tests/tree/master/tests/mainnet/bellatrix/ssz_static/SignedBeaconBlock/ssz_random/case_3
+			name:      "case3",
+			inputFile: "../testdata/signed-beacon-block-case3.json",
+			txRoot:    "0xb1d1b761ebc76aa2bd90bed51eab6311200480dc4b6c5c363c50617241fd6841",
+		},
+		{
+			// https://github.com/ethereum/consensus-spec-tests/tree/master/tests/mainnet/bellatrix/ssz_static/SignedBeaconBlock/ssz_random/case_4
+			name:      "case4",
+			inputFile: "../testdata/signed-beacon-block-case4.json",
+			txRoot:    "0xbb892813737d34a771c525639aadc64c5f317ce4da0c3b1b800c4741fdc6b34f",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+
+			jsonFile, err := os.Open(test.inputFile)
+			require.NoError(t, err)
+			defer jsonFile.Close()
+			signedBeaconBlock := new(SignedBeaconBlock)
+			require.NoError(t, DecodeJSON(jsonFile, &signedBeaconBlock))
+
+			header, err := PayloadToPayloadHeader(signedBeaconBlock.Message.Body.ExecutionPayload)
+			require.NoError(t, err)
+			require.Equal(t, test.txRoot, header.TransactionsRoot.String())
+		})
+	}
+}
+
+func TestSignedBlindedBeaconBlockWithDeposit(t *testing.T) {
+	jsonFile, err := os.Open("../testdata/signed-blinded-beacon-block-with-deposit.json")
+	require.NoError(t, err)
+	defer jsonFile.Close()
+	signedBlindedBeaconBlock := new(SignedBlindedBeaconBlock)
+	require.NoError(t, DecodeJSON(jsonFile, &signedBlindedBeaconBlock))
 }
