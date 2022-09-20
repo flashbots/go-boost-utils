@@ -15,7 +15,7 @@ func FuzzNewPubkeyHex(f *testing.F) {
 func FuzzIntToU256(f *testing.F) {
 	f.Fuzz(func(t *testing.T, value uint64) {
 		u256 := IntToU256(value)
-		bigInt := (*(&u256).BigInt())
+		bigInt := *(&u256).BigInt()
 		require.True(t, bigInt.IsUint64())
 		require.Equal(t, bigInt.Uint64(), value)
 	})
@@ -43,18 +43,18 @@ func FuzzU256StrCmp(f *testing.F) {
 
 func FuzzHexToAddress(f *testing.F) {
 	f.Fuzz(func(t *testing.T, str string) {
-		HexToAddress(str)
+		_, _ = HexToAddress(str)
 	})
 }
 
 func FuzzHexToPubkey(f *testing.F) {
 	f.Fuzz(func(t *testing.T, str string) {
-		HexToPubkey(str)
+		_, _ = HexToPubkey(str)
 	})
 }
 
 func FuzzHexToSignature(f *testing.F) {
 	f.Fuzz(func(t *testing.T, str string) {
-		HexToSignature(str)
+		_, _ = HexToSignature(str)
 	})
 }

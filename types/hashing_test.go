@@ -29,6 +29,7 @@ func TestCalculateHash(t *testing.T) {
 	payload := new(ExecutionPayload)
 	require.NoError(t, DecodeJSON(strings.NewReader(payloadJSON), payload))
 
-	hash := CalculateHash(payload)
+	hash, err := CalculateHash(payload)
+	require.NoError(t, err)
 	require.Equal(t, "0x6662fb418aa7b5c5c80e2e8bc87be48db82e799c4704368d34ddeb3b12549655", hash.String())
 }

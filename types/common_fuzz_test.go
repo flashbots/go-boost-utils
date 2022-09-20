@@ -117,7 +117,7 @@ func FuzzRoundTripUint64StringSlice(f *testing.F) {
 func FuzzUnmarshalUint64StringSlice(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value Uint64StringSlice
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
@@ -130,13 +130,13 @@ func FuzzRoundTripSignature(f *testing.F) {
 func FuzzUnmarshalSignature(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value Signature
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
 func FuzzFromSliceSignature(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		new(Signature).FromSlice(data)
+		_ = new(Signature).FromSlice(data)
 	})
 }
 
@@ -149,13 +149,13 @@ func FuzzRoundTripPublicKey(f *testing.F) {
 func FuzzUnmarshalPublicKey(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value PublicKey
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
 func FuzzFromSlicePublicKey(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		new(PublicKey).FromSlice(data)
+		_ = new(PublicKey).FromSlice(data)
 	})
 }
 
@@ -168,13 +168,13 @@ func FuzzRoundTripAddress(f *testing.F) {
 func FuzzUnmarshalAddress(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value Address
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
 func FuzzFromSliceAddress(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		new(Address).FromSlice(data)
+		_ = new(Address).FromSlice(data)
 	})
 }
 
@@ -187,13 +187,13 @@ func FuzzRoundTripHash(f *testing.F) {
 func FuzzUnmarshalHash(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value Hash
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
 func FuzzFromSliceHash(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		new(Hash).FromSlice(data)
+		_ = new(Hash).FromSlice(data)
 	})
 }
 
@@ -206,13 +206,13 @@ func FuzzRoundTripRoot(f *testing.F) {
 func FuzzUnmarshalRoot(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value Root
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
 func FuzzFromSliceRoot(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		new(Root).FromSlice(data)
+		_ = new(Root).FromSlice(data)
 	})
 }
 
@@ -225,13 +225,13 @@ func FuzzRoundTripCommitteeBits(f *testing.F) {
 func FuzzUnmarshalCommitteeBits(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value CommitteeBits
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
 func FuzzFromSliceCommitteeBits(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		new(CommitteeBits).FromSlice(data)
+		_ = new(CommitteeBits).FromSlice(data)
 	})
 }
 
@@ -244,13 +244,13 @@ func FuzzRoundTripBloom(f *testing.F) {
 func FuzzUnmarshalBloom(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value Bloom
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
 func FuzzFromSliceBloom(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		new(Bloom).FromSlice(data)
+		_ = new(Bloom).FromSlice(data)
 	})
 }
 
@@ -263,13 +263,13 @@ func FuzzRoundTripU256Str(f *testing.F) {
 func FuzzUnmarshalU256Str(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value U256Str
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
 func FuzzFromSliceU256Str(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		new(U256Str).FromSlice(data)
+		_ = new(U256Str).FromSlice(data)
 	})
 }
 
@@ -282,12 +282,12 @@ func FuzzRoundTripExtraData(f *testing.F) {
 func FuzzUnmarshalExtraData(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		var value ExtraData
-		json.Unmarshal(data, &value)
+		_ = json.Unmarshal(data, &value)
 	})
 }
 
 func FuzzFromSliceExtraData(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		new(ExtraData).FromSlice(data)
+		_ = new(ExtraData).FromSlice(data)
 	})
 }
