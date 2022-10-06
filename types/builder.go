@@ -12,6 +12,19 @@ import (
 
 var ErrNilPayload = errors.New("nil payload")
 
+// PayloadStatusV1 https://github.com/ethereum/execution-apis/blob/main/src/engine/specification.md#payloadstatusv1
+type PayloadStatusV1 struct {
+	Status          string  `json:"status"`
+	LatestValidHash *Hash   `json:"latestValidHash"`
+	ValidationError *string `json:"validationError"`
+}
+
+// ForkChoiceResponse https://github.com/ethereum/execution-apis/blob/main/src/engine/specification.md#response-1
+type ForkChoiceResponse struct {
+	PayloadStatus PayloadStatusV1 `json:"payloadStatus"`
+	PayloadID     *PayloadID      `json:"payloadId"`
+}
+
 // Eth1Data https://github.com/ethereum/consensus-specs/blob/dev/specs/phase0/beacon-chain.md#eth1data
 type Eth1Data struct {
 	DepositRoot  Root   `json:"deposit_root" ssz-size:"32"`

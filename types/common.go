@@ -362,3 +362,34 @@ func (s *VersionString) UnmarshalJSON(b []byte) error {
 	*s = VersionString(b[1 : len(b)-1])
 	return nil
 }
+
+// PayloadID is an identifier of the payload build process
+type PayloadID [8]byte
+
+func (p PayloadID) MarshalText() ([]byte, error) {
+	return hexutil.Bytes(p[:]).MarshalText()
+}
+
+func (p PayloadID) UnmarshalJSON(input []byte) error {
+	b := hexutil.Bytes(p[:])
+	if err := b.UnmarshalJSON(input); err != nil {
+		return err
+	}
+	return p.FromSlice(b)
+}
+
+func (p PayloadID) UnmarshalText(input []byte) error {
+	b := hexutil.Bytes(p[:])
+	if err := b.UnmarshalText(input); err != nil {
+		return err
+	}
+	return p.FromSlice(b)
+}
+
+func (p PayloadID) FromSlice(x []byte) error {
+	if len(x) != 8 {
+		return ErrLength
+	}
+	copy(p[:], x)
+	return nil
+}
