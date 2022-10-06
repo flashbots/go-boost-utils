@@ -47,3 +47,9 @@ linters-settings:
         json: snake
   gofumpt:
     extra-rules: true
+
+issues:
+  exclude-rules:
+    path: types/execution.go
+    linters:
+      - tagliatelle
