@@ -10,7 +10,10 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
-var ErrLength = fmt.Errorf("incorrect byte length")
+var (
+	ErrLength = fmt.Errorf("incorrect byte length")
+	ErrSign   = fmt.Errorf("negative value casted as unsigned int")
+)
 
 type Uint64StringSlice []uint64
 
@@ -308,6 +311,9 @@ func (n *U256Str) FromSlice(x []byte) error {
 func (n *U256Str) FromBig(x *big.Int) error {
 	if x.BitLen() > 256 {
 		return ErrLength
+	}
+	if x.Sign() == -1 {
+		return ErrSign
 	}
 	copy(n[:], reverse(x.FillBytes(n[:])))
 	return nil
