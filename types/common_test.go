@@ -62,6 +62,9 @@ func TestU256Str(t *testing.T) {
 	err = value.FromBig(big.NewInt(255121513))
 	require.NoError(t, err)
 	require.Equal(t, "255121513", value.String())
+
+	err = value.FromBig(big.NewInt(-50))
+	require.Error(t, ErrSign, err)
 }
 
 func TestU256StrCmp(t *testing.T) {
