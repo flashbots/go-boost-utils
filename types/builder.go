@@ -288,6 +288,12 @@ type BuilderSubmitBlockResponse struct {
 	Message   *BuilderSubmitBlockResponseMessage `json:"message"`
 }
 
+// BuilderBlockValidationRequest is sent to the validation cluster
+type BuilderBlockValidationRequest struct {
+	BuilderSubmitBlockRequest
+	RegisteredGasLimit uint64 `json:"registered_gas_limit,string"`
+}
+
 // PayloadToPayloadHeader converts an ExecutionPayload to ExecutionPayloadHeader
 func PayloadToPayloadHeader(p *ExecutionPayload) (*ExecutionPayloadHeader, error) {
 	if p == nil {
