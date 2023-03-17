@@ -6,9 +6,6 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    env:
-      CGO_CFLAGS_ALLOW: "-O -D__BLST_PORTABLE__"
-      CGO_CFLAGS: "-O -D__BLST_PORTABLE__"
     steps:
       - name: Set up Go 1.x
         uses: actions/setup-go@v2
@@ -25,9 +22,6 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    env:
-      CGO_CFLAGS_ALLOW: "-O -D__BLST_PORTABLE__"
-      CGO_CFLAGS: "-O -D__BLST_PORTABLE__"
     steps:
       - name: Set up Go 1.x
         uses: actions/setup-go@v2
@@ -42,7 +36,7 @@ jobs:
         run: go install mvdan.cc/gofumpt@latest
 
       - name: Install staticcheck
-        run: go install honnef.co/go/tools/cmd/staticcheck@v0.3.1
+        run: go install honnef.co/go/tools/cmd/staticcheck@v0.4.3
 
       - name: Install golangci-lint
         run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.49.0
@@ -56,9 +50,6 @@ jobs:
   fuzz:
     name: Fuzz
     runs-on: ubuntu-latest
-    env:
-      CGO_CFLAGS_ALLOW: "-O -D__BLST_PORTABLE__"
-      CGO_CFLAGS: "-O -D__BLST_PORTABLE__"
     steps:
       - name: Set up Go 1.x
         uses: actions/setup-go@v2
