@@ -241,7 +241,7 @@ type GetPayloadResponse struct {
 }
 
 type Transactions struct {
-	Transactions [][]byte `ssz-max:"1048576,1073741824" ssz-size:"?,?"`
+	Transactions [][]byte `json:"transactions" ssz-max:"1048576,1073741824" ssz-size:"?,?"`
 }
 
 // BuilderGetValidatorsResponseEntry is an entry of the response array for getValidators: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#ba12faa6e2714825af4aa883bdef6d81

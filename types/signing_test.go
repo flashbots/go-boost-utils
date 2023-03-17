@@ -32,9 +32,9 @@ func TestVerifySignature(t *testing.T) {
 	sig := bls.Sign(sk, root[:])
 	sig2, err := SignMessage(msg, domain, sk)
 	require.NoError(t, err)
-	require.Equal(t, sig.Compress(), sig2[:])
+	require.Equal(t, bls.SignatureToBytes(sig), sig2[:])
 
-	ok, err := VerifySignature(msg, domain, pk.Compress(), sig.Compress())
+	ok, err := VerifySignature(msg, domain, bls.PublicKeyToBytes(pk), bls.SignatureToBytes(sig))
 	require.NoError(t, err)
 	require.True(t, ok)
 }
@@ -44,7 +44,7 @@ func genValidatorRegistration(t require.TestingT, domain Domain) *SignedValidato
 	require.NoError(t, err)
 
 	var pubKey PublicKey
-	err = pubKey.FromSlice(pk.Compress())
+	err = pubKey.FromSlice(bls.PublicKeyToBytes(pk))
 	require.NoError(t, err)
 
 	msg := &RegisterValidatorRequestMessage{
@@ -89,7 +89,7 @@ func TestVerifySignatureManualPk(t *testing.T) {
 	pkBytes[0] = 0x01
 	sk2, err := bls.SecretKeyFromBytes(pkBytes)
 	require.NoError(t, err)
-	sig2 := bls.Sign(sk2, root2[:]).Compress()
+	sig2 := bls.SignatureToBytes(bls.Sign(sk2, root2[:]))
 	var signature2 Signature
 	err = signature2.FromSlice(sig2)
 	require.NoError(t, err)
