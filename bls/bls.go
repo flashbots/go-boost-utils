@@ -126,9 +126,8 @@ func Sign(sk *SecretKey, msg []byte) *Signature {
 	}
 	skBigInt := new(big.Int)
 	sk.BigInt(skBigInt)
-	signature := new(bls12381.G2Affine)
-	signature.ScalarMultiplication(&Q, skBigInt)
-	return signature
+	sig := new(bls12381.G2Affine)
+	return sig.ScalarMultiplication(&Q, skBigInt)
 }
 
 func VerifySignature(sig *Signature, pk *PublicKey, msg []byte) (bool, error) {
