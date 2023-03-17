@@ -11,9 +11,9 @@ import (
 var domain = []byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_POP_")
 
 const (
-	PublicKeyLength int = bls12381.SizeOfG1AffineCompressed
-	SecretKeyLength int = fr.Bytes
-	SignatureLength int = bls12381.SizeOfG2AffineCompressed
+	PublicKeyLength = bls12381.SizeOfG1AffineCompressed
+	SecretKeyLength = fr.Bytes
+	SignatureLength = bls12381.SizeOfG2AffineCompressed
 )
 
 type (
