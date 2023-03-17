@@ -28,9 +28,8 @@ type (
 var (
 	ErrInvalidPubkeyLength    = errors.New("invalid pubkey length")
 	ErrInvalidSecretKeyLength = errors.New("invalid secret key length")
-	ErrSecretKeyIsZero        = errors.New("invalid secret key is zero")
 	ErrInvalidSignatureLength = errors.New("invalid signature length")
-	ErrUncompressSignature    = errors.New("could not uncompress signature from bytes")
+	ErrSecretKeyIsZero        = errors.New("invalid secret key is zero")
 )
 
 func PublicKeyToBytes(pk *PublicKey) []byte {
@@ -104,11 +103,7 @@ func SignatureFromBytes(sigBytes []byte) (*Signature, error) {
 	if len(sigBytes) != SignatureLength {
 		return nil, ErrInvalidSignatureLength
 	}
-	sig, err := bls12381.NewG2().FromCompressed(sigBytes)
-	if err != nil {
-		return nil, ErrUncompressSignature
-	}
-	return sig, nil
+	return bls12381.NewG2().FromCompressed(sigBytes)
 }
 
 func VerifySignatureBytes(msg, sigBytes, pkBytes []byte) (bool, error) {
