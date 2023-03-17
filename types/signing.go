@@ -22,13 +22,13 @@ func init() {
 }
 
 type SigningData struct {
-	Root   Root   `ssz-size:"32"`
-	Domain Domain `ssz-size:"32"`
+	Root   Root   `json:"root" ssz-size:"32"`
+	Domain Domain `json:"domain" ssz-size:"32"`
 }
 
 type ForkData struct {
-	CurrentVersion        ForkVersion `ssz-size:"4"`
-	GenesisValidatorsRoot Root        `ssz-size:"32"`
+	CurrentVersion        ForkVersion `json:"current_version" ssz-size:"4"`
+	GenesisValidatorsRoot Root        `json:"genesis_validators_root" ssz-size:"32"`
 }
 
 type HashTreeRoot interface {
