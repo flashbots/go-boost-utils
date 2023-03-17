@@ -106,23 +106,28 @@ func SignatureFromBytes(sigBytes []byte) (*Signature, error) {
 	return bls12381.NewG2().FromCompressed(sigBytes)
 }
 
-func VerifySignatureBytes(msg, sigBytes, pkBytes []byte) (bool, error) {
-	xP, err := bls12381.NewG1().FromCompressed(pkBytes)
-	if err != nil {
-		return false, err
-	}
+func VerifySignature(sig *Signature, pk *PublicKey, msg []byte) (bool, error) {
 	Q, err := bls12381.NewG2().HashToCurve(msg, domain)
-	if err != nil {
-		return false, err
-	}
-	R, err := bls12381.NewG2().FromCompressed(sigBytes)
 	if err != nil {
 		return false, err
 	}
 	P := &bls12381.G1One
 
 	pairingEngine := bls12381.NewEngine()
-	pairingEngine.AddPair(xP, Q)
-	pairingEngine.AddPairInv(P, R)
+	pairingEngine.AddPair(pk, Q)
+	pairingEngine.AddPairInv(P, sig)
 	return pairingEngine.Check(), nil
+}
+
+func VerifySignatureBytes(msg, sigBytes, pkBytes []byte) (bool, error) {
+	pk, err := PublicKeyFromBytes(pkBytes)
+	if err != nil {
+		return false, err
+	}
+	sig, err := SignatureFromBytes(sigBytes)
+	if err != nil {
+		return false, err
+	}
+
+	return VerifySignature(sig, pk, msg)
 }

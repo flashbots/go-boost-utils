@@ -124,6 +124,30 @@ func FuzzSign(f *testing.F) {
 	})
 }
 
+func FuzzVerifySignature(f *testing.F) {
+	f.Fuzz(func(t *testing.T, data []byte) {
+		tp, err := GetTypeProvider(data)
+		if err != nil {
+			return
+		}
+		var sig Signature
+		err = tp.Fill(&sig)
+		if err != nil {
+			return
+		}
+		var pk PublicKey
+		err = tp.Fill(&pk)
+		if err != nil {
+			return
+		}
+		msg, err := tp.GetBytes()
+		if err != nil {
+			return
+		}
+		_, _ = VerifySignature(&sig, &pk, msg)
+	})
+}
+
 func FuzzVerifySignatureBytes(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
 		tp, err := GetTypeProvider(data)
