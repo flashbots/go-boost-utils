@@ -28,8 +28,8 @@ var (
 	ErrInvalidSecretKeyLength = errors.New("invalid secret key length")
 	ErrInvalidSignatureLength = errors.New("invalid signature length")
 	ErrSecretKeyIsZero        = errors.New("invalid secret key is zero")
-	ErrNotOnCurve             = errors.New("point not on the curve")
-	ErrNotInSubGroup          = errors.New("point not in correct subgroup")
+	ErrPointNotOnCurve        = errors.New("point not on the curve")
+	ErrPointNotInSubGroup     = errors.New("point not in correct subgroup")
 )
 
 func PublicKeyToBytes(pk *PublicKey) []byte {
@@ -54,10 +54,10 @@ func PublicKeyFromBytes(pkBytes []byte) (*PublicKey, error) {
 	pk := new(PublicKey)
 	err := pk.Unmarshal(pkBytes)
 	if !pk.IsOnCurve() {
-		return nil, ErrNotOnCurve
+		return nil, ErrPointNotOnCurve
 	}
 	if !pk.IsInSubGroup() {
-		return nil, ErrNotInSubGroup
+		return nil, ErrPointNotInSubGroup
 	}
 	return pk, err
 }
@@ -80,10 +80,10 @@ func SignatureFromBytes(sigBytes []byte) (*Signature, error) {
 	sig := new(Signature)
 	err := sig.Unmarshal(sigBytes)
 	if !sig.IsOnCurve() {
-		return nil, ErrNotOnCurve
+		return nil, ErrPointNotOnCurve
 	}
 	if !sig.IsInSubGroup() {
-		return nil, ErrNotInSubGroup
+		return nil, ErrPointNotInSubGroup
 	}
 	return sig, err
 }
@@ -100,10 +100,10 @@ func PublicKeyFromSecretKey(sk *SecretKey) (*PublicKey, error) {
 	sk.BigInt(skBigInt)
 	pk := new(bls12381.G1Affine).ScalarMultiplication(&g1One, skBigInt)
 	if !pk.IsOnCurve() {
-		return nil, ErrNotOnCurve
+		return nil, ErrPointNotOnCurve
 	}
 	if !pk.IsInSubGroup() {
-		return nil, ErrNotInSubGroup
+		return nil, ErrPointNotInSubGroup
 	}
 	return pk, nil
 }
