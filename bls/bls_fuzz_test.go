@@ -39,7 +39,7 @@ func FuzzPublicKeyFromBytesValidLength(f *testing.F) {
 		if err != nil {
 			return
 		}
-		bytes, err := tp.GetNBytes(BLSPublicKeyLength)
+		bytes, err := tp.GetNBytes(PublicKeyLength)
 		if err != nil {
 			return
 		}
@@ -58,7 +58,7 @@ func FuzzPublicKeyFromSecretKey(f *testing.F) {
 		if err != nil {
 			return
 		}
-		pk := PublicKeyFromSecretKey(&sk)
+		pk, err := PublicKeyFromSecretKey(&sk)
 		require.NotNil(t, pk)
 	})
 }
@@ -75,7 +75,7 @@ func FuzzSecretKeyFromBytesValidLength(f *testing.F) {
 		if err != nil {
 			return
 		}
-		bytes, err := tp.GetNBytes(BLSSecretKeyLength)
+		bytes, err := tp.GetNBytes(SecretKeyLength)
 		if err != nil {
 			return
 		}
@@ -95,7 +95,7 @@ func FuzzSignatureFromBytesValidLength(f *testing.F) {
 		if err != nil {
 			return
 		}
-		bytes, err := tp.GetNBytes(BLSSignatureLength)
+		bytes, err := tp.GetNBytes(SignatureLength)
 		if err != nil {
 			return
 		}
@@ -119,30 +119,6 @@ func FuzzSign(f *testing.F) {
 			return
 		}
 		Sign(&sk, msg)
-	})
-}
-
-func FuzzVerifySignature(f *testing.F) {
-	f.Fuzz(func(t *testing.T, data []byte) {
-		tp, err := GetTypeProvider(data)
-		if err != nil {
-			return
-		}
-		var sig Signature
-		err = tp.Fill(&sig)
-		if err != nil {
-			return
-		}
-		var pk PublicKey
-		err = tp.Fill(&pk)
-		if err != nil {
-			return
-		}
-		msg, err := tp.GetBytes()
-		if err != nil {
-			return
-		}
-		_ = VerifySignature(&sig, &pk, msg)
 	})
 }
 
@@ -174,11 +150,11 @@ func FuzzVerifySignatureBytesValidLength(f *testing.F) {
 		if err != nil {
 			return
 		}
-		sigBytes, err := tp.GetNBytes(BLSSignatureLength)
+		sigBytes, err := tp.GetNBytes(SignatureLength)
 		if err != nil {
 			return
 		}
-		pkBytes, err := tp.GetNBytes(BLSPublicKeyLength)
+		pkBytes, err := tp.GetNBytes(PublicKeyLength)
 		if err != nil {
 			return
 		}

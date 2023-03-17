@@ -68,7 +68,7 @@ func SignMessage(obj HashTreeRoot, d Domain, sk *bls.SecretKey) (Signature, erro
 		return Signature{}, err
 	}
 
-	signatureBytes := bls.Sign(sk, root[:]).Compress()
+	signatureBytes := bls.SignatureToBytes(bls.Sign(sk, root[:]))
 
 	var signature Signature
 	err = signature.FromSlice(signatureBytes)

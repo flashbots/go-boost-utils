@@ -4,76 +4,77 @@ import (
 	"crypto/rand"
 	"errors"
 
-	blst "github.com/supranational/blst/bindings/go"
+	bls12381 "github.com/kilic/bls12-381"
 )
 
-// From https://github.com/supranational/blst/tree/master/bindings/go
+// Heavily inspired by:
+// https://github.com/protolambda/bls12-381-util/blob/master/signatures.go
+// Thank you for the excellent code.
 
-var dst = []byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_POP_")
+var domain = []byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_POP_")
 
 const (
-	BLSPublicKeyLength int = 48
-	BLSSecretKeyLength int = 32
-	BLSSignatureLength int = 96
+	PublicKeyLength int = 48
+	SecretKeyLength int = 32
+	SignatureLength int = 96
 )
 
 type (
-	PublicKey = blst.P1Affine
-	SecretKey = blst.SecretKey
-	Signature = blst.P2Affine
+	PublicKey = bls12381.PointG1
+	SecretKey = bls12381.Fr
+	Signature = bls12381.PointG2
 )
 
 var (
-	ErrDeserializeSecretKey   = errors.New("could not deserialize secret key from bytes")
-	ErrInvalidPubkey          = errors.New("invalid pubkey")
 	ErrInvalidPubkeyLength    = errors.New("invalid pubkey length")
 	ErrInvalidSecretKeyLength = errors.New("invalid secret key length")
-	ErrInvalidSignature       = errors.New("invalid signature")
+	ErrSecretKeyIsZero        = errors.New("invalid secret key is zero")
 	ErrInvalidSignatureLength = errors.New("invalid signature length")
-	ErrUncompressPubkey       = errors.New("could not uncompress public key from bytes")
 	ErrUncompressSignature    = errors.New("could not uncompress signature from bytes")
 )
 
+func PublicKeyToBytes(pk *PublicKey) []byte {
+	return bls12381.NewG1().ToCompressed(pk)
+}
+
+func SecretKeyToBytes(sk *SecretKey) []byte {
+	return sk.ToBytes()
+}
+
+func SignatureToBytes(sig *Signature) []byte {
+	return bls12381.NewG2().ToCompressed(sig)
+}
+
 func PublicKeyFromBytes(pkBytes []byte) (*PublicKey, error) {
-	if len(pkBytes) != BLSPublicKeyLength {
+	if len(pkBytes) != PublicKeyLength {
 		return nil, ErrInvalidPubkeyLength
 	}
+	return bls12381.NewG1().FromCompressed(pkBytes)
+}
 
-	pk := new(PublicKey).Uncompress(pkBytes)
-	if pk == nil {
-		return nil, ErrUncompressPubkey
+func PublicKeyFromSecretKey(sk *SecretKey) (*PublicKey, error) {
+	if sk.IsZero() {
+		return nil, ErrSecretKeyIsZero
 	}
-
-	if !pk.KeyValidate() {
-		return nil, ErrInvalidPubkey
-	}
-
+	pk := new(PublicKey)
+	g1 := bls12381.NewG1()
+	g1.MulScalar(pk, &bls12381.G1One, sk)
 	return pk, nil
 }
 
-func PublicKeyFromSecretKey(sk *SecretKey) *PublicKey {
-	return new(PublicKey).From(sk)
-}
-
 func SecretKeyFromBytes(skBytes []byte) (*SecretKey, error) {
-	if len(skBytes) != BLSSecretKeyLength {
+	if len(skBytes) != SecretKeyLength {
 		return nil, ErrInvalidSecretKeyLength
 	}
-	secretKey := new(SecretKey).Deserialize(skBytes)
-	if secretKey == nil {
-		return nil, ErrDeserializeSecretKey
+	sk := bls12381.NewFr().FromBytes(skBytes)
+	if sk.IsZero() {
+		return nil, ErrSecretKeyIsZero
 	}
-	return secretKey, nil
+	return sk, nil
 }
 
 func GenerateRandomSecretKey() (*SecretKey, error) {
-	var ikm [BLSSecretKeyLength]byte
-	_, err := rand.Read(ikm[:])
-	if err != nil {
-		return nil, err
-	}
-	sk := blst.KeyGen(ikm[:])
-	return sk, nil
+	return new(SecretKey).Rand(rand.Reader)
 }
 
 func GenerateNewKeypair() (*SecretKey, *PublicKey, error) {
@@ -81,41 +82,55 @@ func GenerateNewKeypair() (*SecretKey, *PublicKey, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	return sk, PublicKeyFromSecretKey(sk), nil
+	pk, err := PublicKeyFromSecretKey(sk)
+	if err != nil {
+		return nil, nil, err
+	}
+	return sk, pk, nil
 }
 
 func Sign(sk *SecretKey, msg []byte) *Signature {
-	return new(Signature).Sign(sk, msg, dst)
+	g2 := bls12381.NewG2()
+	Q, err := g2.HashToCurve(msg, domain)
+	if err != nil {
+		panic(err)
+	}
+	var signature bls12381.PointG2
+	g2.MulScalar(&signature, Q, sk)
+	return &signature
 }
 
 func SignatureFromBytes(sigBytes []byte) (*Signature, error) {
-	if len(sigBytes) != BLSSignatureLength {
+	if len(sigBytes) != SignatureLength {
 		return nil, ErrInvalidSignatureLength
 	}
-
-	sig := new(Signature).Uncompress(sigBytes)
-	if sig == nil {
+	sig, err := bls12381.NewG2().FromCompressed(sigBytes)
+	if err != nil {
 		return nil, ErrUncompressSignature
-	}
-
-	if !sig.SigValidate(false) {
-		return nil, ErrInvalidSignature
 	}
 	return sig, nil
 }
 
-func VerifySignature(sig *Signature, pk *PublicKey, msg []byte) bool {
-	return sig.Verify(true, pk, false, msg, dst)
-}
-
 func VerifySignatureBytes(msg, sigBytes, pkBytes []byte) (bool, error) {
-	sig, err := SignatureFromBytes(sigBytes)
+	xP, err := bls12381.NewG1().FromCompressed(pkBytes)
 	if err != nil {
+		panic(err)
 		return false, err
 	}
-	pubkey, err := PublicKeyFromBytes(pkBytes)
+	Q, err := bls12381.NewG2().HashToCurve(msg, domain)
 	if err != nil {
+		panic(err)
 		return false, err
 	}
-	return VerifySignature(sig, pubkey, msg[:]), nil
+	R, err := bls12381.NewG2().FromCompressed(sigBytes)
+	if err != nil {
+		panic(err)
+		return false, err
+	}
+	P := &bls12381.G1One
+
+	pairingEngine := bls12381.NewEngine()
+	pairingEngine.AddPair(xP, Q)
+	pairingEngine.AddPairInv(P, R)
+	return pairingEngine.Check(), nil
 }

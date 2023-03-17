@@ -43,7 +43,7 @@ func (n *U256Str) Cmp(b *U256Str) int {
 }
 
 func BlsPublicKeyToPublicKey(blsPubKey *bls.PublicKey) (ret PublicKey, err error) {
-	err = ret.FromSlice(blsPubKey.Compress())
+	err = ret.FromSlice(bls.PublicKeyToBytes(blsPubKey))
 	return ret, err
 }
 

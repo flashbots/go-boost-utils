@@ -18,8 +18,8 @@ func TestSecretToPubkey(t *testing.T) {
 	} {
 		sk, err := SecretKeyFromBytes(tc.Input)
 		require.NoError(t, err)
-		pk := PublicKeyFromSecretKey(sk)
-		require.Equal(t, pk.Compress(), tc.Output)
+		pk, err := PublicKeyFromSecretKey(sk)
+		require.Equal(t, PublicKeyToBytes(pk), tc.Output)
 	}
 }
 
