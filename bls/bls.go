@@ -1,10 +1,11 @@
 package bls
 
 import (
-	"crypto/rand"
 	"errors"
+	"math/big"
 
-	bls12381 "github.com/kilic/bls12-381"
+	bls12381 "github.com/consensys/gnark-crypto/ecc/bls12-381"
+	"github.com/consensys/gnark-crypto/ecc/bls12-381/fr"
 )
 
 // Heavily inspired by:
@@ -20,12 +21,13 @@ const (
 )
 
 type (
-	PublicKey = bls12381.PointG1
-	SecretKey = bls12381.Fr
-	Signature = bls12381.PointG2
+	PublicKey = bls12381.G1Affine
+	SecretKey = fr.Element
+	Signature = bls12381.G2Affine
 )
 
 var (
+	_, _, g1One, _            = bls12381.Generators()
 	ErrInvalidPubkeyLength    = errors.New("invalid public key length")
 	ErrInvalidSecretKeyLength = errors.New("invalid secret key length")
 	ErrInvalidSignatureLength = errors.New("invalid signature length")
@@ -33,39 +35,43 @@ var (
 )
 
 func PublicKeyToBytes(pk *PublicKey) []byte {
-	return bls12381.NewG1().ToCompressed(pk)
+	pkBytes := pk.Bytes()
+	return pkBytes[:]
 }
 
 func SecretKeyToBytes(sk *SecretKey) []byte {
-	return sk.ToBytes()
+	skBytes := sk.Bytes()
+	return skBytes[:]
 }
 
 func SignatureToBytes(sig *Signature) []byte {
-	return bls12381.NewG2().ToCompressed(sig)
+	sigBytes := sig.Bytes()
+	return sigBytes[:]
 }
 
 func PublicKeyFromBytes(pkBytes []byte) (*PublicKey, error) {
 	if len(pkBytes) != PublicKeyLength {
 		return nil, ErrInvalidPubkeyLength
 	}
-	return bls12381.NewG1().FromCompressed(pkBytes)
+	pk := new(PublicKey)
+	err := pk.Unmarshal(pkBytes)
+	return pk, err
 }
 
 func PublicKeyFromSecretKey(sk *SecretKey) (*PublicKey, error) {
 	if sk.IsZero() {
 		return nil, ErrSecretKeyIsZero
 	}
-	pk := new(PublicKey)
-	g1 := bls12381.NewG1()
-	g1.MulScalar(pk, &bls12381.G1One, sk)
-	return pk, nil
+	skBigInt := new(big.Int)
+	sk.BigInt(skBigInt)
+	return new(bls12381.G1Affine).ScalarMultiplication(&g1One, skBigInt), nil
 }
 
 func SecretKeyFromBytes(skBytes []byte) (*SecretKey, error) {
 	if len(skBytes) != SecretKeyLength {
 		return nil, ErrInvalidSecretKeyLength
 	}
-	sk := bls12381.NewFr().FromBytes(skBytes)
+	sk := new(SecretKey).SetBytes(skBytes)
 	if sk.IsZero() {
 		return nil, ErrSecretKeyIsZero
 	}
@@ -73,7 +79,7 @@ func SecretKeyFromBytes(skBytes []byte) (*SecretKey, error) {
 }
 
 func GenerateRandomSecretKey() (*SecretKey, error) {
-	return new(SecretKey).Rand(rand.Reader)
+	return new(SecretKey).SetRandom()
 }
 
 func GenerateNewKeypair() (*SecretKey, *PublicKey, error) {
@@ -89,34 +95,37 @@ func GenerateNewKeypair() (*SecretKey, *PublicKey, error) {
 }
 
 func Sign(sk *SecretKey, msg []byte) *Signature {
-	g2 := bls12381.NewG2()
-	Q, err := g2.HashToCurve(msg, domain)
+	Q, err := bls12381.HashToG2(msg, domain)
 	if err != nil {
 		panic(err)
 	}
-	var signature bls12381.PointG2
-	g2.MulScalar(&signature, Q, sk)
-	return &signature
+	skBigInt := new(big.Int)
+	sk.BigInt(skBigInt)
+	signature := new(bls12381.G2Affine)
+	signature.ScalarMultiplication(&Q, skBigInt)
+	return signature
 }
 
 func SignatureFromBytes(sigBytes []byte) (*Signature, error) {
 	if len(sigBytes) != SignatureLength {
 		return nil, ErrInvalidSignatureLength
 	}
-	return bls12381.NewG2().FromCompressed(sigBytes)
+	sig := new(Signature)
+	err := sig.Unmarshal(sigBytes)
+	return sig, err
 }
 
 func VerifySignature(sig *Signature, pk *PublicKey, msg []byte) (bool, error) {
-	Q, err := bls12381.NewG2().HashToCurve(msg, domain)
+	Q, err := bls12381.HashToG2(msg, domain)
 	if err != nil {
 		return false, err
 	}
-	P := &bls12381.G1One
-
-	pairingEngine := bls12381.NewEngine()
-	pairingEngine.AddPair(pk, Q)
-	pairingEngine.AddPairInv(P, sig)
-	return pairingEngine.Check(), nil
+	var negP bls12381.G1Affine
+	negP.Neg(&g1One)
+	return bls12381.PairingCheck(
+		[]bls12381.G1Affine{*pk, negP},
+		[]bls12381.G2Affine{Q, *sig},
+	)
 }
 
 func VerifySignatureBytes(msg, sigBytes, pkBytes []byte) (bool, error) {
@@ -128,6 +137,5 @@ func VerifySignatureBytes(msg, sigBytes, pkBytes []byte) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-
 	return VerifySignature(sig, pk, msg)
 }
