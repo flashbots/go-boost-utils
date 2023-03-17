@@ -28,6 +28,8 @@ var (
 	ErrInvalidSecretKeyLength = errors.New("invalid secret key length")
 	ErrInvalidSignatureLength = errors.New("invalid signature length")
 	ErrSecretKeyIsZero        = errors.New("invalid secret key is zero")
+	ErrNotOnCurve             = errors.New("point not on the curve")
+	ErrNotInSubGroup          = errors.New("point not in correct subgroup")
 )
 
 func PublicKeyToBytes(pk *PublicKey) []byte {
@@ -51,16 +53,13 @@ func PublicKeyFromBytes(pkBytes []byte) (*PublicKey, error) {
 	}
 	pk := new(PublicKey)
 	err := pk.Unmarshal(pkBytes)
-	return pk, err
-}
-
-func PublicKeyFromSecretKey(sk *SecretKey) (*PublicKey, error) {
-	if sk.IsZero() {
-		return nil, ErrSecretKeyIsZero
+	if !pk.IsOnCurve() {
+		return nil, ErrNotOnCurve
 	}
-	skBigInt := new(big.Int)
-	sk.BigInt(skBigInt)
-	return new(bls12381.G1Affine).ScalarMultiplication(&g1One, skBigInt), nil
+	if !pk.IsInSubGroup() {
+		return nil, ErrNotInSubGroup
+	}
+	return pk, err
 }
 
 func SecretKeyFromBytes(skBytes []byte) (*SecretKey, error) {
@@ -74,8 +73,39 @@ func SecretKeyFromBytes(skBytes []byte) (*SecretKey, error) {
 	return sk, nil
 }
 
+func SignatureFromBytes(sigBytes []byte) (*Signature, error) {
+	if len(sigBytes) != SignatureLength {
+		return nil, ErrInvalidSignatureLength
+	}
+	sig := new(Signature)
+	err := sig.Unmarshal(sigBytes)
+	if !sig.IsOnCurve() {
+		return nil, ErrNotOnCurve
+	}
+	if !sig.IsInSubGroup() {
+		return nil, ErrNotInSubGroup
+	}
+	return sig, err
+}
+
 func GenerateRandomSecretKey() (*SecretKey, error) {
 	return new(SecretKey).SetRandom()
+}
+
+func PublicKeyFromSecretKey(sk *SecretKey) (*PublicKey, error) {
+	if sk.IsZero() {
+		return nil, ErrSecretKeyIsZero
+	}
+	skBigInt := new(big.Int)
+	sk.BigInt(skBigInt)
+	pk := new(bls12381.G1Affine).ScalarMultiplication(&g1One, skBigInt)
+	if !pk.IsOnCurve() {
+		return nil, ErrNotOnCurve
+	}
+	if !pk.IsInSubGroup() {
+		return nil, ErrNotInSubGroup
+	}
+	return pk, nil
 }
 
 func GenerateNewKeypair() (*SecretKey, *PublicKey, error) {
@@ -100,15 +130,6 @@ func Sign(sk *SecretKey, msg []byte) *Signature {
 	signature := new(bls12381.G2Affine)
 	signature.ScalarMultiplication(&Q, skBigInt)
 	return signature
-}
-
-func SignatureFromBytes(sigBytes []byte) (*Signature, error) {
-	if len(sigBytes) != SignatureLength {
-		return nil, ErrInvalidSignatureLength
-	}
-	sig := new(Signature)
-	err := sig.Unmarshal(sigBytes)
-	return sig, err
 }
 
 func VerifySignature(sig *Signature, pk *PublicKey, msg []byte) (bool, error) {
