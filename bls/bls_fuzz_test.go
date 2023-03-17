@@ -58,8 +58,10 @@ func FuzzPublicKeyFromSecretKey(f *testing.F) {
 		if err != nil {
 			return
 		}
-		pk, _ := PublicKeyFromSecretKey(&sk)
-		require.NotNil(t, pk)
+		pk, err := PublicKeyFromSecretKey(&sk)
+		if err != nil {
+			require.NotNil(t, pk)
+		}
 	})
 }
 
