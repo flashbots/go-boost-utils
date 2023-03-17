@@ -82,7 +82,7 @@ func PublicKeyFromSecretKey(sk *SecretKey) (*PublicKey, error) {
 		return nil, ErrSecretKeyIsZero
 	}
 	skBigInt := new(big.Int)
-	sk.BigInt(skBigInt)
+	sk.ToBigIntRegular(skBigInt)
 	pkJac := new(bls12381.G1Jac).ScalarMultiplication(&g1OneJac, skBigInt)
 	return new(bls12381.G1Affine).FromJacobian(pkJac), nil
 }
@@ -105,7 +105,7 @@ func Sign(sk *SecretKey, msg []byte) *Signature {
 		panic(err)
 	}
 	skBigInt := new(big.Int)
-	sk.BigInt(skBigInt)
+	sk.ToBigIntRegular(skBigInt)
 	QJac := new(bls12381.G2Jac).FromAffine(&Q)
 	sigJac := new(bls12381.G2Jac).ScalarMultiplication(QJac, skBigInt)
 	return new(bls12381.G2Affine).FromJacobian(sigJac)
