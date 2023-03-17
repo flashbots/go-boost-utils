@@ -8,8 +8,6 @@ import (
 	"github.com/consensys/gnark-crypto/ecc/bls12-381/fr"
 )
 
-var domain = []byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_POP_")
-
 const (
 	PublicKeyLength = bls12381.SizeOfG1AffineCompressed
 	SecretKeyLength = fr.Bytes
@@ -24,6 +22,7 @@ type (
 
 var (
 	_, _, g1One, _            = bls12381.Generators()
+	domain                    = []byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_POP_")
 	ErrInvalidPubkeyLength    = errors.New("invalid public key length")
 	ErrInvalidSecretKeyLength = errors.New("invalid secret key length")
 	ErrInvalidSignatureLength = errors.New("invalid signature length")
