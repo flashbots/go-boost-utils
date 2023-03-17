@@ -166,7 +166,7 @@ func FuzzVerifySignatureBytes(f *testing.F) {
 		if err != nil {
 			return
 		}
-		_, _ = VerifySignatureBytes(sigBytes, pkBytes, msg)
+		_, _ = VerifySignatureBytes(msg, sigBytes, pkBytes)
 	})
 }
 
@@ -188,6 +188,6 @@ func FuzzVerifySignatureBytesValidLength(f *testing.F) {
 		if err != nil {
 			return
 		}
-		_, _ = VerifySignatureBytes(sigBytes, pkBytes, msg)
+		_, _ = VerifySignatureBytes(msg, sigBytes, pkBytes)
 	})
 }
