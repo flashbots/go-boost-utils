@@ -114,17 +114,14 @@ func SignatureFromBytes(sigBytes []byte) (*Signature, error) {
 func VerifySignatureBytes(msg, sigBytes, pkBytes []byte) (bool, error) {
 	xP, err := bls12381.NewG1().FromCompressed(pkBytes)
 	if err != nil {
-		panic(err)
 		return false, err
 	}
 	Q, err := bls12381.NewG2().HashToCurve(msg, domain)
 	if err != nil {
-		panic(err)
 		return false, err
 	}
 	R, err := bls12381.NewG2().FromCompressed(sigBytes)
 	if err != nil {
-		panic(err)
 		return false, err
 	}
 	P := &bls12381.G1One
