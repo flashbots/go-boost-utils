@@ -26,7 +26,7 @@ type (
 )
 
 var (
-	ErrInvalidPubkeyLength    = errors.New("invalid pubkey length")
+	ErrInvalidPubkeyLength    = errors.New("invalid public key length")
 	ErrInvalidSecretKeyLength = errors.New("invalid secret key length")
 	ErrInvalidSignatureLength = errors.New("invalid signature length")
 	ErrSecretKeyIsZero        = errors.New("invalid secret key is zero")
