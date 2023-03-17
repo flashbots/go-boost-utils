@@ -8,16 +8,12 @@ import (
 	"github.com/consensys/gnark-crypto/ecc/bls12-381/fr"
 )
 
-// Heavily inspired by:
-// https://github.com/protolambda/bls12-381-util/blob/master/signatures.go
-// Thank you for the excellent code.
-
 var domain = []byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_POP_")
 
 const (
-	PublicKeyLength int = 48
-	SecretKeyLength int = 32
-	SignatureLength int = 96
+	PublicKeyLength int = bls12381.SizeOfG1AffineCompressed
+	SecretKeyLength int = fr.Bytes
+	SignatureLength int = bls12381.SizeOfG2AffineCompressed
 )
 
 type (
