@@ -119,7 +119,7 @@ func VerifySignature(sig *Signature, pk *PublicKey, msg []byte) (bool, error) {
 	return pairingEngine.Check(), nil
 }
 
-func VerifySignatureBytes(msg, sigBytes, pkBytes []byte) (bool, error) {
+func VerifySignatureBytes(sigBytes, pkBytes, msg []byte) (bool, error) {
 	pk, err := PublicKeyFromBytes(pkBytes)
 	if err != nil {
 		return false, err
