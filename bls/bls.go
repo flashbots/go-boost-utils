@@ -21,14 +21,12 @@ type (
 )
 
 var (
-	_, _, g1One, _            = bls12381.Generators()
+	g1OneJac, _, g1One, _     = bls12381.Generators()
 	domain                    = []byte("BLS_SIG_BLS12381G2_XMD:SHA-256_SSWU_RO_POP_")
 	ErrInvalidPubkeyLength    = errors.New("invalid public key length")
 	ErrInvalidSecretKeyLength = errors.New("invalid secret key length")
 	ErrInvalidSignatureLength = errors.New("invalid signature length")
 	ErrSecretKeyIsZero        = errors.New("invalid secret key is zero")
-	ErrPointNotOnCurve        = errors.New("point not on the curve")
-	ErrPointNotInSubGroup     = errors.New("point not in correct subgroup")
 )
 
 func PublicKeyToBytes(pk *PublicKey) []byte {
@@ -52,12 +50,6 @@ func PublicKeyFromBytes(pkBytes []byte) (*PublicKey, error) {
 	}
 	pk := new(PublicKey)
 	err := pk.Unmarshal(pkBytes)
-	if !pk.IsOnCurve() {
-		return nil, ErrPointNotOnCurve
-	}
-	if !pk.IsInSubGroup() {
-		return nil, ErrPointNotInSubGroup
-	}
 	return pk, err
 }
 
@@ -78,12 +70,6 @@ func SignatureFromBytes(sigBytes []byte) (*Signature, error) {
 	}
 	sig := new(Signature)
 	err := sig.Unmarshal(sigBytes)
-	if !sig.IsOnCurve() {
-		return nil, ErrPointNotOnCurve
-	}
-	if !sig.IsInSubGroup() {
-		return nil, ErrPointNotInSubGroup
-	}
 	return sig, err
 }
 
@@ -97,14 +83,8 @@ func PublicKeyFromSecretKey(sk *SecretKey) (*PublicKey, error) {
 	}
 	skBigInt := new(big.Int)
 	sk.BigInt(skBigInt)
-	pk := new(bls12381.G1Affine).ScalarMultiplication(&g1One, skBigInt)
-	if !pk.IsOnCurve() {
-		return nil, ErrPointNotOnCurve
-	}
-	if !pk.IsInSubGroup() {
-		return nil, ErrPointNotInSubGroup
-	}
-	return pk, nil
+	pkJac := new(bls12381.G1Jac).ScalarMultiplication(&g1OneJac, skBigInt)
+	return new(bls12381.G1Affine).FromJacobian(pkJac), nil
 }
 
 func GenerateNewKeypair() (*SecretKey, *PublicKey, error) {
@@ -126,8 +106,9 @@ func Sign(sk *SecretKey, msg []byte) *Signature {
 	}
 	skBigInt := new(big.Int)
 	sk.BigInt(skBigInt)
-	sig := new(bls12381.G2Affine)
-	return sig.ScalarMultiplication(&Q, skBigInt)
+	QJac := new(bls12381.G2Jac).FromAffine(&Q)
+	sigJac := new(bls12381.G2Jac).ScalarMultiplication(QJac, skBigInt)
+	return new(bls12381.G2Affine).FromJacobian(sigJac)
 }
 
 func VerifySignature(sig *Signature, pk *PublicKey, msg []byte) (bool, error) {
