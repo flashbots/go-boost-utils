@@ -3,7 +3,7 @@ module github.com/flashbots/go-boost-utils
 go 1.20
 
 require (
-	github.com/consensys/gnark-crypto v0.7.1-0.20220622171907-450e0206211e
+	github.com/consensys/gnark-crypto v0.9.1
 	github.com/ethereum/go-ethereum v1.10.25
 	github.com/ferranbt/fastssz v0.1.3
 	github.com/pkg/errors v0.9.1
