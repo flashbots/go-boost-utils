@@ -10,5 +10,3 @@ updates:
     reviewers:
       - "metachris"
       - "jtraglia"
-    ignore:
-      - dependency-name: "github.com/consensys/gnark-crypto" # we use an audited version, don't do auto upgrades
