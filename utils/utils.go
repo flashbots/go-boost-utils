@@ -51,9 +51,5 @@ func HexToSignature(s string) (ret phase0.BLSSignature, err error) {
 func DecodeJSON(r io.Reader, dst any) error {
 	decoder := json.NewDecoder(r)
 	decoder.DisallowUnknownFields()
-
-	if err := decoder.Decode(dst); err != nil {
-		return err
-	}
-	return nil
+	return decoder.Decode(dst)
 }
