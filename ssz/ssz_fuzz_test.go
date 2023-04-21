@@ -1,22 +1,24 @@
-package types
+package ssz
 
 import (
 	"encoding/json"
 	"testing"
 
+	"github.com/attestantio/go-eth2-client/spec/phase0"
 	"github.com/flashbots/go-boost-utils/bls"
+	"github.com/flashbots/go-boost-utils/fuzzing"
 )
 
 func FuzzRoundTripSigningData(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		RoundTripSSZ(t, data, &SigningData{})
-		RoundTripJSON(t, data, &SigningData{})
+		fuzzing.RoundTripSSZ(t, data, &phase0.SigningData{})
+		fuzzing.RoundTripJSON(t, data, &phase0.SigningData{})
 	})
 }
 
 func FuzzUnmarshalSigningData(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		var value SigningData
+		var value phase0.SigningData
 		_ = json.Unmarshal(data, &value)
 		_ = value.UnmarshalSSZ(data)
 	})
@@ -24,14 +26,14 @@ func FuzzUnmarshalSigningData(f *testing.F) {
 
 func FuzzRoundTripForkData(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		RoundTripSSZ(t, data, &ForkData{})
-		RoundTripJSON(t, data, &ForkData{})
+		fuzzing.RoundTripSSZ(t, data, &phase0.ForkData{})
+		fuzzing.RoundTripJSON(t, data, &phase0.ForkData{})
 	})
 }
 
 func FuzzUnmarshalForkData(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		var value ForkData
+		var value phase0.ForkData
 		_ = json.Unmarshal(data, &value)
 		_ = value.UnmarshalSSZ(data)
 	})
@@ -39,21 +41,21 @@ func FuzzUnmarshalForkData(f *testing.F) {
 
 func FuzzComputeDomain(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		tp, err := GetTypeProvider(data)
+		tp, err := fuzzing.GetTypeProvider(data)
 		if err != nil {
 			return
 		}
-		var domainType DomainType
+		var domainType phase0.DomainType
 		err = tp.Fill(&domainType)
 		if err != nil {
 			return
 		}
-		var forkVersion ForkVersion
+		var forkVersion phase0.Version
 		err = tp.Fill(&forkVersion)
 		if err != nil {
 			return
 		}
-		var genesisValidatorsRoot Root
+		var genesisValidatorsRoot phase0.Root
 		err = tp.Fill(&genesisValidatorsRoot)
 		if err != nil {
 			return
@@ -64,16 +66,16 @@ func FuzzComputeDomain(f *testing.F) {
 
 func FuzzComputeSigningRoot(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		tp, err := GetTypeProvider(data)
+		tp, err := fuzzing.GetTypeProvider(data)
 		if err != nil {
 			return
 		}
-		var forkData ForkData
+		var forkData phase0.ForkData
 		err = tp.Fill(&forkData)
 		if err != nil {
 			return
 		}
-		var domain Domain
+		var domain phase0.Domain
 		err = tp.Fill(&domain)
 		if err != nil {
 			return
@@ -84,16 +86,16 @@ func FuzzComputeSigningRoot(f *testing.F) {
 
 func FuzzSignMessage(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		tp, err := GetTypeProvider(data)
+		tp, err := fuzzing.GetTypeProvider(data)
 		if err != nil {
 			return
 		}
-		var forkData ForkData
+		var forkData phase0.ForkData
 		err = tp.Fill(&forkData)
 		if err != nil {
 			return
 		}
-		var domain Domain
+		var domain phase0.Domain
 		err = tp.Fill(&domain)
 		if err != nil {
 			return
@@ -114,16 +116,16 @@ func FuzzSignMessage(f *testing.F) {
 
 func FuzzVerifySignature(f *testing.F) {
 	f.Fuzz(func(t *testing.T, data []byte) {
-		tp, err := GetTypeProvider(data)
+		tp, err := fuzzing.GetTypeProvider(data)
 		if err != nil {
 			return
 		}
-		var forkData ForkData
+		var forkData phase0.ForkData
 		err = tp.Fill(&forkData)
 		if err != nil {
 			return
 		}
-		var domain Domain
+		var domain phase0.Domain
 		err = tp.Fill(&domain)
 		if err != nil {
 			return
