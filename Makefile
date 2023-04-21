@@ -28,10 +28,6 @@ lint:
 	staticcheck ./...
 	golangci-lint run
 
-generate-ssz:
-	rm -f types/builder_encoding.go types/signing_encoding.go types/common_encoding.go
-	sszgen --path types --include ../go-ethereum/common/hexutil --objs Eth1Data,BeaconBlockHeader,SignedBeaconBlockHeader,ProposerSlashing,Checkpoint,AttestationData,IndexedAttestation,AttesterSlashing,Attestation,Deposit,VoluntaryExit,SyncAggregate,ExecutionPayloadHeader,VersionedExecutionPayloadHeader,BlindedBeaconBlockBody,BlindedBeaconBlock,SignedBlindedBeaconBlock,RegisterValidatorRequestMessage,BuilderBid,SignedBuilderBid,SigningData,ForkData,Transactions,BidTraceMessage,BuilderSubmitBlockRequestMessage,BuilderSubmitBlockResponseMessage
-
 cover:
 	go test -coverprofile=/tmp/go-sim-lb.cover.tmp ./...
 	go tool cover -func /tmp/go-sim-lb.cover.tmp
