@@ -246,8 +246,9 @@ type Transactions struct {
 
 // BuilderGetValidatorsResponseEntry is an entry of the response array for getValidators: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#ba12faa6e2714825af4aa883bdef6d81
 type BuilderGetValidatorsResponseEntry struct {
-	Slot  uint64                       `json:"slot,string"`
-	Entry *SignedValidatorRegistration `json:"entry"`
+	Slot           uint64                       `json:"slot,string"`
+	ValidatorIndex uint64                       `json:"validator_index,string"`
+	Entry          *SignedValidatorRegistration `json:"entry"`
 }
 
 // BidTrace is public information about a bid: https://flashbots.notion.site/Relay-API-Spec-5fb0819366954962bc02e81cb33840f5#286c858c4ba24e58ada6348d8d4b71ec
