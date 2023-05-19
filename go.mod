@@ -7,7 +7,7 @@ require (
 	github.com/ethereum/go-ethereum v1.11.6
 	github.com/ferranbt/fastssz v0.1.3
 	github.com/pkg/errors v0.9.1
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.3
 	github.com/trailofbits/go-fuzz-utils v0.0.0-20210901195358-9657fcfd256c
 )
 
