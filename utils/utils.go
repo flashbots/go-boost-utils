@@ -17,6 +17,20 @@ func BlsPublicKeyToPublicKey(blsPubKey *bls.PublicKey) (ret phase0.BLSPubKey, er
 	return HexToPubkey(hexutil.Encode(bls.PublicKeyToBytes(blsPubKey)))
 }
 
+func BlsSignatureToSignature(blsSignature *bls.Signature) (ret phase0.BLSSignature, err error) {
+	return HexToSignature(hexutil.Encode(bls.SignatureToBytes(blsSignature)))
+}
+
+// HexToHash takes a hex string and returns a Hash
+func HexToHash(s string) (ret phase0.Hash32, err error) {
+	bytes, err := hexutil.Decode(s)
+	if len(bytes) != len(ret) {
+		return phase0.Hash32{}, ErrLength
+	}
+	copy(ret[:], bytes)
+	return
+}
+
 // HexToAddress takes a hex string and returns an Address
 func HexToAddress(s string) (ret bellatrix.ExecutionAddress, err error) {
 	bytes, err := hexutil.Decode(s)
