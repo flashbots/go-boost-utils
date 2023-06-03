@@ -6,6 +6,15 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestHexToHash(t *testing.T) {
+	_, err := HexToHash("0x01")
+	require.Error(t, err)
+
+	a, err := HexToHash("0x0100000000000000000000000000000000000000000000000000000000000000")
+	require.NoError(t, err)
+	require.Equal(t, "0x0100000000000000000000000000000000000000000000000000000000000000", a.String())
+}
+
 func TestHexToAddress(t *testing.T) {
 	_, err := HexToAddress("0x01")
 	require.Error(t, err)
