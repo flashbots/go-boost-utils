@@ -7,7 +7,7 @@ require (
 	github.com/attestantio/go-eth2-client v0.16.3
 	github.com/consensys/gnark-crypto v0.11.0
 	github.com/ethereum/go-ethereum v1.12.0
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.8.4
 	github.com/trailofbits/go-fuzz-utils v0.0.0-20210901195358-9657fcfd256c
 )
 
