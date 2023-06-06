@@ -3,7 +3,7 @@ module github.com/flashbots/go-boost-utils
 go 1.20
 
 require (
-	github.com/attestantio/go-builder-client v0.3.0
+	github.com/attestantio/go-builder-client v0.3.1
 	github.com/attestantio/go-eth2-client v0.16.3
 	github.com/consensys/gnark-crypto v0.11.0
 	github.com/ethereum/go-ethereum v1.12.0
