@@ -48,3 +48,7 @@ linters-settings:
         json: snake
   gofumpt:
     extra-rules: true
+  gomoddirectives:
+    replace-allow-list:
+      # TODO: remove when https://github.com/attestantio/go-builder-client/pull/12 is merged
+      - github.com/attestantio/go-builder-client
