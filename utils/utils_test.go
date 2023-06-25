@@ -1,8 +1,12 @@
 package utils
 
 import (
+	"os"
 	"testing"
 
+	"github.com/attestantio/go-builder-client/api"
+	"github.com/attestantio/go-eth2-client/spec"
+	"github.com/attestantio/go-eth2-client/spec/capella"
 	"github.com/stretchr/testify/require"
 )
 
@@ -40,4 +44,34 @@ func TestHexToSignature(t *testing.T) {
 	a, err := HexToSignature("0xb8f03e639b91fa8e9892f66c798f07f6e7b3453234f643b2c06a35c5149cf6d85e4e1572c33549fe749292445fbff9e0739c78159324c35dc1a90e5745ca70c8caf1b63fb6678d81bd2d5cb6baeb1462df7a93877d0e22a31dd6438334536d9a")
 	require.NoError(t, err)
 	require.Equal(t, "0xb8f03e639b91fa8e9892f66c798f07f6e7b3453234f643b2c06a35c5149cf6d85e4e1572c33549fe749292445fbff9e0739c78159324c35dc1a90e5745ca70c8caf1b63fb6678d81bd2d5cb6baeb1462df7a93877d0e22a31dd6438334536d9a", a.String())
+}
+
+func TestComputeHash(t *testing.T) {
+	t.Run("Should compute capella hash", func(t *testing.T) {
+		jsonFile, err := os.Open("../testdata/executionpayload/capella-case0.json")
+		require.NoError(t, err)
+		defer jsonFile.Close()
+
+		payload := new(capella.ExecutionPayload)
+		require.NoError(t, DecodeJSON(jsonFile, payload))
+		versionedPayload := &api.VersionedExecutionPayload{
+			Version: spec.DataVersionCapella,
+			Capella: payload,
+		}
+
+		hash, err := ComputeBlockHash(versionedPayload)
+		require.NoError(t, err)
+		require.Equal(t, "0x08751ea2076d3ecc606231495a90ba91a66a9b8fb1a2b76c333f1957a1c667c3", hash.String())
+	})
+
+	t.Run("Should error on unknown version", func(t *testing.T) {
+		payload := new(capella.ExecutionPayload)
+		versionedPayload := &api.VersionedExecutionPayload{
+			Version: spec.DataVersionAltair,
+			Capella: payload,
+		}
+
+		_, err := ComputeBlockHash(versionedPayload)
+		require.Error(t, err)
+	})
 }
