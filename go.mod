@@ -3,7 +3,7 @@ module github.com/flashbots/go-boost-utils
 go 1.20
 
 require (
-	github.com/attestantio/go-builder-client v0.3.1
+	github.com/attestantio/go-builder-client v0.3.2-0.20230623215408-1b5c4f7aaeaa
 	github.com/attestantio/go-eth2-client v0.16.4
 	github.com/consensys/gnark-crypto v0.11.0
 	github.com/ethereum/go-ethereum v1.12.0
@@ -71,5 +71,3 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	rsc.io/tmplfunc v0.0.3 // indirect
 )
-
-replace github.com/attestantio/go-builder-client => github.com/avalonche/go-builder-client v0.0.0-20230621061803-f3fb9ac1c15c
