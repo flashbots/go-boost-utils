@@ -76,3 +76,13 @@ func VerifySignature(obj ObjWithHashTreeRoot, d phase0.Domain, pkBytes, sigBytes
 
 	return bls.VerifySignatureBytes(msg[:], sigBytes, pkBytes)
 }
+
+func VerifySignatureRoot(root phase0.Root, d phase0.Domain, pkBytes, sigBytes []byte) (bool, error) {
+	signingData := phase0.SigningData{ObjectRoot: root, Domain: d}
+	msg, err := signingData.HashTreeRoot()
+	if err != nil {
+		return false, err
+	}
+
+	return bls.VerifySignatureBytes(msg[:], sigBytes, pkBytes)
+}
