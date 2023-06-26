@@ -47,6 +47,31 @@ func TestVerifySignature(t *testing.T) {
 	require.True(t, ok)
 }
 
+func TestVerifySignatureRoot(t *testing.T) {
+	sk, pk, err := bls.GenerateNewKeypair()
+	require.NoError(t, err)
+	msg := &builderApiV1.ValidatorRegistration{
+		FeeRecipient: bellatrix.ExecutionAddress{0x42},
+		GasLimit:     15_000_000,
+		Timestamp:    time.Now(),
+		Pubkey:       phase0.BLSPubKey{0x0d},
+	}
+	domain := ComputeDomain(phase0.DomainType{0x01, 0x00, 0x00, 0x00}, phase0.Version{}, phase0.Root{})
+	root, err := ComputeSigningRoot(msg, domain)
+	require.NoError(t, err)
+
+	sig := bls.Sign(sk, root[:])
+	sig2, err := SignMessage(msg, domain, sk)
+	require.NoError(t, err)
+	require.Equal(t, bls.SignatureToBytes(sig), sig2[:])
+	root2, err := msg.HashTreeRoot()
+	require.NoError(t, err)
+
+	ok, err := VerifySignatureRoot(root2, domain, bls.PublicKeyToBytes(pk), bls.SignatureToBytes(sig))
+	require.NoError(t, err)
+	require.True(t, ok)
+}
+
 func genValidatorRegistration(t require.TestingT, domain phase0.Domain) *builderApiV1.SignedValidatorRegistration {
 	sk, pk, err := bls.GenerateNewKeypair()
 	require.NoError(t, err)
@@ -160,6 +185,24 @@ func TestVerifySignedBuilderBidSignature(t *testing.T) {
 	builderDomainKiln, err := _ComputeDomain(DomainTypeAppBuilder, types.GenesisForkVersionKiln, phase0.Root{}.String())
 	require.NoError(t, err)
 	ok, err := VerifySignature(bid.Message, builderDomainKiln, bid.Message.Pubkey[:], bid.Signature[:])
+	require.NoError(t, err)
+	require.True(t, ok)
+}
+
+func TestVerifySignedBuilderBidRootSignature(t *testing.T) {
+	// SignedBuilderBid from Kiln
+	bidStr := `{"message":{"header":{"parent_hash":"0x0544e2170998060d9560fdbf8f263a08c0a209211569a0560138522b84805abc","fee_recipient":"0x0000000000000000000000000000000000000000","state_root":"0xcded53d652660a91bfe6f5dfb017204a4cdd1598a07116b2cdea1586d603d01c","receipts_root":"0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421","logs_bloom":"0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","prev_randao":"0xd60955dc7f0cc7bf28d7e6c6f4859081f3a6df5ef4f70e05d70d8282bac20c6c","block_number":"960335","gas_limit":"30000000","gas_used":"0","timestamp":"1659720144","extra_data":"0x466c617368626f747320666c617368626c6f636b","base_fee_per_gas":"7","block_hash":"0xea33078b00e6b2926f45ed6d3190a3a6ada75cee342f600cf22fa02a9a2edcb7","transactions_root":"0x7ffe241ea60187fdb0187bfa22de35d1f9bed7ab061d9401fd47e34a54fbede1"},"value":"0","pubkey":"0xb5246e299aeb782fbc7c91b41b3284245b1ed5206134b0028b81dfb974e5900616c67847c2354479934fc4bb75519ee1"},"signature":"0xa775df980d589a87b234cf36b94fbcd40540ab1dffb752a013c02f636d85db60023f7e9d883de8cfdbfd94e0e3b598c01429fee50a5cb8d9fce50557baec2e9f81268f14f4f044b44b1238b7945201f036036d1a25d60e681f3737d4ef3b54b6"}`
+
+	// Decode the bid
+	bid := new(builderApiBellatrix.SignedBuilderBid)
+	require.NoError(t, utils.DecodeJSON(strings.NewReader(bidStr), bid))
+
+	// Verify signature
+	builderDomainKiln, err := _ComputeDomain(DomainTypeAppBuilder, types.GenesisForkVersionKiln, phase0.Root{}.String())
+	require.NoError(t, err)
+	root, err := bid.Message.HashTreeRoot()
+	require.NoError(t, err)
+	ok, err := VerifySignatureRoot(root, builderDomainKiln, bid.Message.Pubkey[:], bid.Signature[:])
 	require.NoError(t, err)
 	require.True(t, ok)
 }
