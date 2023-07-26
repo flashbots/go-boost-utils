@@ -21,6 +21,12 @@ bench:
 fuzz:
 	./scripts/fuzz.sh
 
+fmt:
+	gofmt -s -w .
+	gofumpt -extra -w .
+	gci write .
+	go mod tidy
+
 lint:
 	gofmt -d -s .
 	gofumpt -d -extra .
