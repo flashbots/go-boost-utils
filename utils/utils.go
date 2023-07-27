@@ -112,10 +112,8 @@ func PayloadToPayloadHeader(payload *api.VersionedExecutionPayload) (*api.Versio
 			Version: spec.DataVersionDeneb,
 			Deneb:   header,
 		}, nil
-	case spec.DataVersionPhase0, spec.DataVersionAltair, spec.DataVersionBellatrix:
+	case spec.DataVersionUnknown, spec.DataVersionPhase0, spec.DataVersionAltair, spec.DataVersionBellatrix:
 		return nil, fmt.Errorf("%w: %d", ErrUnsupportedVersion, payload.Version)
-	case spec.DataVersionUnknown:
-		return nil, fmt.Errorf("%w: %d", ErrUnknownVersion, payload.Version)
 	default:
 		return nil, fmt.Errorf("%w: %d", ErrUnknownVersion, payload.Version)
 	}
@@ -224,10 +222,8 @@ func ComputeBlockHash(payload *api.VersionedExecutionPayload) (phase0.Hash32, er
 			return phase0.Hash32{}, err
 		}
 		return phase0.Hash32(header.Hash()), nil
-	case spec.DataVersionPhase0, spec.DataVersionAltair, spec.DataVersionBellatrix:
+	case spec.DataVersionUnknown, spec.DataVersionPhase0, spec.DataVersionAltair, spec.DataVersionBellatrix:
 		return phase0.Hash32{}, fmt.Errorf("%w: %d", ErrUnsupportedVersion, payload.Version)
-	case spec.DataVersionUnknown:
-		return phase0.Hash32{}, fmt.Errorf("%w: %d", ErrUnknownVersion, payload.Version)
 	default:
 		return phase0.Hash32{}, fmt.Errorf("%w: %d", ErrUnknownVersion, payload.Version)
 	}
