@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/attestantio/go-builder-client v0.3.2-0.20230623215408-1b5c4f7aaeaa
 	github.com/attestantio/go-eth2-client v0.17.0
-	github.com/consensys/gnark-crypto v0.11.1
+	github.com/consensys/gnark-crypto v0.11.2
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/stretchr/testify v1.8.4
 	github.com/trailofbits/go-fuzz-utils v0.0.0-20210901195358-9657fcfd256c
@@ -61,10 +61,10 @@ require (
 	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7 // indirect
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.2.2 // indirect
-	golang.org/x/crypto v0.7.0 // indirect
+	golang.org/x/crypto v0.10.0 // indirect
 	golang.org/x/exp v0.0.0-20230206171751-46f607a40771 // indirect
-	golang.org/x/sys v0.7.0 // indirect
-	golang.org/x/text v0.8.0 // indirect
+	golang.org/x/sys v0.9.0 // indirect
+	golang.org/x/text v0.10.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
