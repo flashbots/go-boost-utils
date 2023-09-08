@@ -114,6 +114,8 @@ func PayloadToPayloadHeader(payload *api.VersionedExecutionPayload) (*api.Versio
 		}, nil
 	case spec.DataVersionPhase0, spec.DataVersionAltair, spec.DataVersionBellatrix:
 		return nil, fmt.Errorf("%w: %d", ErrUnsupportedVersion, payload.Version)
+	case spec.DataVersionUnknown:
+		fallthrough
 	default:
 		return nil, fmt.Errorf("%w: %d", ErrUnknownVersion, payload.Version)
 	}
@@ -184,8 +186,8 @@ func denebPayloadToPayloadHeader(payload *deneb.ExecutionPayload) (*deneb.Execut
 		BlockHash:        payload.BlockHash,
 		TransactionsRoot: txRoot,
 		WithdrawalsRoot:  wdRoot,
-		DataGasUsed:      payload.DataGasUsed,
-		ExcessDataGas:    payload.ExcessDataGas,
+		BlobGasUsed:      payload.BlobGasUsed,
+		ExcessBlobGas:    payload.ExcessBlobGas,
 	}, nil
 }
 
@@ -224,6 +226,8 @@ func ComputeBlockHash(payload *api.VersionedExecutionPayload) (phase0.Hash32, er
 		return phase0.Hash32(header.Hash()), nil
 	case spec.DataVersionPhase0, spec.DataVersionAltair, spec.DataVersionBellatrix:
 		return phase0.Hash32{}, fmt.Errorf("%w: %d", ErrUnsupportedVersion, payload.Version)
+	case spec.DataVersionUnknown:
+		fallthrough
 	default:
 		return phase0.Hash32{}, fmt.Errorf("%w: %d", ErrUnknownVersion, payload.Version)
 	}
@@ -280,7 +284,8 @@ func denebExecutionPayloadToBlockHeader(payload *deneb.ExecutionPayload) (*types
 		MixDigest:       payload.PrevRandao,
 		BaseFee:         baseFeePerGas,
 		WithdrawalsHash: &withdrawalsHash,
-		ExcessDataGas:   new(big.Int).SetUint64(payload.ExcessDataGas),
+		BlobGasUsed:     &payload.BlobGasUsed,
+		ExcessBlobGas:   &payload.ExcessBlobGas,
 	}, nil
 }
 
