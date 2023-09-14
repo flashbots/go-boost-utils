@@ -6,6 +6,7 @@ import (
 
 	"github.com/attestantio/go-builder-client/api"
 	"github.com/attestantio/go-eth2-client/spec"
+	"github.com/attestantio/go-eth2-client/spec/bellatrix"
 	"github.com/attestantio/go-eth2-client/spec/capella"
 	"github.com/stretchr/testify/require"
 )
@@ -47,6 +48,23 @@ func TestHexToSignature(t *testing.T) {
 }
 
 func TestComputeHash(t *testing.T) {
+	t.Run("Should compute bellatrix hash", func(t *testing.T) {
+		jsonFile, err := os.Open("../testdata/executionpayload/bellatrix-case0.json")
+		require.NoError(t, err)
+		defer jsonFile.Close()
+
+		payload := new(bellatrix.ExecutionPayload)
+		require.NoError(t, DecodeJSON(jsonFile, payload))
+		versionedPayload := &api.VersionedExecutionPayload{
+			Version:   spec.DataVersionBellatrix,
+			Bellatrix: payload,
+		}
+
+		hash, err := ComputeBlockHash(versionedPayload, nil)
+		require.NoError(t, err)
+		require.Equal(t, "0x6662fb418aa7b5c5c80e2e8bc87be48db82e799c4704368d34ddeb3b12549655", hash.String())
+	})
+
 	t.Run("Should compute capella hash", func(t *testing.T) {
 		jsonFile, err := os.Open("../testdata/executionpayload/capella-case0.json")
 		require.NoError(t, err)
@@ -59,7 +77,7 @@ func TestComputeHash(t *testing.T) {
 			Capella: payload,
 		}
 
-		hash, err := ComputeBlockHash(versionedPayload)
+		hash, err := ComputeBlockHash(versionedPayload, nil)
 		require.NoError(t, err)
 		require.Equal(t, "0x08751ea2076d3ecc606231495a90ba91a66a9b8fb1a2b76c333f1957a1c667c3", hash.String())
 	})
@@ -71,7 +89,7 @@ func TestComputeHash(t *testing.T) {
 			Capella: payload,
 		}
 
-		_, err := ComputeBlockHash(versionedPayload)
+		_, err := ComputeBlockHash(versionedPayload, nil)
 		require.Error(t, err)
 	})
 }

@@ -92,6 +92,16 @@ func PayloadToPayloadHeader(payload *api.VersionedExecutionPayload) (*api.Versio
 	}
 
 	switch payload.Version {
+	case spec.DataVersionBellatrix:
+		header, err := bellatrixPayloadToPayloadHeader(payload.Bellatrix)
+		if err != nil {
+			return nil, err
+		}
+
+		return &api.VersionedExecutionPayloadHeader{
+			Version:   spec.DataVersionBellatrix,
+			Bellatrix: header,
+		}, nil
 	case spec.DataVersionCapella:
 		header, err := capellaPayloadToPayloadHeader(payload.Capella)
 		if err != nil {
@@ -112,13 +122,39 @@ func PayloadToPayloadHeader(payload *api.VersionedExecutionPayload) (*api.Versio
 			Version: spec.DataVersionDeneb,
 			Deneb:   header,
 		}, nil
-	case spec.DataVersionPhase0, spec.DataVersionAltair, spec.DataVersionBellatrix:
+	case spec.DataVersionUnknown, spec.DataVersionPhase0, spec.DataVersionAltair:
 		return nil, fmt.Errorf("%w: %d", ErrUnsupportedVersion, payload.Version)
-	case spec.DataVersionUnknown:
-		fallthrough
 	default:
 		return nil, fmt.Errorf("%w: %d", ErrUnknownVersion, payload.Version)
 	}
+}
+
+func bellatrixPayloadToPayloadHeader(payload *bellatrix.ExecutionPayload) (*bellatrix.ExecutionPayloadHeader, error) {
+	if payload == nil {
+		return nil, ErrNilPayload
+	}
+
+	txRoot, err := deriveTransactionsRoot(payload.Transactions)
+	if err != nil {
+		return nil, fmt.Errorf("failed to derive transactions root: %w", err)
+	}
+
+	return &bellatrix.ExecutionPayloadHeader{
+		ParentHash:       payload.ParentHash,
+		FeeRecipient:     payload.FeeRecipient,
+		StateRoot:        payload.StateRoot,
+		ReceiptsRoot:     payload.ReceiptsRoot,
+		LogsBloom:        payload.LogsBloom,
+		PrevRandao:       payload.PrevRandao,
+		BlockNumber:      payload.BlockNumber,
+		GasLimit:         payload.GasLimit,
+		GasUsed:          payload.GasUsed,
+		Timestamp:        payload.Timestamp,
+		ExtraData:        payload.ExtraData,
+		BaseFeePerGas:    payload.BaseFeePerGas,
+		BlockHash:        payload.BlockHash,
+		TransactionsRoot: txRoot,
+	}, nil
 }
 
 func capellaPayloadToPayloadHeader(payload *capella.ExecutionPayload) (*capella.ExecutionPayloadHeader, error) {
@@ -210,8 +246,14 @@ func deriveWithdrawalsRoot(withdrawals []*capella.Withdrawal) (phase0.Root, erro
 }
 
 // ComputeBlockHash computes the block hash for a given execution payload.
-func ComputeBlockHash(payload *api.VersionedExecutionPayload) (phase0.Hash32, error) {
+func ComputeBlockHash(payload *api.VersionedExecutionPayload, beaconRoot *phase0.Hash32) (phase0.Hash32, error) {
 	switch payload.Version {
+	case spec.DataVersionBellatrix:
+		header, err := bellatrixExecutionPayloadToBlockHeader(payload.Bellatrix)
+		if err != nil {
+			return phase0.Hash32{}, err
+		}
+		return phase0.Hash32(header.Hash()), nil
 	case spec.DataVersionCapella:
 		header, err := capellaExecutionPayloadToBlockHeader(payload.Capella)
 		if err != nil {
@@ -219,18 +261,43 @@ func ComputeBlockHash(payload *api.VersionedExecutionPayload) (phase0.Hash32, er
 		}
 		return phase0.Hash32(header.Hash()), nil
 	case spec.DataVersionDeneb:
-		header, err := denebExecutionPayloadToBlockHeader(payload.Deneb)
+		header, err := denebExecutionPayloadToBlockHeader(payload.Deneb, beaconRoot)
 		if err != nil {
 			return phase0.Hash32{}, err
 		}
 		return phase0.Hash32(header.Hash()), nil
-	case spec.DataVersionPhase0, spec.DataVersionAltair, spec.DataVersionBellatrix:
+	case spec.DataVersionPhase0, spec.DataVersionAltair:
 		return phase0.Hash32{}, fmt.Errorf("%w: %d", ErrUnsupportedVersion, payload.Version)
 	case spec.DataVersionUnknown:
 		fallthrough
 	default:
 		return phase0.Hash32{}, fmt.Errorf("%w: %d", ErrUnknownVersion, payload.Version)
 	}
+}
+
+func bellatrixExecutionPayloadToBlockHeader(payload *bellatrix.ExecutionPayload) (*types.Header, error) {
+	transactionHash, err := deriveTransactionsHash(payload.Transactions)
+	if err != nil {
+		return nil, err
+	}
+	baseFeePerGas := deriveBaseFeePerGas(payload.BaseFeePerGas)
+	return &types.Header{
+		ParentHash:  common.Hash(payload.ParentHash),
+		UncleHash:   types.EmptyUncleHash,
+		Coinbase:    common.Address(payload.FeeRecipient),
+		Root:        payload.StateRoot,
+		TxHash:      transactionHash,
+		ReceiptHash: payload.ReceiptsRoot,
+		Bloom:       payload.LogsBloom,
+		Difficulty:  common.Big0,
+		Number:      new(big.Int).SetUint64(payload.BlockNumber),
+		GasLimit:    payload.GasLimit,
+		GasUsed:     payload.GasUsed,
+		Time:        payload.Timestamp,
+		Extra:       payload.ExtraData,
+		MixDigest:   payload.PrevRandao,
+		BaseFee:     baseFeePerGas,
+	}, nil
 }
 
 func capellaExecutionPayloadToBlockHeader(payload *capella.ExecutionPayload) (*types.Header, error) {
@@ -260,32 +327,38 @@ func capellaExecutionPayloadToBlockHeader(payload *capella.ExecutionPayload) (*t
 	}, nil
 }
 
-func denebExecutionPayloadToBlockHeader(payload *deneb.ExecutionPayload) (*types.Header, error) {
+func denebExecutionPayloadToBlockHeader(payload *deneb.ExecutionPayload, beaconRoot *phase0.Hash32) (*types.Header, error) {
 	transactionHash, err := deriveTransactionsHash(payload.Transactions)
 	if err != nil {
 		return nil, err
 	}
 	baseFeePerGas := payload.BaseFeePerGas.ToBig()
 	withdrawalsHash := deriveWithdrawalsHash(payload.Withdrawals)
+	var beaconRootHash *common.Hash
+	if beaconRoot != nil {
+		root := common.Hash(*beaconRoot)
+		beaconRootHash = &root
+	}
 	return &types.Header{
-		ParentHash:      common.Hash(payload.ParentHash),
-		UncleHash:       types.EmptyUncleHash,
-		Coinbase:        common.Address(payload.FeeRecipient),
-		Root:            common.Hash(payload.StateRoot),
-		TxHash:          transactionHash,
-		ReceiptHash:     common.Hash(payload.ReceiptsRoot),
-		Bloom:           payload.LogsBloom,
-		Difficulty:      common.Big0,
-		Number:          new(big.Int).SetUint64(payload.BlockNumber),
-		GasLimit:        payload.GasLimit,
-		GasUsed:         payload.GasUsed,
-		Time:            payload.Timestamp,
-		Extra:           payload.ExtraData,
-		MixDigest:       payload.PrevRandao,
-		BaseFee:         baseFeePerGas,
-		WithdrawalsHash: &withdrawalsHash,
-		BlobGasUsed:     &payload.BlobGasUsed,
-		ExcessBlobGas:   &payload.ExcessBlobGas,
+		ParentHash:       common.Hash(payload.ParentHash),
+		UncleHash:        types.EmptyUncleHash,
+		Coinbase:         common.Address(payload.FeeRecipient),
+		Root:             common.Hash(payload.StateRoot),
+		TxHash:           transactionHash,
+		ReceiptHash:      common.Hash(payload.ReceiptsRoot),
+		Bloom:            payload.LogsBloom,
+		Difficulty:       common.Big0,
+		Number:           new(big.Int).SetUint64(payload.BlockNumber),
+		GasLimit:         payload.GasLimit,
+		GasUsed:          payload.GasUsed,
+		Time:             payload.Timestamp,
+		Extra:            payload.ExtraData,
+		MixDigest:        payload.PrevRandao,
+		BaseFee:          baseFeePerGas,
+		WithdrawalsHash:  &withdrawalsHash,
+		BlobGasUsed:      &payload.BlobGasUsed,
+		ExcessBlobGas:    &payload.ExcessBlobGas,
+		ParentBeaconRoot: beaconRootHash,
 	}, nil
 }
 
