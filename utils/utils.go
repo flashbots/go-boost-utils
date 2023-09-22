@@ -246,7 +246,7 @@ func deriveWithdrawalsRoot(withdrawals []*capella.Withdrawal) (phase0.Root, erro
 }
 
 // ComputeBlockHash computes the block hash for a given execution payload.
-func ComputeBlockHash(payload *api.VersionedExecutionPayload, beaconRoot *phase0.Hash32) (phase0.Hash32, error) {
+func ComputeBlockHash(payload *api.VersionedExecutionPayload, beaconRoot *phase0.Root) (phase0.Hash32, error) {
 	switch payload.Version {
 	case spec.DataVersionBellatrix:
 		header, err := bellatrixExecutionPayloadToBlockHeader(payload.Bellatrix)
@@ -327,7 +327,7 @@ func capellaExecutionPayloadToBlockHeader(payload *capella.ExecutionPayload) (*t
 	}, nil
 }
 
-func denebExecutionPayloadToBlockHeader(payload *deneb.ExecutionPayload, beaconRoot *phase0.Hash32) (*types.Header, error) {
+func denebExecutionPayloadToBlockHeader(payload *deneb.ExecutionPayload, beaconRoot *phase0.Root) (*types.Header, error) {
 	transactionHash, err := deriveTransactionsHash(payload.Transactions)
 	if err != nil {
 		return nil, err
