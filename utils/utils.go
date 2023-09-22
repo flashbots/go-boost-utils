@@ -246,7 +246,7 @@ func deriveWithdrawalsRoot(withdrawals []*capella.Withdrawal) (phase0.Root, erro
 }
 
 // ComputeBlockHash computes the block hash for a given execution payload.
-func ComputeBlockHash(payload *api.VersionedExecutionPayload, beaconRoot *phase0.Root) (phase0.Hash32, error) {
+func ComputeBlockHash(payload *api.VersionedExecutionPayload, parentBeaconRoot *phase0.Root) (phase0.Hash32, error) {
 	switch payload.Version {
 	case spec.DataVersionBellatrix:
 		header, err := bellatrixExecutionPayloadToBlockHeader(payload.Bellatrix)
@@ -261,7 +261,7 @@ func ComputeBlockHash(payload *api.VersionedExecutionPayload, beaconRoot *phase0
 		}
 		return phase0.Hash32(header.Hash()), nil
 	case spec.DataVersionDeneb:
-		header, err := denebExecutionPayloadToBlockHeader(payload.Deneb, beaconRoot)
+		header, err := denebExecutionPayloadToBlockHeader(payload.Deneb, parentBeaconRoot)
 		if err != nil {
 			return phase0.Hash32{}, err
 		}
@@ -327,7 +327,7 @@ func capellaExecutionPayloadToBlockHeader(payload *capella.ExecutionPayload) (*t
 	}, nil
 }
 
-func denebExecutionPayloadToBlockHeader(payload *deneb.ExecutionPayload, beaconRoot *phase0.Root) (*types.Header, error) {
+func denebExecutionPayloadToBlockHeader(payload *deneb.ExecutionPayload, parentBeaconRoot *phase0.Root) (*types.Header, error) {
 	transactionHash, err := deriveTransactionsHash(payload.Transactions)
 	if err != nil {
 		return nil, err
@@ -335,8 +335,8 @@ func denebExecutionPayloadToBlockHeader(payload *deneb.ExecutionPayload, beaconR
 	baseFeePerGas := payload.BaseFeePerGas.ToBig()
 	withdrawalsHash := deriveWithdrawalsHash(payload.Withdrawals)
 	var beaconRootHash *common.Hash
-	if beaconRoot != nil {
-		root := common.Hash(*beaconRoot)
+	if parentBeaconRoot != nil {
+		root := common.Hash(*parentBeaconRoot)
 		beaconRootHash = &root
 	}
 	return &types.Header{
