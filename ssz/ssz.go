@@ -13,6 +13,7 @@ var (
 	DomainBuilder = ComputeDomain(DomainTypeAppBuilder, phase0.Version{}, phase0.Root{})
 
 	DomainTypeBeaconProposer = phase0.DomainType{0x00, 0x00, 0x00, 0x00}
+	DomainTypeBlobSidecar    = phase0.DomainType{0x0B, 0x00, 0x00, 0x00}
 	DomainTypeAppBuilder     = phase0.DomainType{0x00, 0x00, 0x00, 0x01}
 )
 
