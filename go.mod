@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/attestantio/go-builder-client v0.3.2-0.20230623215408-1b5c4f7aaeaa
-	github.com/attestantio/go-eth2-client v0.18.3
+	github.com/attestantio/go-eth2-client v0.19.7
 	github.com/consensys/gnark-crypto v0.11.2
 	github.com/ethereum/go-ethereum v1.13.0
 	github.com/stretchr/testify v1.8.4
