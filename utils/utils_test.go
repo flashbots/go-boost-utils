@@ -8,6 +8,8 @@ import (
 	"github.com/attestantio/go-eth2-client/spec"
 	"github.com/attestantio/go-eth2-client/spec/bellatrix"
 	"github.com/attestantio/go-eth2-client/spec/capella"
+	"github.com/attestantio/go-eth2-client/spec/deneb"
+	"github.com/attestantio/go-eth2-client/spec/phase0"
 	"github.com/stretchr/testify/require"
 )
 
@@ -80,6 +82,24 @@ func TestComputeHash(t *testing.T) {
 		hash, err := ComputeBlockHash(versionedPayload, nil)
 		require.NoError(t, err)
 		require.Equal(t, "0x08751ea2076d3ecc606231495a90ba91a66a9b8fb1a2b76c333f1957a1c667c3", hash.String())
+	})
+
+	t.Run("Should compute deneb hash", func(t *testing.T) {
+		jsonFile, err := os.Open("../testdata/executionpayload/deneb-case0.json")
+		require.NoError(t, err)
+		defer jsonFile.Close()
+
+		payload := new(deneb.ExecutionPayload)
+		require.NoError(t, DecodeJSON(jsonFile, payload))
+		versionedPayload := &api.VersionedExecutionPayload{
+			Version: spec.DataVersionDeneb,
+			Deneb:   payload,
+		}
+		h, _ := HexToHash("0xa119064ee9c03e2c7ad5821b6077606c64f36542eda12ed61a1edc5f898a17fc")
+		r := phase0.Root(h)
+		hash, err := ComputeBlockHash(versionedPayload, &r)
+		require.NoError(t, err)
+		require.Equal(t, "0xd9491c8ae79611d0f08806f29b1e2e86cb8f64512aa381e543dcae257dda80d6", hash.String())
 	})
 
 	t.Run("Should error on unknown version", func(t *testing.T) {
