@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	bls12381 "github.com/consensys/gnark-crypto/ecc/bls12-381"
 	"io"
 	"math/big"
 
@@ -28,6 +29,8 @@ var (
 	ErrNilPayload         = errors.New("nil payload")
 	ErrUnsupportedVersion = errors.New("unsupported version")
 	ErrUnknownVersion     = errors.New("unknown version")
+	ErrInvalidPubkey      = errors.New("invalid pubkey")
+	ErrInvalidSignature   = errors.New("invalid signature")
 )
 
 func BlsPublicKeyToPublicKey(blsPubKey *bls.PublicKey) (ret phase0.BLSPubKey, err error) {
@@ -64,6 +67,10 @@ func HexToPubkey(s string) (ret phase0.BLSPubKey, err error) {
 	if len(bytes) != len(ret) {
 		return phase0.BLSPubKey{}, ErrLength
 	}
+	_, err = new(bls12381.G1Affine).SetBytes(bytes)
+	if err != nil {
+		return phase0.BLSPubKey{}, ErrInvalidPubkey
+	}
 	copy(ret[:], bytes)
 	return
 }
@@ -73,6 +80,10 @@ func HexToSignature(s string) (ret phase0.BLSSignature, err error) {
 	bytes, err := hexutil.Decode(s)
 	if len(bytes) != len(ret) {
 		return phase0.BLSSignature{}, ErrLength
+	}
+	_, err = new(bls12381.G2Affine).SetBytes(bytes)
+	if err != nil {
+		return phase0.BLSSignature{}, ErrInvalidSignature
 	}
 	copy(ret[:], bytes)
 	return
