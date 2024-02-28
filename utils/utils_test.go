@@ -32,31 +32,73 @@ func TestHexToAddress(t *testing.T) {
 }
 
 func TestHexToPubkey(t *testing.T) {
-	_, err := HexToPubkey("0x01")
-	require.Error(t, err)
+	testCases := []struct {
+		name   string
+		pubkey string
 
-	// This is an invalid pubkey
-	_, err = HexToPubkey("0xed7f862045422bd51ba732730ce993c94d2545e5db1112102026343904fcdf6f5cf37926a3688444703772ed80fa223f")
-	require.Error(t, err)
+		expectedErr error
+	}{
+		{
+			name:        "Valid pubkey",
+			pubkey:      "0xac6e77dfe25ecd6110b8e780608cce0dab71fdd5ebea22a16c0205200f2f8e2e3ad3b71d3499c54ad14d6c21b41a37ae",
+			expectedErr: nil,
+		},
+		{
+			name:        "Invalid pubkey (wrong length)",
+			pubkey:      "0x123456",
+			expectedErr: ErrLength,
+		},
+		{
+			name:        "Invalid pubkey (not on the curve)",
+			pubkey:      "0xed7f862045422bd51ba732730ce993c94d2545e5db1112102026343904fcdf6f5cf37926a3688444703772ed80fa223f",
+			expectedErr: ErrInvalidPubkey,
+		},
+	}
 
-	// This is a valid pubkey
-	a, err := HexToPubkey("0xac6e77dfe25ecd6110b8e780608cce0dab71fdd5ebea22a16c0205200f2f8e2e3ad3b71d3499c54ad14d6c21b41a37ae")
-	require.NoError(t, err)
-	require.Equal(t, "0xac6e77dfe25ecd6110b8e780608cce0dab71fdd5ebea22a16c0205200f2f8e2e3ad3b71d3499c54ad14d6c21b41a37ae", a.String())
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			result, err := HexToPubkey(tt.pubkey)
+			require.Equal(t, tt.expectedErr, err)
+			if tt.expectedErr == nil {
+				require.Equal(t, tt.pubkey, result.String())
+			}
+		})
+	}
 }
 
 func TestHexToSignature(t *testing.T) {
-	_, err := HexToSignature("0x01")
-	require.Error(t, err)
+	testCases := []struct {
+		name      string
+		signature string
 
-	// This is an invalid signature
-	_, err = HexToSignature("0xb8f03e639b91fa8e9892f66c798f07f6e7b3453234f643b2c06a35c5149cf6d85e4e1572c33549fe749292445fbff9e0739c78159324c35dc1a90e5745ca70c8caf1b63fb6678d81bd2d5cb6baeb1462df7a93877d0e22a31dd6438334536d9a")
-	require.Error(t, err)
+		expectedErr error
+	}{
+		{
+			name:        "Valid signature",
+			signature:   "0x8069aa021666163aae46d353c348aa913fb5050062e05ab764c8eef99407a8befcd46190b30cc40e40ee8c197356959816799d62e85f640ef76b4be1b08a741949230fbde49589125537daad06c23a66838725d89e3504bc21559a91534f6712",
+			expectedErr: nil,
+		},
+		{
+			name:        "Invalid signature (wrong length)",
+			signature:   "0x123456",
+			expectedErr: ErrLength,
+		},
+		{
+			name:        "Invalid signature (not on the curve)",
+			signature:   "0xb8f03e639b91fa8e9892f66c798f07f6e7b3453234f643b2c06a35c5149cf6d85e4e1572c33549fe749292445fbff9e0739c78159324c35dc1a90e5745ca70c8caf1b63fb6678d81bd2d5cb6baeb1462df7a93877d0e22a31dd6438334536d9a",
+			expectedErr: ErrInvalidSignature,
+		},
+	}
 
-	// This is a valid signature
-	a, err := HexToSignature("0x8069aa021666163aae46d353c348aa913fb5050062e05ab764c8eef99407a8befcd46190b30cc40e40ee8c197356959816799d62e85f640ef76b4be1b08a741949230fbde49589125537daad06c23a66838725d89e3504bc21559a91534f6712")
-	require.NoError(t, err)
-	require.Equal(t, "0x8069aa021666163aae46d353c348aa913fb5050062e05ab764c8eef99407a8befcd46190b30cc40e40ee8c197356959816799d62e85f640ef76b4be1b08a741949230fbde49589125537daad06c23a66838725d89e3504bc21559a91534f6712", a.String())
+	for _, tt := range testCases {
+		t.Run(tt.name, func(t *testing.T) {
+			result, err := HexToSignature(tt.signature)
+			require.Equal(t, tt.expectedErr, err)
+			if tt.expectedErr == nil {
+				require.Equal(t, tt.signature, result.String())
+			}
+		})
+	}
 }
 
 func TestComputeHash(t *testing.T) {
