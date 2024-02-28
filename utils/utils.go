@@ -65,7 +65,7 @@ func HexToAddress(s string) (ret bellatrix.ExecutionAddress, err error) {
 func HexToPubkey(s string) (ret phase0.BLSPubKey, err error) {
 	bytes, err := hexutil.Decode(s)
 	if err != nil {
-		return phase0.BLSPubKey{}, ErrInvalidPubkey
+		return phase0.BLSPubKey{}, err
 	}
 	if len(bytes) != len(ret) {
 		return phase0.BLSPubKey{}, ErrLength
@@ -82,7 +82,7 @@ func HexToPubkey(s string) (ret phase0.BLSPubKey, err error) {
 func HexToSignature(s string) (ret phase0.BLSSignature, err error) {
 	bytes, err := hexutil.Decode(s)
 	if err != nil {
-		return phase0.BLSSignature{}, ErrInvalidSignature
+		return phase0.BLSSignature{}, err
 	}
 	if len(bytes) != len(ret) {
 		return phase0.BLSSignature{}, ErrLength
