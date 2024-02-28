@@ -114,7 +114,7 @@ func TestHexToSignature(t *testing.T) {
 			expectedErr: "hex string without 0x prefix",
 		},
 		{
-			name:        "Invalid pubkey (not hex)",
+			name:        "Invalid signature (not hex)",
 			signature:   "0xthisisnothex",
 			valid:       false,
 			expectedErr: "invalid hex string",
