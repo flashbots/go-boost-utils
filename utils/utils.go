@@ -15,6 +15,7 @@ import (
 	"github.com/attestantio/go-eth2-client/spec/phase0"
 	utilbellatrix "github.com/attestantio/go-eth2-client/util/bellatrix"
 	utilcapella "github.com/attestantio/go-eth2-client/util/capella"
+	bls12381 "github.com/consensys/gnark-crypto/ecc/bls12-381"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -28,6 +29,8 @@ var (
 	ErrNilPayload         = errors.New("nil payload")
 	ErrUnsupportedVersion = errors.New("unsupported version")
 	ErrUnknownVersion     = errors.New("unknown version")
+	ErrInvalidPubkey      = errors.New("invalid pubkey")
+	ErrInvalidSignature   = errors.New("invalid signature")
 )
 
 func BlsPublicKeyToPublicKey(blsPubKey *bls.PublicKey) (ret phase0.BLSPubKey, err error) {
@@ -61,8 +64,15 @@ func HexToAddress(s string) (ret bellatrix.ExecutionAddress, err error) {
 // HexToPubkey takes a hex string and returns a PublicKey
 func HexToPubkey(s string) (ret phase0.BLSPubKey, err error) {
 	bytes, err := hexutil.Decode(s)
+	if err != nil {
+		return phase0.BLSPubKey{}, err
+	}
 	if len(bytes) != len(ret) {
 		return phase0.BLSPubKey{}, ErrLength
+	}
+	_, err = new(bls12381.G1Affine).SetBytes(bytes)
+	if err != nil {
+		return phase0.BLSPubKey{}, ErrInvalidPubkey
 	}
 	copy(ret[:], bytes)
 	return
@@ -71,8 +81,15 @@ func HexToPubkey(s string) (ret phase0.BLSPubKey, err error) {
 // HexToSignature takes a hex string and returns a Signature
 func HexToSignature(s string) (ret phase0.BLSSignature, err error) {
 	bytes, err := hexutil.Decode(s)
+	if err != nil {
+		return phase0.BLSSignature{}, err
+	}
 	if len(bytes) != len(ret) {
 		return phase0.BLSSignature{}, ErrLength
+	}
+	_, err = new(bls12381.G2Affine).SetBytes(bytes)
+	if err != nil {
+		return phase0.BLSSignature{}, ErrInvalidSignature
 	}
 	copy(ret[:], bytes)
 	return
