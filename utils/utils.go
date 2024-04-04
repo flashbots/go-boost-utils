@@ -12,9 +12,11 @@ import (
 	"github.com/attestantio/go-eth2-client/spec/bellatrix"
 	"github.com/attestantio/go-eth2-client/spec/capella"
 	"github.com/attestantio/go-eth2-client/spec/deneb"
+	"github.com/attestantio/go-eth2-client/spec/electra"
 	"github.com/attestantio/go-eth2-client/spec/phase0"
 	utilbellatrix "github.com/attestantio/go-eth2-client/util/bellatrix"
 	utilcapella "github.com/attestantio/go-eth2-client/util/capella"
+	utilelectra "github.com/attestantio/go-eth2-client/util/electra"
 	bls12381 "github.com/consensys/gnark-crypto/ecc/bls12-381"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -139,6 +141,16 @@ func PayloadToPayloadHeader(payload *api.VersionedExecutionPayload) (*api.Versio
 			Version: spec.DataVersionDeneb,
 			Deneb:   header,
 		}, nil
+	case spec.DataVersionElectra:
+		header, err := electraPayloadToPayloadHeader(payload.Electra)
+		if err != nil {
+			return nil, err
+		}
+
+		return &api.VersionedExecutionPayloadHeader{
+			Version: spec.DataVersionElectra,
+			Electra: header,
+		}, nil
 	case spec.DataVersionUnknown, spec.DataVersionPhase0, spec.DataVersionAltair:
 		return nil, fmt.Errorf("%w: %d", ErrUnsupportedVersion, payload.Version)
 	default:
@@ -244,6 +256,48 @@ func denebPayloadToPayloadHeader(payload *deneb.ExecutionPayload) (*deneb.Execut
 	}, nil
 }
 
+func electraPayloadToPayloadHeader(payload *electra.ExecutionPayload) (*electra.ExecutionPayloadHeader, error) {
+	if payload == nil {
+		return nil, ErrNilPayload
+	}
+
+	txRoot, err := deriveTransactionsRoot(payload.Transactions)
+	if err != nil {
+		return nil, fmt.Errorf("failed to derive transactions root: %w", err)
+	}
+
+	wdRoot, err := deriveWithdrawalsRoot(payload.Withdrawals)
+	if err != nil {
+		return nil, fmt.Errorf("failed to derive withdrawals root: %w", err)
+	}
+
+	exitsRoot, err := deriveExitsRoot(payload.Exits)
+	if err != nil {
+		return nil, fmt.Errorf("failed to derive withdrawals root: %w", err)
+	}
+
+	return &electra.ExecutionPayloadHeader{
+		ParentHash:       payload.ParentHash,
+		FeeRecipient:     payload.FeeRecipient,
+		StateRoot:        payload.StateRoot,
+		ReceiptsRoot:     payload.ReceiptsRoot,
+		LogsBloom:        payload.LogsBloom,
+		PrevRandao:       payload.PrevRandao,
+		BlockNumber:      payload.BlockNumber,
+		GasLimit:         payload.GasLimit,
+		GasUsed:          payload.GasUsed,
+		Timestamp:        payload.Timestamp,
+		ExtraData:        payload.ExtraData,
+		BaseFeePerGas:    payload.BaseFeePerGas,
+		BlockHash:        payload.BlockHash,
+		TransactionsRoot: txRoot,
+		WithdrawalsRoot:  wdRoot,
+		BlobGasUsed:      payload.BlobGasUsed,
+		ExcessBlobGas:    payload.ExcessBlobGas,
+		ExitsRoot:        exitsRoot,
+	}, nil
+}
+
 func deriveTransactionsRoot(transactions []bellatrix.Transaction) (phase0.Root, error) {
 	txs := utilbellatrix.ExecutionPayloadTransactions{Transactions: transactions}
 	txRoot, err := txs.HashTreeRoot()
@@ -260,6 +314,15 @@ func deriveWithdrawalsRoot(withdrawals []*capella.Withdrawal) (phase0.Root, erro
 		return phase0.Root{}, err
 	}
 	return wdRoot, nil
+}
+
+func deriveExitsRoot(exits []*electra.ExecutionLayerExit) (phase0.Root, error) {
+	exs := utilelectra.ExecutionPayloadExits{Exits: exits}
+	exitsRoot, err := exs.HashTreeRoot()
+	if err != nil {
+		return phase0.Root{}, err
+	}
+	return exitsRoot, nil
 }
 
 // ComputeBlockHash computes the block hash for a given execution payload.
@@ -279,6 +342,12 @@ func ComputeBlockHash(payload *api.VersionedExecutionPayload, parentBeaconRoot *
 		return phase0.Hash32(header.Hash()), nil
 	case spec.DataVersionDeneb:
 		header, err := denebExecutionPayloadToBlockHeader(payload.Deneb, parentBeaconRoot)
+		if err != nil {
+			return phase0.Hash32{}, err
+		}
+		return phase0.Hash32(header.Hash()), nil
+	case spec.DataVersionElectra:
+		header, err := electraExecutionPayloadToBlockHeader(payload.Electra, parentBeaconRoot)
 		if err != nil {
 			return phase0.Hash32{}, err
 		}
@@ -379,6 +448,46 @@ func denebExecutionPayloadToBlockHeader(payload *deneb.ExecutionPayload, parentB
 	}, nil
 }
 
+func electraExecutionPayloadToBlockHeader(payload *electra.ExecutionPayload, parentBeaconRoot *phase0.Root) (*types.Header, error) {
+	transactionHash, err := deriveTransactionsHash(payload.Transactions)
+	if err != nil {
+		return nil, err
+	}
+	baseFeePerGas := payload.BaseFeePerGas.ToBig()
+	withdrawalsHash := deriveWithdrawalsHash(payload.Withdrawals)
+	// TODO(electra): add new fields.
+	// exitsHash := deriveExitsHash(payload.Exits)
+	var beaconRootHash *common.Hash
+	if parentBeaconRoot != nil {
+		root := common.Hash(*parentBeaconRoot)
+		beaconRootHash = &root
+	}
+	// TODO(electra): we're stuck until geth updates this.
+	return &types.Header{
+		ParentHash:       common.Hash(payload.ParentHash),
+		UncleHash:        types.EmptyUncleHash,
+		Coinbase:         common.Address(payload.FeeRecipient),
+		Root:             common.Hash(payload.StateRoot),
+		TxHash:           transactionHash,
+		ReceiptHash:      common.Hash(payload.ReceiptsRoot),
+		Bloom:            payload.LogsBloom,
+		Difficulty:       common.Big0,
+		Number:           new(big.Int).SetUint64(payload.BlockNumber),
+		GasLimit:         payload.GasLimit,
+		GasUsed:          payload.GasUsed,
+		Time:             payload.Timestamp,
+		Extra:            payload.ExtraData,
+		MixDigest:        payload.PrevRandao,
+		BaseFee:          baseFeePerGas,
+		WithdrawalsHash:  &withdrawalsHash,
+		BlobGasUsed:      &payload.BlobGasUsed,
+		ExcessBlobGas:    &payload.ExcessBlobGas,
+		ParentBeaconRoot: beaconRootHash,
+		// TODO(electra): add new fields.
+		// ExitsHash: &exitsHash,
+	}, nil
+}
+
 func deriveTransactionsHash(transactions []bellatrix.Transaction) (common.Hash, error) {
 	transactionData := make([]*types.Transaction, len(transactions))
 	for i, encTx := range transactions {
@@ -403,6 +512,21 @@ func deriveWithdrawalsHash(withdrawals []*capella.Withdrawal) common.Hash {
 		}
 	}
 	return types.DeriveSha(types.Withdrawals(withdrawalData), trie.NewStackTrie(nil))
+}
+
+func deriveExitsHash(exits []*electra.ExecutionLayerExit) common.Hash {
+	// TODO(electra): we're stuck until geth updates this.
+	/*
+		exitData := make([]*types.Exit, len(exits))
+		for i, e := range exits {
+			exitData[i] = &types.Exit{
+				SourceAddress:   common.Address(e.SourceAddress),
+				ValidatorPubkey: e.ValidatorPubkey,
+			}
+		}
+		return types.DeriveSha(types.Exits(exitData), trie.NewStackTrie(nil))
+	*/
+	return common.Hash{}
 }
 
 func deriveBaseFeePerGas(baseFeePerGas [32]byte) *big.Int {
