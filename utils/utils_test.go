@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"github.com/attestantio/go-eth2-client/spec/electra"
 	"os"
 	"testing"
 
@@ -172,6 +173,26 @@ func TestComputeHash(t *testing.T) {
 		hash, err := ComputeBlockHash(versionedPayload, &r)
 		require.NoError(t, err)
 		require.Equal(t, "0xd9491c8ae79611d0f08806f29b1e2e86cb8f64512aa381e543dcae257dda80d6", hash.String())
+	})
+
+	/* TODO(electra): update with real electra execution payload & known hash */
+	t.Run("Should compute electra hash", func(t *testing.T) {
+		jsonFile, err := os.Open("../testdata/executionpayload/electra-case0.json")
+		require.NoError(t, err)
+		defer jsonFile.Close()
+
+		payload := new(electra.ExecutionPayload)
+		require.NoError(t, DecodeJSON(jsonFile, payload))
+		versionedPayload := &api.VersionedExecutionPayload{
+			Version: spec.DataVersionElectra,
+			Electra: payload,
+		}
+		h, _ := HexToHash("0xa119064ee9c03e2c7ad5821b6077606c64f36542eda12ed61a1edc5f898a17fc")
+		r := phase0.Root(h)
+		hash, err := ComputeBlockHash(versionedPayload, &r)
+		require.NoError(t, err)
+		/* TODO(electra): not actually sure this is the right hash */
+		require.Equal(t, "0xd936ca0c33434bf70ffbb999cc6699ca300c9717b5dc12850658c6c4da2261ee", hash.String())
 	})
 
 	t.Run("Should error on unknown version", func(t *testing.T) {

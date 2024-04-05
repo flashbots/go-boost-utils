@@ -455,14 +455,12 @@ func electraExecutionPayloadToBlockHeader(payload *electra.ExecutionPayload, par
 	}
 	baseFeePerGas := payload.BaseFeePerGas.ToBig()
 	withdrawalsHash := deriveWithdrawalsHash(payload.Withdrawals)
-	// TODO(electra): add new fields.
-	// exitsHash := deriveExitsHash(payload.Exits)
+	exitsHash := deriveExitsHash(payload.Exits)
 	var beaconRootHash *common.Hash
 	if parentBeaconRoot != nil {
 		root := common.Hash(*parentBeaconRoot)
 		beaconRootHash = &root
 	}
-	// TODO(electra): we're stuck until geth updates this.
 	return &types.Header{
 		ParentHash:       common.Hash(payload.ParentHash),
 		UncleHash:        types.EmptyUncleHash,
@@ -483,8 +481,7 @@ func electraExecutionPayloadToBlockHeader(payload *electra.ExecutionPayload, par
 		BlobGasUsed:      &payload.BlobGasUsed,
 		ExcessBlobGas:    &payload.ExcessBlobGas,
 		ParentBeaconRoot: beaconRootHash,
-		// TODO(electra): add new fields.
-		// ExitsHash: &exitsHash,
+		ExitsHash:        &exitsHash,
 	}, nil
 }
 
@@ -515,18 +512,14 @@ func deriveWithdrawalsHash(withdrawals []*capella.Withdrawal) common.Hash {
 }
 
 func deriveExitsHash(exits []*electra.ExecutionLayerExit) common.Hash {
-	// TODO(electra): we're stuck until geth updates this.
-	/*
-		exitData := make([]*types.Exit, len(exits))
-		for i, e := range exits {
-			exitData[i] = &types.Exit{
-				SourceAddress:   common.Address(e.SourceAddress),
-				ValidatorPubkey: e.ValidatorPubkey,
-			}
+	exitData := make([]*types.Exit, len(exits))
+	for i, e := range exits {
+		exitData[i] = &types.Exit{
+			SourceAddress:   common.Address(e.SourceAddress),
+			ValidatorPubkey: e.ValidatorPubkey,
 		}
-		return types.DeriveSha(types.Exits(exitData), trie.NewStackTrie(nil))
-	*/
-	return common.Hash{}
+	}
+	return types.DeriveSha(types.Exits(exitData), trie.NewStackTrie(nil))
 }
 
 func deriveBaseFeePerGas(baseFeePerGas [32]byte) *big.Int {
