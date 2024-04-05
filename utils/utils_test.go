@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"github.com/attestantio/go-eth2-client/spec/electra"
 	"os"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/attestantio/go-eth2-client/spec/bellatrix"
 	"github.com/attestantio/go-eth2-client/spec/capella"
 	"github.com/attestantio/go-eth2-client/spec/deneb"
+	"github.com/attestantio/go-eth2-client/spec/electra"
 	"github.com/attestantio/go-eth2-client/spec/phase0"
 	"github.com/stretchr/testify/require"
 )
