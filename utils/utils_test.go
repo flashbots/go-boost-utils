@@ -192,7 +192,7 @@ func TestComputeHash(t *testing.T) {
 		hash, err := ComputeBlockHash(versionedPayload, &r)
 		require.NoError(t, err)
 		/* TODO(electra): not actually sure this is the right hash */
-		require.Equal(t, "0xd936ca0c33434bf70ffbb999cc6699ca300c9717b5dc12850658c6c4da2261ee", hash.String())
+		require.Equal(t, "0xe485e2a6cbb8a9f263d150dbee496d899f5d18f2b5a376b8330e2fcf5df9d54f", hash.String())
 	})
 
 	t.Run("Should error on unknown version", func(t *testing.T) {

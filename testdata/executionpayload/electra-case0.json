@@ -216,6 +216,15 @@
   ],
   "blob_gas_used": "262144",
   "excess_blob_gas": "46399488",
+  "deposit_receipts": [
+    {
+      "pubkey": "0x977e9c64a409aceb31101fff9775e76524c4c1dcf64910062e66e3133a4a4b0447ce0fd096129e3a329adeb302f7ca0c",
+      "withdrawal_credentials": "0x01f24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+      "amount": "1234",
+      "signature": "0x50c43c26b8ea9b8c00fbbe16d2d61ea91abdeab72e9b3a84495b25c027dd7b93a8964fb5f1821617aed572a964baf470778a662a74a5b06f8f983bc107ed5b387cb324fa08355f30979878c3c7a0b98b0f3a1a2855a11387e98c0d730f88fa0b",
+      "index": "5678"
+    }
+  ],
   "exits": [
     {
       "source_address": "0x8e609ac80f4324e499a6efd24f221a2caa868224",
