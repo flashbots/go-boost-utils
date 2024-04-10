@@ -225,26 +225,31 @@
       "index": "5678"
     }
   ],
-  "exits": [
+  "withdraw_requests": [
     {
       "source_address": "0x8e609ac80f4324e499a6efd24f221a2caa868224",
-      "validator_pubkey": "0x977e9c64a409aceb31101fff9775e76524c4c1dcf64910062e66e3133a4a4b0447ce0fd096129e3a329adeb302f7ca0c"
+      "validator_pubkey": "0x977e9c64a409aceb31101fff9775e76524c4c1dcf64910062e66e3133a4a4b0447ce0fd096129e3a329adeb302f7ca0c",
+      "amount": "0"
     },
     {
       "source_address": "0xb9d7934878b5fb9610b3fe8a5e441e8fad7e293f",
-      "validator_pubkey": "0x93a44c6999cff05bcb6770249ba5a74753dcfecfc6aefae564a0e067a1576ab4b9eff12a3c1623107fb3f3c6dd838859"
+      "validator_pubkey": "0x93a44c6999cff05bcb6770249ba5a74753dcfecfc6aefae564a0e067a1576ab4b9eff12a3c1623107fb3f3c6dd838859",
+      "amount": "10"
     },
     {
       "source_address": "0xb9d7934878b5fb9610b3fe8a5e441e8fad7e293f",
-      "validator_pubkey": "0x870e4932e9e6a4921941286c3f7eb07410ba844f765ba831cf92b6ac0f9a86e080f489205086fd9b64093b0b39abfbac"
+      "validator_pubkey": "0x870e4932e9e6a4921941286c3f7eb07410ba844f765ba831cf92b6ac0f9a86e080f489205086fd9b64093b0b39abfbac",
+      "amount": "100"
     },
     {
       "source_address": "0x8d0b4dfccc8b2a268486d9754b135d8ad1ee7258",
-      "validator_pubkey": "0x8a049217690890447ee0a91502f8b40581f5889e023cf6261a336c8f60afd239722d170751f1d7f1a15626e7227e3ffc"
+      "validator_pubkey": "0x8a049217690890447ee0a91502f8b40581f5889e023cf6261a336c8f60afd239722d170751f1d7f1a15626e7227e3ffc",
+      "amount": "1000"
     },
     {
       "source_address": "0xd4e11c28e04c0c2bf370b7a9989498b7ea02493f",
-      "validator_pubkey": "0x879bca77468086bd2ca90ba22bce90046738938cebf5d2facea448229088f01771f4a6a2efcfd548473035e0fd43008a"
+      "validator_pubkey": "0x879bca77468086bd2ca90ba22bce90046738938cebf5d2facea448229088f01771f4a6a2efcfd548473035e0fd43008a",
+      "amount": "10000"
     }
   ]
 }
