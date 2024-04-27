@@ -225,7 +225,7 @@
       "index": "5678"
     }
   ],
-  "withdraw_requests": [
+  "withdrawal_requests": [
     {
       "source_address": "0x8e609ac80f4324e499a6efd24f221a2caa868224",
       "validator_pubkey": "0x977e9c64a409aceb31101fff9775e76524c4c1dcf64910062e66e3133a4a4b0447ce0fd096129e3a329adeb302f7ca0c",

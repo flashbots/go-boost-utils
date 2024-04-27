@@ -276,31 +276,31 @@ func electraPayloadToPayloadHeader(payload *electra.ExecutionPayload) (*electra.
 		return nil, fmt.Errorf("failed to derive deposit receipts root: %w", err)
 	}
 
-	withdrawRequestsRoot, err := deriveWithdrawRequestsRoot(payload.WithdrawRequests)
+	withdrawalRequestsRoot, err := deriveWithdrawalRequestsRoot(payload.WithdrawalRequests)
 	if err != nil {
 		return nil, fmt.Errorf("failed to derive exits root: %w", err)
 	}
 
 	return &electra.ExecutionPayloadHeader{
-		ParentHash:           payload.ParentHash,
-		FeeRecipient:         payload.FeeRecipient,
-		StateRoot:            payload.StateRoot,
-		ReceiptsRoot:         payload.ReceiptsRoot,
-		LogsBloom:            payload.LogsBloom,
-		PrevRandao:           payload.PrevRandao,
-		BlockNumber:          payload.BlockNumber,
-		GasLimit:             payload.GasLimit,
-		GasUsed:              payload.GasUsed,
-		Timestamp:            payload.Timestamp,
-		ExtraData:            payload.ExtraData,
-		BaseFeePerGas:        payload.BaseFeePerGas,
-		BlockHash:            payload.BlockHash,
-		TransactionsRoot:     txRoot,
-		WithdrawalsRoot:      wdRoot,
-		BlobGasUsed:          payload.BlobGasUsed,
-		ExcessBlobGas:        payload.ExcessBlobGas,
-		DepositReceiptsRoot:  depositReceiptsRoot,
-		WithdrawRequestsRoot: withdrawRequestsRoot,
+		ParentHash:             payload.ParentHash,
+		FeeRecipient:           payload.FeeRecipient,
+		StateRoot:              payload.StateRoot,
+		ReceiptsRoot:           payload.ReceiptsRoot,
+		LogsBloom:              payload.LogsBloom,
+		PrevRandao:             payload.PrevRandao,
+		BlockNumber:            payload.BlockNumber,
+		GasLimit:               payload.GasLimit,
+		GasUsed:                payload.GasUsed,
+		Timestamp:              payload.Timestamp,
+		ExtraData:              payload.ExtraData,
+		BaseFeePerGas:          payload.BaseFeePerGas,
+		BlockHash:              payload.BlockHash,
+		TransactionsRoot:       txRoot,
+		WithdrawalsRoot:        wdRoot,
+		BlobGasUsed:            payload.BlobGasUsed,
+		ExcessBlobGas:          payload.ExcessBlobGas,
+		DepositReceiptsRoot:    depositReceiptsRoot,
+		WithdrawalRequestsRoot: withdrawalRequestsRoot,
 	}, nil
 }
 
@@ -331,13 +331,13 @@ func deriveDepositReceiptsRoot(depositReceipts []*electra.DepositReceipt) (phase
 	return depositReceiptsRoot, nil
 }
 
-func deriveWithdrawRequestsRoot(withdrawRequests []*electra.ExecutionLayerWithdrawRequest) (phase0.Root, error) {
-	wrs := utilelectra.ExecutionPayloadWithdrawRequests{WithdrawRequests: withdrawRequests}
-	withdrawRequestsRoot, err := wrs.HashTreeRoot()
+func deriveWithdrawalRequestsRoot(withdrawalRequests []*electra.ExecutionLayerWithdrawalRequest) (phase0.Root, error) {
+	wrs := utilelectra.ExecutionPayloadWithdrawalRequests{WithdrawalRequests: withdrawalRequests}
+	withdrawalRequestsRoot, err := wrs.HashTreeRoot()
 	if err != nil {
 		return phase0.Root{}, err
 	}
-	return withdrawRequestsRoot, nil
+	return withdrawalRequestsRoot, nil
 }
 
 // ComputeBlockHash computes the block hash for a given execution payload.
@@ -471,34 +471,34 @@ func electraExecutionPayloadToBlockHeader(payload *electra.ExecutionPayload, par
 	baseFeePerGas := payload.BaseFeePerGas.ToBig()
 	withdrawalsHash := deriveWithdrawalsHash(payload.Withdrawals)
 	depositReceiptsHash := deriveDepositReceiptsHash(payload.DepositReceipts)
-	withdrawRequestsHash := deriveWithdrawRequestsHash(payload.WithdrawRequests)
+	withdrawalRequestsHash := deriveWithdrawalRequestsHash(payload.WithdrawalRequests)
 	var beaconRootHash *common.Hash
 	if parentBeaconRoot != nil {
 		root := common.Hash(*parentBeaconRoot)
 		beaconRootHash = &root
 	}
 	return &types.Header{
-		ParentHash:           common.Hash(payload.ParentHash),
-		UncleHash:            types.EmptyUncleHash,
-		Coinbase:             common.Address(payload.FeeRecipient),
-		Root:                 common.Hash(payload.StateRoot),
-		TxHash:               transactionHash,
-		ReceiptHash:          common.Hash(payload.ReceiptsRoot),
-		Bloom:                payload.LogsBloom,
-		Difficulty:           common.Big0,
-		Number:               new(big.Int).SetUint64(payload.BlockNumber),
-		GasLimit:             payload.GasLimit,
-		GasUsed:              payload.GasUsed,
-		Time:                 payload.Timestamp,
-		Extra:                payload.ExtraData,
-		MixDigest:            payload.PrevRandao,
-		BaseFee:              baseFeePerGas,
-		WithdrawalsHash:      &withdrawalsHash,
-		BlobGasUsed:          &payload.BlobGasUsed,
-		ExcessBlobGas:        &payload.ExcessBlobGas,
-		ParentBeaconRoot:     beaconRootHash,
-		DepositReceiptsHash:  &depositReceiptsHash,
-		WithdrawRequestsHash: &withdrawRequestsHash,
+		ParentHash:             common.Hash(payload.ParentHash),
+		UncleHash:              types.EmptyUncleHash,
+		Coinbase:               common.Address(payload.FeeRecipient),
+		Root:                   common.Hash(payload.StateRoot),
+		TxHash:                 transactionHash,
+		ReceiptHash:            common.Hash(payload.ReceiptsRoot),
+		Bloom:                  payload.LogsBloom,
+		Difficulty:             common.Big0,
+		Number:                 new(big.Int).SetUint64(payload.BlockNumber),
+		GasLimit:               payload.GasLimit,
+		GasUsed:                payload.GasUsed,
+		Time:                   payload.Timestamp,
+		Extra:                  payload.ExtraData,
+		MixDigest:              payload.PrevRandao,
+		BaseFee:                baseFeePerGas,
+		WithdrawalsHash:        &withdrawalsHash,
+		BlobGasUsed:            &payload.BlobGasUsed,
+		ExcessBlobGas:          &payload.ExcessBlobGas,
+		ParentBeaconRoot:       beaconRootHash,
+		DepositReceiptsHash:    &depositReceiptsHash,
+		WithdrawalRequestsHash: &withdrawalRequestsHash,
 	}, nil
 }
 
@@ -542,16 +542,16 @@ func deriveDepositReceiptsHash(depositReceipts []*electra.DepositReceipt) common
 	return types.DeriveSha(types.DepositReceipts(depositReceiptsData), trie.NewStackTrie(nil))
 }
 
-func deriveWithdrawRequestsHash(withdrawRequests []*electra.ExecutionLayerWithdrawRequest) common.Hash {
-	withdrawRequestsData := make([]*types.WithdrawRequest, len(withdrawRequests))
-	for i, e := range withdrawRequests {
-		withdrawRequestsData[i] = &types.WithdrawRequest{
+func deriveWithdrawalRequestsHash(withdrawalRequests []*electra.ExecutionLayerWithdrawalRequest) common.Hash {
+	withdrawalRequestsData := make([]*types.WithdrawalRequest, len(withdrawalRequests))
+	for i, e := range withdrawalRequests {
+		withdrawalRequestsData[i] = &types.WithdrawalRequest{
 			SourceAddress:   common.Address(e.SourceAddress),
 			ValidatorPubkey: e.ValidatorPubkey,
 			Amount:          uint64(e.Amount),
 		}
 	}
-	return types.DeriveSha(types.WithdrawRequests(withdrawRequestsData), trie.NewStackTrie(nil))
+	return types.DeriveSha(types.WithdrawalRequests(withdrawalRequestsData), trie.NewStackTrie(nil))
 }
 
 func deriveBaseFeePerGas(baseFeePerGas [32]byte) *big.Int {
