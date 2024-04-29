@@ -2,8 +2,6 @@ module github.com/flashbots/go-boost-utils
 
 go 1.21
 
-toolchain go1.21.5
-
 require (
 	github.com/attestantio/go-builder-client v0.4.2
 	github.com/attestantio/go-eth2-client v0.21.1
