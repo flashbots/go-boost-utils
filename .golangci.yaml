@@ -49,3 +49,6 @@ linters-settings:
         json: snake
   gofumpt:
     extra-rules: true
+  gomoddirectives:
+    replace-allow-list:
+      - github.com/ethereum/go-ethereum

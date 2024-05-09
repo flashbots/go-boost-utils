@@ -79,5 +79,4 @@ require (
 )
 
 // This version points to Lightclient's prague-devnet-0 branch.
-//nolint:gomoddirectives
 replace github.com/ethereum/go-ethereum => github.com/lightclient/go-ethereum v1.10.10-0.20240429213339-9b7958ba0063
