@@ -9,7 +9,6 @@ import (
 	"github.com/attestantio/go-eth2-client/spec/bellatrix"
 	"github.com/attestantio/go-eth2-client/spec/capella"
 	"github.com/attestantio/go-eth2-client/spec/deneb"
-	"github.com/attestantio/go-eth2-client/spec/electra"
 	"github.com/attestantio/go-eth2-client/spec/phase0"
 	"github.com/stretchr/testify/require"
 )
@@ -173,26 +172,6 @@ func TestComputeHash(t *testing.T) {
 		hash, err := ComputeBlockHash(versionedPayload, &r)
 		require.NoError(t, err)
 		require.Equal(t, "0xd9491c8ae79611d0f08806f29b1e2e86cb8f64512aa381e543dcae257dda80d6", hash.String())
-	})
-
-	/* TODO(electra): update with real electra execution payload & known hash */
-	t.Run("Should compute electra hash", func(t *testing.T) {
-		jsonFile, err := os.Open("../testdata/executionpayload/electra-case0.json")
-		require.NoError(t, err)
-		defer jsonFile.Close()
-
-		payload := new(electra.ExecutionPayload)
-		require.NoError(t, DecodeJSON(jsonFile, payload))
-		versionedPayload := &api.VersionedExecutionPayload{
-			Version: spec.DataVersionElectra,
-			Electra: payload,
-		}
-		h, _ := HexToHash("0xa119064ee9c03e2c7ad5821b6077606c64f36542eda12ed61a1edc5f898a17fc")
-		r := phase0.Root(h)
-		hash, err := ComputeBlockHash(versionedPayload, &r)
-		require.NoError(t, err)
-		/* TODO(electra): not actually sure this is the right hash */
-		require.Equal(t, "0x500991c7bb744af42002f9883f456f0b308abc07f74c18901aaf2dde352f59f2", hash.String())
 	})
 
 	t.Run("Should error on unknown version", func(t *testing.T) {

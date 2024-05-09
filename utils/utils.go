@@ -470,35 +470,33 @@ func electraExecutionPayloadToBlockHeader(payload *electra.ExecutionPayload, par
 	}
 	baseFeePerGas := payload.BaseFeePerGas.ToBig()
 	withdrawalsHash := deriveWithdrawalsHash(payload.Withdrawals)
-	depositReceiptsHash := deriveDepositReceiptsHash(payload.DepositReceipts)
-	withdrawalRequestsHash := deriveWithdrawalRequestsHash(payload.WithdrawalRequests)
+	requestsHash := deriveRequestsHash(payload.DepositReceipts, payload.WithdrawalRequests)
 	var beaconRootHash *common.Hash
 	if parentBeaconRoot != nil {
 		root := common.Hash(*parentBeaconRoot)
 		beaconRootHash = &root
 	}
 	return &types.Header{
-		ParentHash:             common.Hash(payload.ParentHash),
-		UncleHash:              types.EmptyUncleHash,
-		Coinbase:               common.Address(payload.FeeRecipient),
-		Root:                   common.Hash(payload.StateRoot),
-		TxHash:                 transactionHash,
-		ReceiptHash:            common.Hash(payload.ReceiptsRoot),
-		Bloom:                  payload.LogsBloom,
-		Difficulty:             common.Big0,
-		Number:                 new(big.Int).SetUint64(payload.BlockNumber),
-		GasLimit:               payload.GasLimit,
-		GasUsed:                payload.GasUsed,
-		Time:                   payload.Timestamp,
-		Extra:                  payload.ExtraData,
-		MixDigest:              payload.PrevRandao,
-		BaseFee:                baseFeePerGas,
-		WithdrawalsHash:        &withdrawalsHash,
-		BlobGasUsed:            &payload.BlobGasUsed,
-		ExcessBlobGas:          &payload.ExcessBlobGas,
-		ParentBeaconRoot:       beaconRootHash,
-		DepositReceiptsHash:    &depositReceiptsHash,
-		WithdrawalRequestsHash: &withdrawalRequestsHash,
+		ParentHash:       common.Hash(payload.ParentHash),
+		UncleHash:        types.EmptyUncleHash,
+		Coinbase:         common.Address(payload.FeeRecipient),
+		Root:             common.Hash(payload.StateRoot),
+		TxHash:           transactionHash,
+		ReceiptHash:      common.Hash(payload.ReceiptsRoot),
+		Bloom:            payload.LogsBloom,
+		Difficulty:       common.Big0,
+		Number:           new(big.Int).SetUint64(payload.BlockNumber),
+		GasLimit:         payload.GasLimit,
+		GasUsed:          payload.GasUsed,
+		Time:             payload.Timestamp,
+		Extra:            payload.ExtraData,
+		MixDigest:        payload.PrevRandao,
+		BaseFee:          baseFeePerGas,
+		WithdrawalsHash:  &withdrawalsHash,
+		BlobGasUsed:      &payload.BlobGasUsed,
+		ExcessBlobGas:    &payload.ExcessBlobGas,
+		ParentBeaconRoot: beaconRootHash,
+		RequestsHash:     &requestsHash,
 	}, nil
 }
 
@@ -528,30 +526,29 @@ func deriveWithdrawalsHash(withdrawals []*capella.Withdrawal) common.Hash {
 	return types.DeriveSha(types.Withdrawals(withdrawalData), trie.NewStackTrie(nil))
 }
 
-func deriveDepositReceiptsHash(depositReceipts []*electra.DepositReceipt) common.Hash {
-	depositReceiptsData := make([]*types.DepositReceipt, len(depositReceipts))
-	for i, d := range depositReceipts {
-		depositReceiptsData[i] = &types.DepositReceipt{
-			Pubkey:                d.Pubkey,
-			WithdrawalCredentials: [32]byte(d.WithdrawalCredentials),
-			Amount:                uint64(d.Amount),
-			Signature:             d.Signature,
-			Index:                 d.Index,
+func deriveRequestsHash(depositRequests []*electra.DepositReceipt, withdrawalRequests []*electra.ExecutionLayerWithdrawalRequest) common.Hash {
+	deposits := make(types.Deposits, len(depositRequests))
+	for i, e := range depositRequests {
+		deposits[i] = &types.Deposit{
+			PublicKey:             types.BLSPublicKey(e.Pubkey),
+			WithdrawalCredentials: common.Hash(e.WithdrawalCredentials),
+			Amount:                uint64(e.Amount),
+			Signature:             types.BLSSignature(e.Signature),
+			Index:                 e.Index,
 		}
 	}
-	return types.DeriveSha(types.DepositReceipts(depositReceiptsData), trie.NewStackTrie(nil))
-}
-
-func deriveWithdrawalRequestsHash(withdrawalRequests []*electra.ExecutionLayerWithdrawalRequest) common.Hash {
-	withdrawalRequestsData := make([]*types.WithdrawalRequest, len(withdrawalRequests))
+	withdrawals := make(types.WithdrawalRequests, len(withdrawalRequests))
 	for i, e := range withdrawalRequests {
-		withdrawalRequestsData[i] = &types.WithdrawalRequest{
-			SourceAddress:   common.Address(e.SourceAddress),
-			ValidatorPubkey: e.ValidatorPubkey,
-			Amount:          uint64(e.Amount),
+		withdrawals[i] = &types.WithdrawalRequest{
+			Source:    common.Address(e.SourceAddress),
+			PublicKey: types.BLSPublicKey(e.ValidatorPubkey),
+			Amount:    uint64(e.Amount),
 		}
 	}
-	return types.DeriveSha(types.WithdrawalRequests(withdrawalRequestsData), trie.NewStackTrie(nil))
+
+	requests := deposits.Requests()
+	requests = append(requests, withdrawals.Requests()...)
+	return types.DeriveSha(requests, trie.NewStackTrie(nil))
 }
 
 func deriveBaseFeePerGas(baseFeePerGas [32]byte) *big.Int {

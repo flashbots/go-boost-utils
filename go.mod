@@ -3,8 +3,8 @@ module github.com/flashbots/go-boost-utils
 go 1.21
 
 require (
-	github.com/attestantio/go-builder-client v0.4.2
-	github.com/attestantio/go-eth2-client v0.21.1
+	github.com/attestantio/go-builder-client v0.4.6-0.20240508205504-2210689d2f24
+	github.com/attestantio/go-eth2-client v0.21.4-0.20240508205406-66fbb02e3c16
 	github.com/consensys/gnark-crypto v0.12.1
 	github.com/ethereum/go-ethereum v1.13.14
 	github.com/stretchr/testify v1.8.4
@@ -68,7 +68,7 @@ require (
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa // indirect
-	golang.org/x/sync v0.5.0 // indirect
+	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
@@ -78,11 +78,5 @@ require (
 	rsc.io/tmplfunc v0.0.3 // indirect
 )
 
-// git clone git@github.com:jtraglia/go-eth2-client.git -b electra
-replace github.com/attestantio/go-eth2-client => ../../jtraglia/go-eth2-client
-
-// git clone git@github.com:jtraglia/go-builder-client.git -b electra
-replace github.com/attestantio/go-builder-client => ../../jtraglia/go-builder-client
-
-// git clone git@github.com:jtraglia/go-ethereum.git -b electra
-replace github.com/ethereum/go-ethereum => ../../jtraglia/go-ethereum
+// This version points to Lightclient's prague-devnet-0 branch.
+replace github.com/ethereum/go-ethereum => github.com/lightclient/go-ethereum v1.10.10-0.20240429213339-9b7958ba0063
