@@ -105,6 +105,8 @@ func DecodeJSON(r io.Reader, dst any) error {
 }
 
 // PayloadToPayloadHeader converts an ExecutionPayload to ExecutionPayloadHeader
+//
+// nolint:cyclop
 func PayloadToPayloadHeader(payload *api.VersionedExecutionPayload) (*api.VersionedExecutionPayloadHeader, error) {
 	if payload == nil {
 		return nil, ErrNilPayload
@@ -341,6 +343,8 @@ func deriveWithdrawalRequestsRoot(withdrawalRequests []*electra.ExecutionLayerWi
 }
 
 // ComputeBlockHash computes the block hash for a given execution payload.
+//
+// nolint:cyclop
 func ComputeBlockHash(payload *api.VersionedExecutionPayload, parentBeaconRoot *phase0.Root) (phase0.Hash32, error) {
 	switch payload.Version {
 	case spec.DataVersionBellatrix:
