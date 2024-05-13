@@ -1,6 +1,11 @@
 package utils
 
 import (
+	"fmt"
+	"github.com/attestantio/go-eth2-client/spec/electra"
+	"github.com/golang/snappy"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"testing"
 
@@ -12,6 +17,33 @@ import (
 	"github.com/attestantio/go-eth2-client/spec/phase0"
 	"github.com/stretchr/testify/require"
 )
+
+const mainnetTests = "https://github.com/ethereum/consensus-spec-tests/raw/master/tests/mainnet/"
+
+func downloadFile(url string) ([]byte, error) {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("failed to download file: %s", resp.Status)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
+}
 
 func TestHexToHash(t *testing.T) {
 	_, err := HexToHash("0x01")
@@ -154,6 +186,54 @@ func TestComputeHash(t *testing.T) {
 		hash, err := ComputeBlockHash(versionedPayload, nil)
 		require.NoError(t, err)
 		require.Equal(t, "0x08751ea2076d3ecc606231495a90ba91a66a9b8fb1a2b76c333f1957a1c667c3", hash.String())
+	})
+
+	t.Run("compute deneb block hash", func(t *testing.T) {
+		body := func() (body deneb.BeaconBlockBody) {
+			contentURL := mainnetTests + "deneb/operations/execution_payload/pyspec_tests/success_regular_payload/body.ssz_snappy"
+			compressedData, err := downloadFile(contentURL)
+			require.NoError(t, err)
+			decompressedData, err := snappy.Decode(nil, compressedData)
+			require.NoError(t, err)
+			err = body.UnmarshalSSZ(decompressedData)
+			require.NoError(t, err)
+			return
+		}()
+
+		versionedPayload := &api.VersionedExecutionPayload{
+			Version: spec.DataVersionDeneb,
+			Deneb:   body.ExecutionPayload,
+		}
+
+		hash, err := ComputeBlockHash(versionedPayload, nil)
+		require.NoError(t, err)
+		expectedHash, err := versionedPayload.BlockHash()
+		require.NoError(t, err)
+		require.Equal(t, expectedHash, hash)
+	})
+
+	t.Run("compute electra block hash", func(t *testing.T) {
+		body := func() (body electra.BeaconBlockBody) {
+			contentURL := mainnetTests + "electra/operations/execution_payload/pyspec_tests/success_regular_payload/body.ssz_snappy"
+			compressedData, err := downloadFile(contentURL)
+			require.NoError(t, err)
+			decompressedData, err := snappy.Decode(nil, compressedData)
+			require.NoError(t, err)
+			err = body.UnmarshalSSZ(decompressedData)
+			require.NoError(t, err)
+			return
+		}()
+
+		versionedPayload := &api.VersionedExecutionPayload{
+			Version: spec.DataVersionElectra,
+			Electra: body.ExecutionPayload,
+		}
+
+		hash, err := ComputeBlockHash(versionedPayload, nil)
+		require.NoError(t, err)
+		expectedHash, err := versionedPayload.BlockHash()
+		require.NoError(t, err)
+		require.Equal(t, expectedHash, hash)
 	})
 
 	t.Run("Should compute deneb hash", func(t *testing.T) {

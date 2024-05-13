@@ -7,6 +7,7 @@ require (
 	github.com/attestantio/go-eth2-client v0.21.4-0.20240508205406-66fbb02e3c16
 	github.com/consensys/gnark-crypto v0.12.1
 	github.com/ethereum/go-ethereum v1.13.14
+	github.com/golang/snappy v0.0.5-0.20220116011046-fa5810519dcb
 	github.com/stretchr/testify v1.8.4
 	github.com/trailofbits/go-fuzz-utils v0.0.0-20210901195358-9657fcfd256c
 )
@@ -38,7 +39,6 @@ require (
 	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
-	github.com/golang/snappy v0.0.5-0.20220116011046-fa5810519dcb // indirect
 	github.com/holiman/uint256 v1.2.4 // indirect
 	github.com/klauspost/compress v1.15.15 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
@@ -79,4 +79,4 @@ require (
 )
 
 // This version points to Lightclient's prague-devnet-0 branch.
-replace github.com/ethereum/go-ethereum => github.com/lightclient/go-ethereum v1.10.10-0.20240429213339-9b7958ba0063
+replace github.com/ethereum/go-ethereum => github.com/lightclient/go-ethereum v1.10.10-0.20240513091005-ce8886c120a0
