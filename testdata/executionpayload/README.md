@@ -1,1 +1,0 @@
-https://github.com/ethereum/consensus-spec-tests/tree/master/tests/mainnet/bellatrix/ssz_static/ExecutionPayload/ssz_random
