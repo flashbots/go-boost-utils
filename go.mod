@@ -80,3 +80,6 @@ require (
 
 // This version points to Lightclient's prague-devnet-0 branch.
 replace github.com/ethereum/go-ethereum => github.com/lightclient/go-ethereum v1.10.10-0.20240514061317-d0d5d5390a5c
+
+// Temporary replacement until Jim merges https://github.com/attestantio/go-eth2-client/pull/141
+replace github.com/attestantio/go-eth2-client => github.com/jtraglia/go-eth2-client v0.21.4-0.20240517074005-afe509204532
