@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/attestantio/go-builder-client v0.4.6-0.20240508205504-2210689d2f24
-	github.com/attestantio/go-eth2-client v0.21.4-0.20240508205406-66fbb02e3c16
+	github.com/attestantio/go-eth2-client v0.21.4-0.20240517101940-c13fd7112c55
 	github.com/consensys/gnark-crypto v0.12.1
 	github.com/ethereum/go-ethereum v1.13.14
 	github.com/golang/snappy v0.0.5-0.20220116011046-fa5810519dcb
@@ -80,6 +80,3 @@ require (
 
 // This version points to Lightclient's prague-devnet-0 branch.
 replace github.com/ethereum/go-ethereum => github.com/lightclient/go-ethereum v1.10.10-0.20240514061317-d0d5d5390a5c
-
-// Temporary replacement until Jim merges https://github.com/attestantio/go-eth2-client/pull/141
-replace github.com/attestantio/go-eth2-client => github.com/jtraglia/go-eth2-client v0.21.4-0.20240517074005-afe509204532

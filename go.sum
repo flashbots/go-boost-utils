@@ -6,6 +6,8 @@ github.com/VictoriaMetrics/fastcache v1.12.1 h1:i0mICQuojGDL3KblA7wUNlY5lOK6a4bw
 github.com/VictoriaMetrics/fastcache v1.12.1/go.mod h1:tX04vaqcNoQeGLD+ra5pU5sWkuxnzWhEzLwhP9w653o=
 github.com/attestantio/go-builder-client v0.4.6-0.20240508205504-2210689d2f24 h1:KXWQwsxrrJD1G7rp+18uESZ0BSPmUdady46iAfCgwDY=
 github.com/attestantio/go-builder-client v0.4.6-0.20240508205504-2210689d2f24/go.mod h1:bs7HF4beRWCjcvKsHH8nEl3aDzrTqeUjXOfqpfrYTJQ=
+github.com/attestantio/go-eth2-client v0.21.4-0.20240517101940-c13fd7112c55 h1:3HjnisE8nFHBhf20H4ya9Q+4HvX1bbV8lCM6LJLLcg0=
+github.com/attestantio/go-eth2-client v0.21.4-0.20240517101940-c13fd7112c55/go.mod h1:RssbJ8txdfZ+O7cIjOKCvizcTWHzgPuJNByrwtQ6tBQ=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
 github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6rlkpw=
 github.com/bits-and-blooms/bitset v1.10.0 h1:ePXTeiPEazB5+opbv5fr8umg2R/1NlzgDsyepwsSr88=
