@@ -273,7 +273,7 @@ func electraPayloadToPayloadHeader(payload *electra.ExecutionPayload) (*electra.
 		return nil, fmt.Errorf("failed to derive withdrawals root: %w", err)
 	}
 
-	depositReceiptsRoot, err := deriveDepositReceiptsRoot(payload.DepositReceipts)
+	depositRequestsRoot, err := deriveDepositRequestsRoot(payload.DepositRequests)
 	if err != nil {
 		return nil, fmt.Errorf("failed to derive deposit receipts root: %w", err)
 	}
@@ -301,7 +301,7 @@ func electraPayloadToPayloadHeader(payload *electra.ExecutionPayload) (*electra.
 		WithdrawalsRoot:        wdRoot,
 		BlobGasUsed:            payload.BlobGasUsed,
 		ExcessBlobGas:          payload.ExcessBlobGas,
-		DepositReceiptsRoot:    depositReceiptsRoot,
+		DepositRequestsRoot:    depositRequestsRoot,
 		WithdrawalRequestsRoot: withdrawalRequestsRoot,
 	}, nil
 }
@@ -324,17 +324,17 @@ func deriveWithdrawalsRoot(withdrawals []*capella.Withdrawal) (phase0.Root, erro
 	return wdRoot, nil
 }
 
-func deriveDepositReceiptsRoot(depositReceipts []*electra.DepositReceipt) (phase0.Root, error) {
-	drs := utilelectra.DepositReceipts{DepositReceipts: depositReceipts}
-	depositReceiptsRoot, err := drs.HashTreeRoot()
+func deriveDepositRequestsRoot(depositRequests []*electra.DepositRequest) (phase0.Root, error) {
+	drs := utilelectra.DepositRequests{DepositRequests: depositRequests}
+	depositRequestsRoot, err := drs.HashTreeRoot()
 	if err != nil {
 		return phase0.Root{}, err
 	}
-	return depositReceiptsRoot, nil
+	return depositRequestsRoot, nil
 }
 
-func deriveWithdrawalRequestsRoot(withdrawalRequests []*electra.ExecutionLayerWithdrawalRequest) (phase0.Root, error) {
-	wrs := utilelectra.ExecutionPayloadWithdrawalRequests{WithdrawalRequests: withdrawalRequests}
+func deriveWithdrawalRequestsRoot(withdrawalRequests []*electra.WithdrawalRequest) (phase0.Root, error) {
+	wrs := utilelectra.WithdrawalRequests{WithdrawalRequests: withdrawalRequests}
 	withdrawalRequestsRoot, err := wrs.HashTreeRoot()
 	if err != nil {
 		return phase0.Root{}, err
@@ -474,7 +474,7 @@ func electraExecutionPayloadToBlockHeader(payload *electra.ExecutionPayload, par
 	}
 	baseFeePerGas := payload.BaseFeePerGas.ToBig()
 	withdrawalsHash := deriveWithdrawalsHash(payload.Withdrawals)
-	requestsHash := deriveRequestsHash(payload.DepositReceipts, payload.WithdrawalRequests)
+	requestsHash := deriveRequestsHash(payload.DepositRequests, payload.WithdrawalRequests)
 	var beaconRootHash *common.Hash
 	if parentBeaconRoot != nil {
 		root := common.Hash(*parentBeaconRoot)
@@ -530,7 +530,7 @@ func deriveWithdrawalsHash(withdrawals []*capella.Withdrawal) common.Hash {
 	return types.DeriveSha(types.Withdrawals(withdrawalData), trie.NewStackTrie(nil))
 }
 
-func deriveRequestsHash(depositRequests []*electra.DepositReceipt, withdrawalRequests []*electra.ExecutionLayerWithdrawalRequest) common.Hash {
+func deriveRequestsHash(depositRequests []*electra.DepositRequest, withdrawalRequests []*electra.WithdrawalRequest) common.Hash {
 	deposits := make(types.Deposits, len(depositRequests))
 	for i, e := range depositRequests {
 		deposits[i] = &types.Deposit{

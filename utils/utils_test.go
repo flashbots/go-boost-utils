@@ -2,17 +2,17 @@ package utils
 
 import (
 	"fmt"
-	"github.com/attestantio/go-eth2-client/spec/bellatrix"
-	"github.com/attestantio/go-eth2-client/spec/electra"
-	"github.com/golang/snappy"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 
 	"github.com/attestantio/go-builder-client/api"
 	"github.com/attestantio/go-eth2-client/spec"
+	"github.com/attestantio/go-eth2-client/spec/bellatrix"
 	"github.com/attestantio/go-eth2-client/spec/capella"
 	"github.com/attestantio/go-eth2-client/spec/deneb"
+	"github.com/attestantio/go-eth2-client/spec/electra"
+	"github.com/golang/snappy"
 	"github.com/stretchr/testify/require"
 )
 
@@ -35,7 +35,7 @@ func downloadFile(url string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to download file: %s", resp.Status)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
