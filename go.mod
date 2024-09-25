@@ -7,7 +7,6 @@ require (
 	github.com/attestantio/go-eth2-client v0.21.11-0.20240803084815-07eba3e76a14
 	github.com/consensys/gnark-crypto v0.12.1
 	github.com/ethereum/go-ethereum v1.13.14
-	github.com/golang/snappy v0.0.5-0.20220116011046-fa5810519dcb
 	github.com/stretchr/testify v1.8.4
 	github.com/trailofbits/go-fuzz-utils v0.0.0-20210901195358-9657fcfd256c
 )
@@ -39,6 +38,7 @@ require (
 	github.com/gofrs/flock v0.8.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
+	github.com/golang/snappy v0.0.5-0.20220116011046-fa5810519dcb // indirect
 	github.com/holiman/uint256 v1.2.4 // indirect
 	github.com/klauspost/compress v1.15.15 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
@@ -80,3 +80,9 @@ require (
 
 // This version points to Lightclient's prague-devnet-0 branch.
 replace github.com/ethereum/go-ethereum => github.com/lightclient/go-ethereum v1.10.10-0.20240514061317-d0d5d5390a5c
+
+// Remove this when Jim merges pk910's PR.
+replace github.com/attestantio/go-eth2-client => github.com/pk910/go-eth2-client v0.0.0-20240923174943-8d64565c83ca
+
+// Remove this when Jim merge's jtraglia's PR.
+replace github.com/attestantio/go-builder-client => github.com/jtraglia/go-builder-client v0.4.6-0.20240925183257-4d86495441b5

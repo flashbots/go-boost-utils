@@ -12,11 +12,9 @@ import (
 	"github.com/attestantio/go-eth2-client/spec/bellatrix"
 	"github.com/attestantio/go-eth2-client/spec/capella"
 	"github.com/attestantio/go-eth2-client/spec/deneb"
-	"github.com/attestantio/go-eth2-client/spec/electra"
 	"github.com/attestantio/go-eth2-client/spec/phase0"
 	utilbellatrix "github.com/attestantio/go-eth2-client/util/bellatrix"
 	utilcapella "github.com/attestantio/go-eth2-client/util/capella"
-	utilelectra "github.com/attestantio/go-eth2-client/util/electra"
 	bls12381 "github.com/consensys/gnark-crypto/ecc/bls12-381"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -105,8 +103,6 @@ func DecodeJSON(r io.Reader, dst any) error {
 }
 
 // PayloadToPayloadHeader converts an ExecutionPayload to ExecutionPayloadHeader
-//
-//nolint:cyclop
 func PayloadToPayloadHeader(payload *api.VersionedExecutionPayload) (*api.VersionedExecutionPayloadHeader, error) {
 	if payload == nil {
 		return nil, ErrNilPayload
@@ -144,7 +140,8 @@ func PayloadToPayloadHeader(payload *api.VersionedExecutionPayload) (*api.Versio
 			Deneb:   header,
 		}, nil
 	case spec.DataVersionElectra:
-		header, err := electraPayloadToPayloadHeader(payload.Electra)
+		// Electra uses the same ExecutionPayload as Deneb
+		header, err := denebPayloadToPayloadHeader(payload.Electra)
 		if err != nil {
 			return nil, err
 		}
@@ -258,54 +255,6 @@ func denebPayloadToPayloadHeader(payload *deneb.ExecutionPayload) (*deneb.Execut
 	}, nil
 }
 
-func electraPayloadToPayloadHeader(payload *electra.ExecutionPayload) (*electra.ExecutionPayloadHeader, error) {
-	if payload == nil {
-		return nil, ErrNilPayload
-	}
-
-	txRoot, err := deriveTransactionsRoot(payload.Transactions)
-	if err != nil {
-		return nil, fmt.Errorf("failed to derive transactions root: %w", err)
-	}
-
-	wdRoot, err := deriveWithdrawalsRoot(payload.Withdrawals)
-	if err != nil {
-		return nil, fmt.Errorf("failed to derive withdrawals root: %w", err)
-	}
-
-	depositRequestsRoot, err := deriveDepositRequestsRoot(payload.DepositRequests)
-	if err != nil {
-		return nil, fmt.Errorf("failed to derive deposit receipts root: %w", err)
-	}
-
-	withdrawalRequestsRoot, err := deriveWithdrawalRequestsRoot(payload.WithdrawalRequests)
-	if err != nil {
-		return nil, fmt.Errorf("failed to derive exits root: %w", err)
-	}
-
-	return &electra.ExecutionPayloadHeader{
-		ParentHash:             payload.ParentHash,
-		FeeRecipient:           payload.FeeRecipient,
-		StateRoot:              payload.StateRoot,
-		ReceiptsRoot:           payload.ReceiptsRoot,
-		LogsBloom:              payload.LogsBloom,
-		PrevRandao:             payload.PrevRandao,
-		BlockNumber:            payload.BlockNumber,
-		GasLimit:               payload.GasLimit,
-		GasUsed:                payload.GasUsed,
-		Timestamp:              payload.Timestamp,
-		ExtraData:              payload.ExtraData,
-		BaseFeePerGas:          payload.BaseFeePerGas,
-		BlockHash:              payload.BlockHash,
-		TransactionsRoot:       txRoot,
-		WithdrawalsRoot:        wdRoot,
-		BlobGasUsed:            payload.BlobGasUsed,
-		ExcessBlobGas:          payload.ExcessBlobGas,
-		DepositRequestsRoot:    depositRequestsRoot,
-		WithdrawalRequestsRoot: withdrawalRequestsRoot,
-	}, nil
-}
-
 func deriveTransactionsRoot(transactions []bellatrix.Transaction) (phase0.Root, error) {
 	txs := utilbellatrix.ExecutionPayloadTransactions{Transactions: transactions}
 	txRoot, err := txs.HashTreeRoot()
@@ -324,27 +273,7 @@ func deriveWithdrawalsRoot(withdrawals []*capella.Withdrawal) (phase0.Root, erro
 	return wdRoot, nil
 }
 
-func deriveDepositRequestsRoot(depositRequests []*electra.DepositRequest) (phase0.Root, error) {
-	drs := utilelectra.DepositRequests{DepositRequests: depositRequests}
-	depositRequestsRoot, err := drs.HashTreeRoot()
-	if err != nil {
-		return phase0.Root{}, err
-	}
-	return depositRequestsRoot, nil
-}
-
-func deriveWithdrawalRequestsRoot(withdrawalRequests []*electra.WithdrawalRequest) (phase0.Root, error) {
-	wrs := utilelectra.WithdrawalRequests{WithdrawalRequests: withdrawalRequests}
-	withdrawalRequestsRoot, err := wrs.HashTreeRoot()
-	if err != nil {
-		return phase0.Root{}, err
-	}
-	return withdrawalRequestsRoot, nil
-}
-
 // ComputeBlockHash computes the block hash for a given execution payload.
-//
-//nolint:cyclop
 func ComputeBlockHash(payload *api.VersionedExecutionPayload, parentBeaconRoot *phase0.Root) (phase0.Hash32, error) {
 	switch payload.Version {
 	case spec.DataVersionBellatrix:
@@ -361,12 +290,6 @@ func ComputeBlockHash(payload *api.VersionedExecutionPayload, parentBeaconRoot *
 		return phase0.Hash32(header.Hash()), nil
 	case spec.DataVersionDeneb:
 		header, err := denebExecutionPayloadToBlockHeader(payload.Deneb, parentBeaconRoot)
-		if err != nil {
-			return phase0.Hash32{}, err
-		}
-		return phase0.Hash32(header.Hash()), nil
-	case spec.DataVersionElectra:
-		header, err := electraExecutionPayloadToBlockHeader(payload.Electra, parentBeaconRoot)
 		if err != nil {
 			return phase0.Hash32{}, err
 		}
@@ -467,43 +390,6 @@ func denebExecutionPayloadToBlockHeader(payload *deneb.ExecutionPayload, parentB
 	}, nil
 }
 
-func electraExecutionPayloadToBlockHeader(payload *electra.ExecutionPayload, parentBeaconRoot *phase0.Root) (*types.Header, error) {
-	transactionHash, err := deriveTransactionsHash(payload.Transactions)
-	if err != nil {
-		return nil, err
-	}
-	baseFeePerGas := payload.BaseFeePerGas.ToBig()
-	withdrawalsHash := deriveWithdrawalsHash(payload.Withdrawals)
-	requestsHash := deriveRequestsHash(payload.DepositRequests, payload.WithdrawalRequests)
-	var beaconRootHash *common.Hash
-	if parentBeaconRoot != nil {
-		root := common.Hash(*parentBeaconRoot)
-		beaconRootHash = &root
-	}
-	return &types.Header{
-		ParentHash:       common.Hash(payload.ParentHash),
-		UncleHash:        types.EmptyUncleHash,
-		Coinbase:         common.Address(payload.FeeRecipient),
-		Root:             common.Hash(payload.StateRoot),
-		TxHash:           transactionHash,
-		ReceiptHash:      common.Hash(payload.ReceiptsRoot),
-		Bloom:            payload.LogsBloom,
-		Difficulty:       common.Big0,
-		Number:           new(big.Int).SetUint64(payload.BlockNumber),
-		GasLimit:         payload.GasLimit,
-		GasUsed:          payload.GasUsed,
-		Time:             payload.Timestamp,
-		Extra:            payload.ExtraData,
-		MixDigest:        payload.PrevRandao,
-		BaseFee:          baseFeePerGas,
-		WithdrawalsHash:  &withdrawalsHash,
-		BlobGasUsed:      &payload.BlobGasUsed,
-		ExcessBlobGas:    &payload.ExcessBlobGas,
-		ParentBeaconRoot: beaconRootHash,
-		RequestsHash:     &requestsHash,
-	}, nil
-}
-
 func deriveTransactionsHash(transactions []bellatrix.Transaction) (common.Hash, error) {
 	transactionData := make([]*types.Transaction, len(transactions))
 	for i, encTx := range transactions {
@@ -528,31 +414,6 @@ func deriveWithdrawalsHash(withdrawals []*capella.Withdrawal) common.Hash {
 		}
 	}
 	return types.DeriveSha(types.Withdrawals(withdrawalData), trie.NewStackTrie(nil))
-}
-
-func deriveRequestsHash(depositRequests []*electra.DepositRequest, withdrawalRequests []*electra.WithdrawalRequest) common.Hash {
-	deposits := make(types.Deposits, len(depositRequests))
-	for i, e := range depositRequests {
-		deposits[i] = &types.Deposit{
-			PublicKey:             types.BLSPublicKey(e.Pubkey),
-			WithdrawalCredentials: common.Hash(e.WithdrawalCredentials),
-			Amount:                uint64(e.Amount),
-			Signature:             types.BLSSignature(e.Signature),
-			Index:                 e.Index,
-		}
-	}
-	withdrawals := make(types.WithdrawalRequests, len(withdrawalRequests))
-	for i, e := range withdrawalRequests {
-		withdrawals[i] = &types.WithdrawalRequest{
-			Source:    common.Address(e.SourceAddress),
-			PublicKey: types.BLSPublicKey(e.ValidatorPubkey),
-			Amount:    uint64(e.Amount),
-		}
-	}
-
-	requests := deposits.Requests()
-	requests = append(requests, withdrawals.Requests()...)
-	return types.DeriveSha(requests, trie.NewStackTrie(nil))
 }
 
 func deriveBaseFeePerGas(baseFeePerGas [32]byte) *big.Int {

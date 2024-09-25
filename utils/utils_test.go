@@ -1,9 +1,7 @@
 package utils
 
 import (
-	"fmt"
-	"io"
-	"net/http"
+	"os"
 	"testing"
 
 	"github.com/attestantio/go-builder-client/api"
@@ -11,37 +9,9 @@ import (
 	"github.com/attestantio/go-eth2-client/spec/bellatrix"
 	"github.com/attestantio/go-eth2-client/spec/capella"
 	"github.com/attestantio/go-eth2-client/spec/deneb"
-	"github.com/attestantio/go-eth2-client/spec/electra"
-	"github.com/golang/snappy"
+	"github.com/attestantio/go-eth2-client/spec/phase0"
 	"github.com/stretchr/testify/require"
 )
-
-const mainnetTests = "https://github.com/ethereum/consensus-spec-tests/raw/master/tests/mainnet/"
-
-func downloadFile(url string) ([]byte, error) {
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to download file: %s", resp.Status)
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return body, nil
-}
 
 func TestHexToHash(t *testing.T) {
 	_, err := HexToHash("0x01")
@@ -152,100 +122,56 @@ func TestHexToSignature(t *testing.T) {
 }
 
 func TestComputeHash(t *testing.T) {
-	t.Run("compute bellatrix block hash", func(t *testing.T) {
-		body := func() (body bellatrix.BeaconBlockBody) {
-			contentURL := mainnetTests + "bellatrix/operations/execution_payload/pyspec_tests/success_regular_payload/body.ssz_snappy"
-			compressedData, err := downloadFile(contentURL)
-			require.NoError(t, err)
-			decompressedData, err := snappy.Decode(nil, compressedData)
-			require.NoError(t, err)
-			err = body.UnmarshalSSZ(decompressedData)
-			require.NoError(t, err)
-			return
-		}()
+	t.Run("Should compute bellatrix hash", func(t *testing.T) {
+		jsonFile, err := os.Open("../testdata/executionpayload/bellatrix-case0.json")
+		require.NoError(t, err)
+		defer jsonFile.Close()
 
+		payload := new(bellatrix.ExecutionPayload)
+		require.NoError(t, DecodeJSON(jsonFile, payload))
 		versionedPayload := &api.VersionedExecutionPayload{
 			Version:   spec.DataVersionBellatrix,
-			Bellatrix: body.ExecutionPayload,
+			Bellatrix: payload,
 		}
 
 		hash, err := ComputeBlockHash(versionedPayload, nil)
 		require.NoError(t, err)
-		expectedHash, err := versionedPayload.BlockHash()
-		require.NoError(t, err)
-		require.Equal(t, expectedHash, hash)
+		require.Equal(t, "0x6662fb418aa7b5c5c80e2e8bc87be48db82e799c4704368d34ddeb3b12549655", hash.String())
 	})
 
-	t.Run("compute capella block hash", func(t *testing.T) {
-		body := func() (body capella.BeaconBlockBody) {
-			contentURL := mainnetTests + "capella/operations/execution_payload/pyspec_tests/success_regular_payload/body.ssz_snappy"
-			compressedData, err := downloadFile(contentURL)
-			require.NoError(t, err)
-			decompressedData, err := snappy.Decode(nil, compressedData)
-			require.NoError(t, err)
-			err = body.UnmarshalSSZ(decompressedData)
-			require.NoError(t, err)
-			return
-		}()
+	t.Run("Should compute capella hash", func(t *testing.T) {
+		jsonFile, err := os.Open("../testdata/executionpayload/capella-case0.json")
+		require.NoError(t, err)
+		defer jsonFile.Close()
 
+		payload := new(capella.ExecutionPayload)
+		require.NoError(t, DecodeJSON(jsonFile, payload))
 		versionedPayload := &api.VersionedExecutionPayload{
 			Version: spec.DataVersionCapella,
-			Capella: body.ExecutionPayload,
+			Capella: payload,
 		}
 
 		hash, err := ComputeBlockHash(versionedPayload, nil)
 		require.NoError(t, err)
-		expectedHash, err := versionedPayload.BlockHash()
-		require.NoError(t, err)
-		require.Equal(t, expectedHash, hash)
+		require.Equal(t, "0x08751ea2076d3ecc606231495a90ba91a66a9b8fb1a2b76c333f1957a1c667c3", hash.String())
 	})
 
-	t.Run("compute deneb block hash", func(t *testing.T) {
-		body := func() (body deneb.BeaconBlockBody) {
-			contentURL := mainnetTests + "deneb/operations/execution_payload/pyspec_tests/success_regular_payload/body.ssz_snappy"
-			compressedData, err := downloadFile(contentURL)
-			require.NoError(t, err)
-			decompressedData, err := snappy.Decode(nil, compressedData)
-			require.NoError(t, err)
-			err = body.UnmarshalSSZ(decompressedData)
-			require.NoError(t, err)
-			return
-		}()
+	t.Run("Should compute deneb hash", func(t *testing.T) {
+		jsonFile, err := os.Open("../testdata/executionpayload/deneb-case0.json")
+		require.NoError(t, err)
+		defer jsonFile.Close()
 
+		payload := new(deneb.ExecutionPayload)
+		require.NoError(t, DecodeJSON(jsonFile, payload))
 		versionedPayload := &api.VersionedExecutionPayload{
 			Version: spec.DataVersionDeneb,
-			Deneb:   body.ExecutionPayload,
+			Deneb:   payload,
 		}
-
-		hash, err := ComputeBlockHash(versionedPayload, nil)
+		h, _ := HexToHash("0xa119064ee9c03e2c7ad5821b6077606c64f36542eda12ed61a1edc5f898a17fc")
+		r := phase0.Root(h)
+		hash, err := ComputeBlockHash(versionedPayload, &r)
 		require.NoError(t, err)
-		expectedHash, err := versionedPayload.BlockHash()
-		require.NoError(t, err)
-		require.Equal(t, expectedHash, hash)
-	})
-
-	t.Run("compute electra block hash", func(t *testing.T) {
-		body := func() (body electra.BeaconBlockBody) {
-			contentURL := mainnetTests + "electra/operations/execution_payload/pyspec_tests/success_regular_payload/body.ssz_snappy"
-			compressedData, err := downloadFile(contentURL)
-			require.NoError(t, err)
-			decompressedData, err := snappy.Decode(nil, compressedData)
-			require.NoError(t, err)
-			err = body.UnmarshalSSZ(decompressedData)
-			require.NoError(t, err)
-			return
-		}()
-
-		versionedPayload := &api.VersionedExecutionPayload{
-			Version: spec.DataVersionElectra,
-			Electra: body.ExecutionPayload,
-		}
-
-		hash, err := ComputeBlockHash(versionedPayload, nil)
-		require.NoError(t, err)
-		expectedHash, err := versionedPayload.BlockHash()
-		require.NoError(t, err)
-		require.Equal(t, expectedHash, hash)
+		require.Equal(t, "0xd9491c8ae79611d0f08806f29b1e2e86cb8f64512aa381e543dcae257dda80d6", hash.String())
 	})
 
 	t.Run("Should error on unknown version", func(t *testing.T) {
