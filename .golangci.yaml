@@ -43,6 +43,8 @@ linters:
     - varcheck
 
 linters-settings:
+  cyclop:
+    max-complexity: 20
   tagliatelle:
     case:
       rules:
