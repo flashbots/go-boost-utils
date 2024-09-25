@@ -51,6 +51,5 @@ linters-settings:
     extra-rules: true
   gomoddirectives:
     replace-allow-list:
-      - github.com/ethereum/go-ethereum
       - github.com/attestantio/go-builder-client
       - github.com/attestantio/go-eth2-client
