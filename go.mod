@@ -3,8 +3,8 @@ module github.com/flashbots/go-boost-utils
 go 1.22
 
 require (
-	github.com/attestantio/go-builder-client v0.4.2
-	github.com/attestantio/go-eth2-client v0.21.7-0.20240701211822-0a60485fce68
+	github.com/attestantio/go-builder-client v0.5.1-0.20240925223414-5da8987dd6f3
+	github.com/attestantio/go-eth2-client v0.21.12-0.20240925220056-393fff117304
 	github.com/consensys/gnark-crypto v0.12.1
 	github.com/ethereum/go-ethereum v1.14.9
 	github.com/stretchr/testify v1.9.0
@@ -78,9 +78,3 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	rsc.io/tmplfunc v0.0.3 // indirect
 )
-
-// Remove this when Jim merges pk910's PR.
-replace github.com/attestantio/go-eth2-client => github.com/pk910/go-eth2-client v0.0.0-20240923174943-8d64565c83ca
-
-// Remove this when Jim merge's jtraglia's PR.
-replace github.com/attestantio/go-builder-client => github.com/jtraglia/go-builder-client v0.4.6-0.20240925183257-4d86495441b5
