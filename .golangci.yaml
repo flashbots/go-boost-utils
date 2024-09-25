@@ -1,6 +1,7 @@
 linters:
   enable-all: true
   disable:
+    - depguard
     - dupl
     - exhaustruct
     - funlen
@@ -10,12 +11,17 @@ linters:
     - godot
     - godox
     - gomnd
+    - inamedparam
+    - intrange
     - lll
+    - mnd
     - musttag
     - nlreturn
     - nonamedreturns
-    - nosnakecase
     - paralleltest
+    - perfsprint
+    - revive
+    - testifylint
     - testpackage
     - varnamelen
     - wrapcheck
@@ -27,20 +33,7 @@ linters:
     - contextcheck
     - rowserrcheck
     - sqlclosecheck
-    - structcheck
     - wastedassign
-
-    #
-    # Disabled because deprecated:
-    #
-    - deadcode
-    - exhaustivestruct
-    - golint
-    - ifshort
-    - interfacer
-    - maligned
-    - scopelint
-    - varcheck
 
 linters-settings:
   cyclop:
