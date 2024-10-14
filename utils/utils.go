@@ -139,6 +139,17 @@ func PayloadToPayloadHeader(payload *api.VersionedExecutionPayload) (*api.Versio
 			Version: spec.DataVersionDeneb,
 			Deneb:   header,
 		}, nil
+	case spec.DataVersionElectra:
+		// Electra uses the same ExecutionPayload as Deneb
+		header, err := denebPayloadToPayloadHeader(payload.Electra)
+		if err != nil {
+			return nil, err
+		}
+
+		return &api.VersionedExecutionPayloadHeader{
+			Version: spec.DataVersionElectra,
+			Electra: header,
+		}, nil
 	case spec.DataVersionUnknown, spec.DataVersionPhase0, spec.DataVersionAltair:
 		return nil, fmt.Errorf("%w: %d", ErrUnsupportedVersion, payload.Version)
 	default:
@@ -279,6 +290,13 @@ func ComputeBlockHash(payload *api.VersionedExecutionPayload, parentBeaconRoot *
 		return phase0.Hash32(header.Hash()), nil
 	case spec.DataVersionDeneb:
 		header, err := denebExecutionPayloadToBlockHeader(payload.Deneb, parentBeaconRoot)
+		if err != nil {
+			return phase0.Hash32{}, err
+		}
+		return phase0.Hash32(header.Hash()), nil
+	case spec.DataVersionElectra:
+		// Electra uses the same ExecutionPayload as Deneb
+		header, err := denebExecutionPayloadToBlockHeader(payload.Electra, parentBeaconRoot)
 		if err != nil {
 			return phase0.Hash32{}, err
 		}
