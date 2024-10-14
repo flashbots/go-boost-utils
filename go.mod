@@ -79,5 +79,8 @@ require (
 	rsc.io/tmplfunc v0.0.3 // indirect
 )
 
+// Remove when go-eth2-client is updated.
+replace github.com/attestantio/go-eth2-client => github.com/jtraglia/go-eth2-client v0.21.5-0.20241014213529-c8e71ddfccc4
+
 // Remove when go-builder-client is updated.
 replace github.com/attestantio/go-builder-client => github.com/jtraglia/go-builder-client v0.4.6-0.20241014193815-df58bba2ab54
