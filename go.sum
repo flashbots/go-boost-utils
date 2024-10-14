@@ -4,8 +4,6 @@ github.com/StackExchange/wmi v1.2.1 h1:VIkavFPXSjcnS+O8yTq7NI32k0R5Aj+v39y29VYDO
 github.com/StackExchange/wmi v1.2.1/go.mod h1:rcmrprowKIVzvc+NUiLncP2uuArMWLCbu9SBzvHz7e8=
 github.com/VictoriaMetrics/fastcache v1.12.2 h1:N0y9ASrJ0F6h0QaC3o6uJb3NIZ9VKLjCM7NQbSmF7WI=
 github.com/VictoriaMetrics/fastcache v1.12.2/go.mod h1:AmC+Nzz1+3G2eCPapF6UcsnkThDcMsQicp4xDukwJYI=
-github.com/attestantio/go-builder-client v0.5.1-0.20240925223414-5da8987dd6f3 h1:Ccyc8R6CJbnb5oTwjuYSa2XaYWFSN8R43Gh9V1zN3Dg=
-github.com/attestantio/go-builder-client v0.5.1-0.20240925223414-5da8987dd6f3/go.mod h1:qM91NvVG+fepPBN2/MDLpWJ9I/zZtpZAkXa8T9GFOvM=
 github.com/attestantio/go-eth2-client v0.21.12-0.20241006200801-8fa702e3a895 h1:3uu4l7TK5PPVBvVUpwxftDpKFddEE3g196BYJbKYq4g=
 github.com/attestantio/go-eth2-client v0.21.12-0.20241006200801-8fa702e3a895/go.mod h1:vy5jU/uDZ2+RcVzq5BfnG+bQ3/6uu9DGwCrGsPtjJ1A=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
@@ -106,6 +104,8 @@ github.com/huandu/go-clone v1.6.0 h1:HMo5uvg4wgfiy5FoGOqlFLQED/VGRm2D9Pi8g1FXPGc
 github.com/huandu/go-clone v1.6.0/go.mod h1:ReGivhG6op3GYr+UY3lS6mxjKp7MIGTknuU5TbTVaXE=
 github.com/huandu/go-clone/generic v1.6.0 h1:Wgmt/fUZ28r16F2Y3APotFD59sHk1p78K0XLdbUYN5U=
 github.com/huandu/go-clone/generic v1.6.0/go.mod h1:xgd9ZebcMsBWWcBx5mVMCoqMX24gLWr5lQicr+nVXNs=
+github.com/jtraglia/go-builder-client v0.4.6-0.20241014193815-df58bba2ab54 h1:ip/ONBWDWPCGWNGrMXD2vvZH/ABjw5wKfcQ8z7a8MWo=
+github.com/jtraglia/go-builder-client v0.4.6-0.20241014193815-df58bba2ab54/go.mod h1:UkqMh+CHZh63XDx3GdBLijRdFQu2Hyqh3n71V4G10Ws=
 github.com/kisielk/errcheck v1.5.0/go.mod h1:pFxgyoBC7bSaBwPgfKdkLd5X25qrDl4LWUI2bnpBCr8=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/klauspost/compress v1.16.0 h1:iULayQNOReoYUe+1qtKOqw9CwJv3aNQu8ivo7lw1HU4=
