@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/attestantio/go-builder-client v0.5.1-0.20240925223414-5da8987dd6f3
-	github.com/attestantio/go-eth2-client v0.21.12-0.20241006200801-8fa702e3a895
+	github.com/attestantio/go-eth2-client v0.21.12-0.20241014214053-759b0ace2e43
 	github.com/consensys/gnark-crypto v0.12.1
 	github.com/ethereum/go-ethereum v1.14.9
 	github.com/stretchr/testify v1.9.0
@@ -78,9 +78,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	rsc.io/tmplfunc v0.0.3 // indirect
 )
-
-// Remove when go-eth2-client is updated.
-replace github.com/attestantio/go-eth2-client => github.com/jtraglia/go-eth2-client v0.21.5-0.20241014213529-c8e71ddfccc4
 
 // Remove when go-builder-client is updated.
 replace github.com/attestantio/go-builder-client => github.com/jtraglia/go-builder-client v0.4.6-0.20241014193815-df58bba2ab54
