@@ -10,7 +10,6 @@ linters:
     - gocritic
     - godot
     - godox
-    - gomnd
     - inamedparam
     - intrange
     - lll
@@ -21,6 +20,7 @@ linters:
     - paralleltest
     - perfsprint
     - revive
+    - tenv
     - testifylint
     - testpackage
     - varnamelen
