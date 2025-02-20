@@ -1,6 +1,7 @@
 linters:
   enable-all: true
   disable:
+    - depguard
     - dupl
     - exhaustruct
     - funlen
@@ -9,13 +10,18 @@ linters:
     - gocritic
     - godot
     - godox
-    - gomnd
+    - inamedparam
+    - intrange
     - lll
+    - mnd
     - musttag
     - nlreturn
     - nonamedreturns
-    - nosnakecase
     - paralleltest
+    - perfsprint
+    - revive
+    - tenv
+    - testifylint
     - testpackage
     - varnamelen
     - wrapcheck
@@ -27,25 +33,18 @@ linters:
     - contextcheck
     - rowserrcheck
     - sqlclosecheck
-    - structcheck
     - wastedassign
 
-    #
-    # Disabled because deprecated:
-    #
-    - deadcode
-    - exhaustivestruct
-    - golint
-    - ifshort
-    - interfacer
-    - maligned
-    - scopelint
-    - varcheck
-
 linters-settings:
+  cyclop:
+    max-complexity: 20
   tagliatelle:
     case:
       rules:
         json: snake
   gofumpt:
     extra-rules: true
+  gomoddirectives:
+    replace-allow-list:
+      - github.com/attestantio/go-builder-client
+      - github.com/attestantio/go-eth2-client
