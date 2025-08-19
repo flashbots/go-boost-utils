@@ -313,6 +313,7 @@ func ComputeBlockHash(payload *api.VersionedExecutionPayload, parentBeaconRoot *
 		}
 		return phase0.Hash32(header.Hash()), nil
 	case spec.DataVersionFulu:
+		// Fulu uses the same ExecutionPayload as Deneb
 		header, err := denebExecutionPayloadToBlockHeader(payload.Fulu, parentBeaconRoot)
 		if err != nil {
 			return phase0.Hash32{}, err
