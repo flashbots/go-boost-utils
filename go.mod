@@ -3,8 +3,8 @@ module github.com/flashbots/go-boost-utils
 go 1.24
 
 require (
-	github.com/attestantio/go-builder-client v0.6.1
-	github.com/attestantio/go-eth2-client v0.25.1-0.20250603135601-6ac0bfda7fda
+	github.com/attestantio/go-builder-client v0.7.2
+	github.com/attestantio/go-eth2-client v0.27.1
 	github.com/consensys/gnark-crypto v0.16.0
 	github.com/ethereum/go-ethereum v1.15.2
 	github.com/stretchr/testify v1.10.0
@@ -49,5 +49,3 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	rsc.io/tmplfunc v0.0.3 // indirect
 )
-
-replace github.com/attestantio/go-builder-client => github.com/bharath-123/go-builder-client v0.0.0-20250626135301-b3bfa7d447a0
